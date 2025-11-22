@@ -1,0 +1,16 @@
+<div style="ywidth: 100vw; height: 100vh;">
+    <app-navbar></app-navbar>
+
+    <div class="body">
+        <h1>Welcome back !</h1>
+        <section class="bookings">
+            <h2 style="margin-left: 1rem;">Your bookings</h2>
+            <ul>
+                @for (b of bookings; track $index) {
+                    <app-booking-item [booking]="b" (cancelBooking)="onCancelBooking($event)"></app-booking-item>
+                }
+            </ul>
+        </section>
+    </div>
+
+</div>

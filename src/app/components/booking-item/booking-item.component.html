@@ -1,0 +1,33 @@
+<li class="booking-item">
+  <div class="main">
+    <div class="info">
+      <div class="room">{{ booking.roomName }}</div>
+      <div class="time">{{ booking.startTime | date:'short' }} — {{ booking.endTime | date:'short' }}</div>
+      <div class="id">ID: {{ booking.id }}</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn cancel" (click)="emitCancel()">Cancel booking</button>
+      <button class="btn details" (click)="toggleDetails()">View booking details</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="showDetails">
+    <div class="modal">
+      <h3>Booking details</h3>
+      <div class="row"><strong>Room:</strong> {{ booking.roomName }}</div>
+      <div class="row"><strong>From:</strong> {{ booking.startTime | date:'full' }}</div>
+      <div class="row"><strong>To:</strong> {{ booking.endTime | date:'full' }}</div>
+      <div class="row"><strong>Booking ID:</strong> {{ booking.id }}</div>
+      <div class="row" *ngFor="let key of (booking | keyvalue)">
+        <ng-container *ngIf="key.key !== 'roomName' && key.key !== 'startTime' && key.key !== 'endTime' && key.key !== 'id'">
+          <strong>{{ key.key }}:</strong> {{ key.value }}
+        </ng-container>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" (click)="toggleDetails()">Close</button>
+      </div>
+    </div>
+  </div>
+</li>
