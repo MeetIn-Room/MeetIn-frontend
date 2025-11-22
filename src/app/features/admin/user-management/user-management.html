@@ -1,1 +1,867 @@
-<p>user-management works!</p>
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+    <div class="logo-container">
+    <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+    <polyline points="2 17 12 22 22 17"></polyline>
+    <polyline points="2 12 12 17 22 12"></polyline>
+    <circle cx="12" cy="12" r="1.5"></circle>
+    </svg>
+    </div>
+    <span class="logo-text">MeetIn</span>
+    </div>
+
+      <div class="header-actions">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" placeholder="Search bookings" />
+        </div>
+        <button class="icon-button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#683b21" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </button>
+        <div class="user-profile">
+          <div class="user-avatar">DS</div>
+          <div class="user-info">
+            <span class="user-name">Admin User</span>
+            <span class="user-role">Administrator</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Sidebar -->
+    <aside class="sidebar">
+ 
+    <div class="menu-section">
+      <p class="section-title">Menu</p>
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active">
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <path d="M20,15.5 C20,14.6715729 19.3284271,14 18.5,14 L8.5,14 C7.67157288,14 7,14.6715729 7,15.5 L7,16.5 C7,17.3284271 7.67157288,18 8.5,18 L18.5,18 C19.3284271,18 20,17.3284271 20,16.5 L20,15.5 Z M21,15.5 L21,16.5 C21,17.8807119 19.8807119,19 18.5,19 L8.5,19 C7.11928813,19 6,17.8807119 6,16.5 L6,15.5 C6,14.1192881 7.11928813,13 8.5,13 L18.5,13 C19.8807119,13 21,14.1192881 21,15.5 Z M18,7.5 L18,8.5 C18,9.88071187 16.8807119,11 15.5,11 L8.5,11 C7.11928813,11 6,9.88071187 6,8.5 L6,7.5 C6,6.11928813 7.11928813,5 8.5,5 L15.5,5 C16.8807119,5 18,6.11928813 18,7.5 Z M17,7.5 C17,6.67157288 16.3284271,6 15.5,6 L8.5,6 C7.67157288,6 7,6.67157288 7,7.5 L7,8.5 C7,9.32842712 7.67157288,10 8.5,10 L15.5,10 C16.3284271,10 17,9.32842712 17,8.5 L17,7.5 Z M3,3.5 C3,3.22385763 3.22385763,3 3.5,3 C3.77614237,3 4,3.22385763 4,3.5 L4,20.5 C4,20.7761424 3.77614237,21 3.5,21 C3.22385763,21 3,20.7761424 3,20.5 L3,3.5 Z"></path>
+</svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item">
+<svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+          <span>User Management</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg class="icon" viewBox="0 0 511.842 511.842" xmlns="http://www.w3.org/2000/svg">
+  <path d="M405.145,106.509h-23.953c-22.156-85.961-173.586-138.302-240.398-85C85.843,25.823,42.59,71.783,42.59,127.842 c0,24.015,7.939,46.175,21.333,64.004v63.996c0,9.182,5.876,17.335,14.587,20.239l22.619,7.54l-27.707,18.471 c-12.666,8.444-12.666,27.057,0,35.501l37.374,24.916l-37.374,24.916c-5.935,3.957-9.5,10.618-9.5,17.75v42.667 c0,7.133,3.565,13.794,9.5,17.75l64,42.667c7.166,4.777,16.501,4.777,23.667,0l64-42.667c5.935-3.957,9.5-10.618,9.5-17.75 V191.846c13.394-17.829,21.333-39.989,21.333-64.004c0-35.016-16.876-66.092-42.938-85.541 c46.38,0.809,105.273,28.358,122.985,64.207h-15.945c-35.398,0-64.107,28.709-64.107,64.107v170.453 c0,35.398,28.709,64.107,64.107,64.107h85.12c35.398,0,64.107-28.709,64.107-64.107V170.615 C469.252,135.217,440.544,106.509,405.145,106.509z M149.256,464.869l-42.667-28.444v-19.832l54.5-36.333 c12.666-8.444,12.666-27.057,0-35.501l-37.374-24.916l37.374-24.916c14.771-9.847,11.754-32.375-5.087-37.989l-49.413-16.471 v-14.842c13.067,5.71,27.495,8.885,42.667,8.885s29.6-3.175,42.667-8.885v210.801L149.256,464.869z M149.256,191.842 c-35.343,0-64-28.657-64-64s28.657-64,64-64s64,28.657,64,64S184.6,191.842,149.256,191.842z M426.585,341.069 c0,11.834-9.606,21.44-21.44,21.44h-85.12c-11.834,0-21.44-9.606-21.44-21.44V170.615c0-11.834,9.606-21.44,21.44-21.44h85.12 c11.834,0,21.44,9.606,21.44,21.44V341.069z M149.256,85.175c-11.776,0-21.333,9.557-21.333,21.333s9.557,21.333,21.333,21.333s21.333-9.557,21.333-21.333 S161.032,85.175,149.256,85.175z M362.59,170.509c-11.776,0-21.333,9.557-21.333,21.333s9.557,21.333,21.333,21.333s21.333-9.557,21.333-21.333 S374.366,170.509,362.59,170.509z M362.59,234.509c-11.782,0-21.333,9.551-21.333,21.333v64c0,11.782,9.551,21.333,21.333,21.333 c11.782,0,21.333-9.551,21.333-21.333v-64C383.923,244.06,374.372,234.509,362.59,234.509z"></path>
+</svg>
+          <span>Rooms Management</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <path d="M15 5V8" stroke-width="2" stroke-linecap="round"></path>
+  <path d="M15 16V19" stroke-width="2" stroke-linecap="round"></path>
+  <path d="M15 11V13" stroke-width="2" stroke-linecap="round"></path>
+  <path d="M4.4416 10.4557C3.79252 9.73379 2.96682 8.93468 3.07899 7.97035C3.35831 5.56902 4.46022 5 7.648 5H16.352C19.5398 5 20.6417 5.56902 20.921 7.97035C21.0332 8.93468 20.2075 9.73379 19.5584 10.4557C19.2424 10.8072 19 11.3037 19 12C19 12.6963 19.2424 13.1928 19.5584 13.5443C20.2075 14.2662 21.0332 15.0653 20.921 16.0296C20.6417 18.431 19.5398 19 16.352 19H7.648C4.46022 19 3.35831 18.431 3.07899 16.0296C2.96682 15.0653 3.79252 14.2662 4.4416 13.5443C4.75761 13.1928 5 12.6963 5 12C5 11.3037 4.75761 10.8072 4.4416 10.4557Z" stroke-width="2"></path>
+</svg>
+          <span>Booking Dashboard</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="menu-section">
+      <p class="section-title">General</p>
+      <nav class="nav-menu">
+        <a href="#" class="nav-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M3 9H21M7 3V5M17 3V5M6 12H8M11 12H13M16 12H18M6 15H8M11 15H13M16 15H18M6 18H8M11 18H13M16 18H18M6.2 21H17.8C18.9201 21 19.4802 21 19.908 20.782C20.2843 20.5903 20.5903 20.2843 20.782 19.908C21 19.4802 21 18.9201 21 17.8V8.2C21 7.07989 21 6.51984 20.782 6.09202C20.5903 5.71569 20.2843 5.40973 19.908 5.21799C19.4802 5 18.9201 5 17.8 5H6.2C5.0799 5 4.51984 5 4.09202 5.21799C3.71569 5.40973 3.40973 5.71569 3.21799 6.09202C3 6.51984 3 7.07989 3 8.2V17.8C3 18.9201 3 19.4802 3.21799 19.908C3.40973 20.2843 3.71569 20.5903 4.09202 20.782C4.51984 21 5.07989 21 6.2 21Z" stroke="#000000" stroke-width="2" stroke-linecap="round"></path> </g></svg>
+          <span>Calendar</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg class="icon" fill="#000000" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M30.015 12.97l-2.567-0.569c-0.2-0.64-0.462-1.252-0.762-1.841l1.389-2.313c0.518-0.829 0.78-2.047 0-2.829l-1.415-1.414c-0.78-0.781-2.098-0.64-2.894-0.088l-2.251 1.434c-0.584-0.303-1.195-0.563-1.829-0.768l-0.576-2.598c-0.172-0.953-1.005-1.984-2.11-1.984h-2c-1.104 0-1.781 1.047-2 2l-0.642 2.567c-0.678 0.216-1.328 0.492-1.948 0.819l-2.308-1.47c-0.795-0.552-2.114-0.692-2.894 0.088l-1.415 1.414c-0.781 0.782-0.519 2 0 2.828l1.461 2.435c-0.274 0.552-0.517 1.123-0.705 1.72l-2.566 0.569c-0.953 0.171-1.984 1.005-1.984 2.109v2c0 1.105 1.047 1.782 2 2l2.598 0.649c0.179 0.551 0.404 1.080 0.658 1.593l-1.462 2.438c-0.518 0.828-0.78 2.047 0 2.828l1.415 1.414c0.78 0.782 2.098 0.64 2.894 0.089l2.313-1.474c0.623 0.329 1.277 0.608 1.96 0.823l0.64 2.559c0.219 0.953 0.896 2 2 2h2c1.105 0 1.938-1.032 2.11-1.985l0.577-2.604c0.628-0.203 1.23-0.459 1.808-0.758l2.256 1.438c0.796 0.552 2.114 0.692 2.895-0.089l1.415-1.414c0.78-0.782 0.518-2 0-2.828l-1.39-2.317c0.279-0.549 0.521-1.12 0.716-1.714l2.599-0.649c0.953-0.219 2-0.895 2-2v-2c0-1.104-1.031-1.938-1.985-2.11zM30.001 16.939c-0.085 0.061-0.245 0.145-0.448 0.192l-3.708 0.926-0.344 1.051c-0.155 0.474-0.356 0.954-0.597 1.428l-0.502 0.986 1.959 3.267c0.125 0.2 0.183 0.379 0.201 0.485l-1.316 1.314c-0.127-0.040-0.271-0.092-0.341-0.14l-3.292-2.099-1.023 0.529c-0.493 0.256-0.999 0.468-1.503 0.631l-1.090 0.352-0.824 3.723c-0.038 0.199-0.145 0.36-0.218 0.417h-1.8c-0.061-0.085-0.145-0.245-0.191-0.448l-0.921-3.681-1.066-0.338c-0.549-0.173-1.097-0.404-1.63-0.684l-1.028-0.543-3.293 2.099c-0.135 0.091-0.279 0.143-0.409 0.143l-1.311-1.276c0.018-0.104 0.072-0.274 0.181-0.449l2.045-3.408-0.487-0.98c-0.227-0.462-0.407-0.895-0.547-1.325l-0.343-1.052-3.671-0.918c-0.231-0.052-0.398-0.139-0.485-0.2v-1.86c0.001 0.001 0.002 0.001 0.005 0.001 0.034 0 0.198-0.117 0.335-0.142l3.772-0.835 0.346-1.103c0.141-0.449 0.333-0.917 0.588-1.43l0.487-0.98-2.024-3.373c-0.125-0.201-0.184-0.38-0.201-0.485l1.315-1.314c0.128 0.041 0.271 0.093 0.34 0.14l3.354 2.138 1.027-0.542c0.527-0.278 1.073-0.507 1.622-0.682l1.063-0.338 0.912-3.649c0.053-0.231 0.138-0.398 0.2-0.485h1.859c-0.014 0.020 0.115 0.195 0.142 0.339l0.84 3.794 1.089 0.352c0.511 0.165 1.023 0.38 1.523 0.639l1.023 0.532 3.224-2.053c0.135-0.092 0.279-0.143 0.409-0.143l1.313 1.276c-0.017 0.104-0.072 0.276-0.181 0.45l-1.98 3.296 0.505 0.988c0.273 0.533 0.48 1.033 0.635 1.529l0.346 1.104 3.697 0.82c0.224 0.041 0.398 0.171 0.434 0.241zM16.013 9.99c-3.321 0-6.023 2.697-6.023 6.010s2.702 6.010 6.023 6.010 6.023-2.697 6.023-6.009c0-3.313-2.702-6.010-6.023-6.010zM16 20c-2.205 0-4-1.794-4-4s1.794-4 4-4c2.206 0 4 1.794 4 4s-1.794 4-4 4z"></path> </g></svg>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="menu-section menu-section-bottom">
+      <nav class="nav-menu">
+        <a href="#" class="nav-item nav-item-logout">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Log out</span>
+        </a>
+      </nav>
+    </div>
+    </aside>
+
+        <div class="sidecontent">
+            <!-- Dashboard Header Section -->
+            <div class="dashboard-header-section">
+                <div class="dashboard-header-content">
+                    <div class="dashboard-title-section">
+                        <h1 class="dashboard-title">User Management</h1>
+                        <p class="dashboard-subtitle">Manage system users, roles, and permissions</p>
+                    </div>
+                    
+                    <div class="dashboard-filters">
+                        <div class="date-range-filter">
+                            <div class="filter-header">
+                                <svg class="calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>User Statistics</span>
+                            </div>
+                            <div class="period-quick-filters">
+                                <button class="period-filter-btn active" (click)="filterUsers('all')">All Users</button>
+                                <button class="period-filter-btn" (click)="filterUsers('active')">Active</button>
+                                <button class="period-filter-btn" (click)="filterUsers('inactive')">Inactive</button>
+                                <button class="period-filter-btn" (click)="filterUsers('admin')">Admins</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div *ngFor="let stat of userStats; let i = index" class="stat-card" [style.--card-color]="stat.color">
+                    <div class="card-bg-shape shape-1"></div>
+                    <div class="card-bg-shape shape-2"></div>
+                    
+                    <div class="stat-content">
+                        <div class="stat-header">
+                            <div class="title-section">
+                                <span class="stat-title">{{ stat.title }}</span>
+                                <div class="trend-sparkline">
+                                    <svg width="60" height="20" viewBox="0 0 60 20">
+                                        <path [attr.d]="generateSparkline(stat.trend)" 
+                                              fill="none" 
+                                              stroke="currentColor" 
+                                              stroke-width="1.5"
+                                              stroke-linecap="round"
+                                              stroke-linejoin="round"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div class="icon-container" [style.background]="getIconGradient(stat.gradient)">
+                                <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <ng-container [ngSwitch]="stat.icon">
+                                        <g *ngSwitchCase="'users'">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </g>
+                                        <g *ngSwitchCase="'user-plus'">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="8.5" cy="7" r="4"></circle>
+                                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                                        </g>
+                                        <g *ngSwitchCase="'shield'">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                        </g>
+                                        <g *ngSwitchCase="'activity'">
+                                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                        </g>
+                                    </ng-container>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="value-section">
+                            <div class="stat-value">{{ stat.value }}</div>
+                            <div class="growth-indicator" [class.positive]="stat.isPositive" [class.negative]="!stat.isPositive">
+                                <svg class="indicator-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                    <path *ngIf="stat.isPositive" d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2"/>
+                                    <path *ngIf="!stat.isPositive" d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <span class="growth-text">{{ stat.change }}</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-footer">
+                            <div class="comparison">
+                                <span class="comparison-label">vs last month</span>
+                                <span class="comparison-value">{{ stat.lastMonth }}</span>
+                            </div>
+                            <div class="progress-indicator">
+                                <div class="progress-track">
+                                    <div class="progress-fill" [style.width.%]="getProgressWidth(stat)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Table -->
+            <div class="enhanced-table-card">
+                <div class="table-header-section">
+                    <div class="table-title-section">
+                        <h3 class="table-main-title">System Users</h3>
+                        <p class="table-subtitle">Manage user accounts, roles, and access permissions</p>
+                    </div>
+                    <div class="table-controls">
+                        <div class="table-search-box">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" placeholder="Search users..." class="search-input" [(ngModel)]="searchQuery" (input)="onSearch()" />
+                        </div>
+                        <div class="table-action-buttons">
+                            <button class="action-btn filter-btn" (click)="openFilterModal()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                </svg>
+                                Filter
+                            </button>
+                            <button class="action-btn sort-btn" (click)="openSortModal()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                                Sort
+                            </button>
+                            <button class="action-btn export-btn" (click)="exportUsers()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Export
+                            </button>
+                            <button class="action-btn add-user-btn" (click)="openAddUserModal()" style="background: #f97316; color: white; border-color: #f97316;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Add User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="enhanced-bookings-table">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-column">
+                                    <div class="checkbox-wrapper">
+                                        <input type="checkbox" class="table-checkbox" (change)="toggleSelectAll($event)" [checked]="allSelected" />
+                                    </div>
+                                </th>
+                                <th class="user-column">
+                                    <div class="column-header" (click)="sortUsers('name')">
+                                        <span>User</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'name' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="email-column">
+                                    <div class="column-header" (click)="sortUsers('email')">
+                                        <span>Email</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'email' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="role-column">
+                                    <div class="column-header" (click)="sortUsers('role')">
+                                        <span>Role</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'role' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="status-column">
+                                    <div class="column-header" (click)="sortUsers('status')">
+                                        <span>Status</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'status' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="date-column">
+                                    <div class="column-header" (click)="sortUsers('lastLogin')">
+                                        <span>Last Login</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'lastLogin' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="actions-column">
+                                    <div class="column-header">
+                                        <span>Actions</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let user of filteredUsers; let i = index" class="table-row">
+                                <td class="checkbox-cell">
+                                    <div class="checkbox-wrapper">
+                                        <input type="checkbox" class="table-checkbox" [checked]="user.selected" (change)="toggleUserSelection(user)" />
+                                    </div>
+                                </td>
+                                <td class="user-cell">
+                                    <div class="user-wrapper">
+                                        <div class="user-avatar-small" [style.background]="getUserAvatarColor(user.name)">
+                                            {{ getUserInitials(user.name) }}
+                                        </div>
+                                        <div class="user-details">
+                                            <span class="user-name">{{ user.name }}</span>
+                                            <span class="user-department">{{ user.department }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="email-cell">
+                                    <div class="email-wrapper">
+                                        <span class="email-text">{{ user.email }}</span>
+                                    </div>
+                                </td>
+                                <td class="role-cell">
+                                    <div class="role-wrapper">
+                                        <span class="role-badge" [ngClass]="getRoleClass(user.role)">
+                                            {{ user.role }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="status-cell">
+                                    <div class="status-wrapper">
+                                        <span class="status-badge-enhanced" [ngClass]="getStatusClass(user.status)">
+                                            <span class="status-dot"></span>
+                                            {{ user.status }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="date-cell">
+                                    <div class="date-wrapper">
+                                        <span class="date-text">{{ user.lastLogin }}</span>
+                                        <span class="login-ip" *ngIf="user.lastLoginIp">({{ user.lastLoginIp }})</span>
+                                    </div>
+                                </td>
+                                <td class="actions-cell">
+                                    <div class="actions-wrapper">
+                                        <button class="action-icon" (click)="editUser(user)" title="Edit User">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="action-icon" (click)="toggleUserStatus(user)" [title]="user.status === 'Active' ? 'Deactivate User' : 'Activate User'">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path *ngIf="user.status === 'Active'" d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                                                <path *ngIf="user.status !== 'Active'" d="M6 12h12"></path>
+                                                <line x1="9" y1="12" x2="15" y2="12"></line>
+                                            </svg>
+                                        </button>
+                                        <button class="action-icon delete-btn" (click)="deleteUser(user)" title="Delete User">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <div class="table-pagination">
+                        <button class="pagination-btn prev-btn" (click)="previousPage()" [disabled]="currentPage === 1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                            Previous
+                        </button>
+                        <div class="pagination-pages">
+                            <button *ngFor="let page of getPaginationPages()" 
+                                    class="page-btn" 
+                                    [class.active]="page === currentPage"
+                                    (click)="goToPage(page)">
+                                {{ page }}
+                            </button>
+                            <span *ngIf="showPaginationDots" class="page-dots">...</span>
+                        </div>
+                        <button class="pagination-btn next-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                            Next
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="table-summary">
+                        <span class="summary-text">
+                            Showing {{ getDisplayRange() }} of {{ totalUsers }} users
+                            <span *ngIf="selectedUsersCount > 0">({{ selectedUsersCount }} selected)</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal-overlay" *ngIf="showAddUserModal" (click)="closeAddUserModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title">Add New User</h3>
+            <button class="modal-close" (click)="closeAddUserModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <form [formGroup]="userForm" (ngSubmit)="saveUser()" class="user-form">
+                <div class="form-grid">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">Personal Information</h4>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">First Name *</label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       formControlName="firstName"
+                                       placeholder="Enter first name">
+                                <div class="error-message" *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched">
+                                    First name is required
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Last Name *</label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       formControlName="lastName"
+                                       placeholder="Enter last name">
+                                <div class="error-message" *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched">
+                                    Last name is required
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" 
+                                   class="form-input" 
+                                   formControlName="email"
+                                   placeholder="Enter email address">
+                            <div class="error-message" *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+                                Valid email is required
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" 
+                                   class="form-input" 
+                                   formControlName="phone"
+                                   placeholder="Enter phone number">
+                        </div>
+                    </div>
+                    
+                    <!-- Account Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">Account Information</h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Department *</label>
+                            <select class="form-select" formControlName="department">
+                                <option value="">Select Department</option>
+                                <option value="IT">IT</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="HR">Human Resources</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Operations">Operations</option>
+                                <option value="Management">Management</option>
+                            </select>
+                            <div class="error-message" *ngIf="userForm.get('department')?.invalid && userForm.get('department')?.touched">
+                                Department is required
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">User Role *</label>
+                            <div class="role-options">
+                                <label class="role-option" *ngFor="let role of roleOptions">
+                                    <input type="radio" 
+                                           [value]="role.value" 
+                                           formControlName="role">
+                                    <span class="role-label">
+                                        <span class="role-name">{{ role.name }}</span>
+                                        <span class="role-description">{{ role.description }}</span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="error-message" *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched">
+                                Role is required
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Initial Status</label>
+                            <div class="status-options">
+                                <label class="status-option">
+                                    <input type="radio" 
+                                           value="Active" 
+                                           formControlName="status">
+                                    <span class="status-indicator active"></span>
+                                    <span>Active</span>
+                                </label>
+                                <label class="status-option">
+                                    <input type="radio" 
+                                           value="Inactive" 
+                                           formControlName="status">
+                                    <span class="status-indicator inactive"></span>
+                                    <span>Inactive</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">Security Settings</h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Password *</label>
+                            <div class="password-input-container">
+                                <input [type]="showPassword ? 'text' : 'password'" 
+                                       class="form-input" 
+                                       formControlName="password"
+                                       placeholder="Enter password">
+                                <button type="button" 
+                                        class="password-toggle"
+                                        (click)="togglePasswordVisibility()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path *ngIf="!showPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle *ngIf="!showPassword" cx="12" cy="12" r="3"></circle>
+                                        <path *ngIf="showPassword" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line *ngIf="showPassword" x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="error-message" *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+                                Password must be at least 8 characters
+                            </div>
+                            <div class="password-strength" *ngIf="userForm.get('password')?.value">
+                                <div class="strength-bar" [class]="getPasswordStrengthClass()"></div>
+                                <span class="strength-text">{{ getPasswordStrengthText() }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password *</label>
+                            <input [type]="showConfirmPassword ? 'text' : 'password'" 
+                                   class="form-input" 
+                                   formControlName="confirmPassword"
+                                   placeholder="Confirm password">
+                            <div class="error-message" *ngIf="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched">
+                                Passwords do not match
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" 
+                                       formControlName="sendWelcomeEmail">
+                                <span class="checkmark"></span>
+                                Send welcome email with login instructions
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" 
+                            class="btn-secondary" 
+                            (click)="closeAddUserModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="btn-primary"
+                            [disabled]="userForm.invalid || isSubmitting">
+                        <span *ngIf="isSubmitting" class="loading-spinner"></span>
+                        {{ isEditing ? 'Update User' : 'Create User' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal-overlay" *ngIf="showEditUserModal" (click)="closeEditUserModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit User</h3>
+            <button class="modal-close" (click)="closeEditUserModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="user-profile-header" *ngIf="editingUser">
+                <div class="user-avatar-large" [style.background]="getUserAvatarColor(editingUser.name)">
+                    {{ getUserInitials(editingUser.name) }}
+                </div>
+                <div class="user-profile-info">
+                    <h4 class="user-profile-name">{{ editingUser.name }}</h4>
+                    <p class="user-profile-email">{{ editingUser.email }}</p>
+                    <div class="user-profile-meta">
+                        <span class="user-meta-item">User ID: {{ editingUser.id }}</span>
+                        <span class="user-meta-item">Last login: {{ editingUser.lastLogin }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <form [formGroup]="userForm" (ngSubmit)="saveUser()" class="user-form">
+                <div class="form-tabs">
+                    <button type="button" 
+                            class="tab-button" 
+                            [class.active]="activeTab === 'profile'"
+                            (click)="activeTab = 'profile'">
+                        Profile
+                    </button>
+                    <button type="button" 
+                            class="tab-button" 
+                            [class.active]="activeTab === 'security'"
+                            (click)="activeTab = 'security'">
+                        Security
+                    </button>
+                    <button type="button" 
+                            class="tab-button" 
+                            [class.active]="activeTab === 'permissions'"
+                            (click)="activeTab = 'permissions'">
+                        Permissions
+                    </button>
+                </div>
+                
+                <!-- Profile Tab -->
+                <div class="tab-content" *ngIf="activeTab === 'profile'">
+                    <div class="form-grid">
+                        <div class="form-section">
+                            <h4 class="section-title">Personal Information</h4>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">First Name *</label>
+                                    <input type="text" 
+                                           class="form-input" 
+                                           formControlName="firstName"
+                                           placeholder="Enter first name">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Last Name *</label>
+                                    <input type="text" 
+                                           class="form-input" 
+                                           formControlName="lastName"
+                                           placeholder="Enter last name">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Email Address *</label>
+                                <input type="email" 
+                                       class="form-input" 
+                                       formControlName="email"
+                                       placeholder="Enter email address">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" 
+                                       class="form-input" 
+                                       formControlName="phone"
+                                       placeholder="Enter phone number">
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h4 class="section-title">Account Information</h4>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Department *</label>
+                                <select class="form-select" formControlName="department">
+                                    <option value="">Select Department</option>
+                                    <option value="IT">IT</option>
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="HR">Human Resources</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Sales">Sales</option>
+                                    <option value="Operations">Operations</option>
+                                    <option value="Management">Management</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">User Role *</label>
+                                <div class="role-options">
+                                    <label class="role-option" *ngFor="let role of roleOptions">
+                                        <input type="radio" 
+                                               [value]="role.value" 
+                                               formControlName="role">
+                                        <span class="role-label">
+                                            <span class="role-name">{{ role.name }}</span>
+                                            <span class="role-description">{{ role.description }}</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Account Status</label>
+                                <div class="status-options">
+                                    <label class="status-option">
+                                        <input type="radio" 
+                                               value="Active" 
+                                               formControlName="status">
+                                        <span class="status-indicator active"></span>
+                                        <span>Active</span>
+                                    </label>
+                                    <label class="status-option">
+                                        <input type="radio" 
+                                               value="Inactive" 
+                                               formControlName="status">
+                                        <span class="status-indicator inactive"></span>
+                                        <span>Inactive</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Tab -->
+                <div class="tab-content" *ngIf="activeTab === 'security'">
+                    <div class="form-section">
+                        <h4 class="section-title">Password Management</h4>
+                        
+                        <div class="security-notice">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>User will receive an email to reset their password</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="button" 
+                                    class="btn-secondary full-width"
+                                    (click)="sendPasswordReset()">
+                                Send Password Reset Email
+                            </button>
+                        </div>
+                        
+                        <div class="form-divider">
+                            <span>Or set new password manually</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <div class="password-input-container">
+                                <input [type]="showPassword ? 'text' : 'password'" 
+                                       class="form-input" 
+                                       formControlName="password"
+                                       placeholder="Enter new password">
+                                <button type="button" 
+                                        class="password-toggle"
+                                        (click)="togglePasswordVisibility()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path *ngIf="!showPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle *ngIf="!showPassword" cx="12" cy="12" r="3"></circle>
+                                        <path *ngIf="showPassword" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line *ngIf="showPassword" x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="password-strength" *ngIf="userForm.get('password')?.value">
+                                <div class="strength-bar" [class]="getPasswordStrengthClass()"></div>
+                                <span class="strength-text">{{ getPasswordStrengthText() }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Confirm New Password</label>
+                            <input [type]="showConfirmPassword ? 'text' : 'password'" 
+                                   class="form-input" 
+                                   formControlName="confirmPassword"
+                                   placeholder="Confirm new password">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Permissions Tab -->
+                <div class="tab-content" *ngIf="activeTab === 'permissions'">
+                    <div class="form-section">
+                        <h4 class="section-title">User Permissions</h4>
+                        
+                        <div class="permissions-list">
+                            <div class="permission-category" *ngFor="let category of permissionCategories">
+                                <h5 class="permission-category-title">{{ category.name }}</h5>
+                                <div class="permission-options">
+                                    <label class="permission-option" *ngFor="let permission of category.permissions">
+                                        <input type="checkbox" 
+                                               [value]="permission.value"
+                                               [checked]="hasPermission(permission.value)"
+                                               (change)="togglePermission(permission.value, $event)">
+                                        <span class="permission-label">
+                                            <span class="permission-name">{{ permission.name }}</span>
+                                            <span class="permission-description">{{ permission.description }}</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" 
+                            class="btn-secondary" 
+                            (click)="closeEditUserModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="btn-primary"
+                            [disabled]="userForm.invalid || isSubmitting">
+                        <span *ngIf="isSubmitting" class="loading-spinner"></span>
+                        Update User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
