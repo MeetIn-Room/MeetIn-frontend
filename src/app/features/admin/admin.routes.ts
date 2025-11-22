@@ -16,10 +16,14 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('./room-management/room-management')
       .then(m => m.RoomManagementComponent)
   },
-  
-    {
+  {
+    path: 'bookings',
+    loadComponent: () => import('./room-booking/room-booking')
+      .then(m => m.BookingManagementComponent)
+  },
+  {
     path: '',
-    redirectTo: 'rooms',
+    redirectTo: 'bookings',
     pathMatch: 'full'
   }
 ];
