@@ -17,16 +17,6 @@ export const routes: Routes = [
     children: ADMIN_ROUTES
   },
   {
-    path: 'rooms',
-    loadChildren: () => import('./features/rooms/rooms.routes')
-      .then(m => m.ROOMS_ROUTES)
-  },
-  {
-    path: 'bookings',
-    loadChildren: () => import('./features/bookings/bookings.routes')
-      .then(m => m.BOOKINGS_ROUTES)
-  },
-  {
     path: '**',
     redirectTo: 'admin'
   }
