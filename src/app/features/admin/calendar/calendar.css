@@ -1,0 +1,54 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Nunito', sans-serif;
+}
+
+.dashboard-container {
+  display: block;
+  min-height: 100vh;
+  background-color: #eaebec;
+  padding: 8px 16px;
+}
+
+ .icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.badge {
+  margin-left: auto;
+  background-color: #f97316;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.badge-gray {
+  margin-left: auto;
+  background-color: #eaebec;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+ 
+.main-content {
+  display: flex;
+  padding: 0px 0px;
+  overflow-x: auto;
+}
+
+.sidecontent {
+  padding: 0px 24px 10px 24px;
+  overflow-y: auto;
+  margin-left: 270px;  
+  margin-top: 10px; 
+  width: calc(100% - 220px);
+  height: calc(100vh - 55px); 
+}
