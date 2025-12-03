@@ -195,11 +195,6 @@
                                         </svg>
                                     </div>
                                 </th>
-                                <th class="attendees-column">
-                                    <div class="column-header">
-                                        <span>Attendees</span>
-                                    </div>
-                                </th>
                                 <th class="purpose-column">
                                     <div class="column-header">
                                         <span>Purpose</span>
@@ -252,18 +247,6 @@
                                 <td class="duration-cell">
                                     <div class="duration-wrapper">
                                         <span class="duration-text">{{ booking.duration }}</span>
-                                    </div>
-                                </td>
-                                <td class="attendees-cell">
-                                    <div class="attendees-wrapper">
-                                        <div class="attendees-avatars">
-                                            <div *ngFor="let attendee of booking.attendees.slice(0, 3)" class="attendee-avatar" [style.background]="getAttendeeColor(attendee)">
-                                                {{ getAttendeeInitials(attendee) }}
-                                            </div>
-                                            <div *ngIf="booking.attendees.length > 3" class="attendee-more">
-                                                +{{ booking.attendees.length - 3 }}
-                                            </div>
-                                        </div>
                                     </div>
                                 </td>
                                 <td class="purpose-cell">
@@ -395,14 +378,6 @@
                         <div class="detail-item">
                             <span class="detail-label">Description:</span>
                             <span class="detail-value">{{ selectedBooking.description || 'No description provided' }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Attendees:</span>
-                            <div class="attendees-list">
-                                <span *ngFor="let attendee of selectedBooking.attendees" class="attendee-tag">
-                                    {{ attendee }}
-                                </span>
-                            </div>
                         </div>
                     </div>
                     

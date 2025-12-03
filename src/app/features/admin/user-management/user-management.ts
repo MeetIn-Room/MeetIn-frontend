@@ -83,7 +83,6 @@ export class UserManagementComponent implements OnInit {
   
   roleOptions: RoleOption[] = [
     { value: 'User', name: 'Standard User', description: 'Can book rooms and manage own bookings' },
-    { value: 'Manager', name: 'Manager', description: 'Can manage team bookings and view reports' },
     { value: 'Admin', name: 'Administrator', description: 'Full system access and user management' }
   ];
 
