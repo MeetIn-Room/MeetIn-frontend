@@ -35,8 +35,14 @@ export class NewBookingComponent {
 
   // In a real app the room list would be retrieved from a service. Expose a simple list here.
   availableRooms: Room[] = [
-    { id: 'r-1', name: 'Conference Room A', capacity: 8, openTime: 8, closeTime: 18, amenities: ['Projector', 'Whiteboard'] },
-    { id: 'r-2', name: 'Focus Room 2', capacity: 4, openTime: 8, closeTime: 18, amenities: ['Monitor'] }
+    {
+      id: 'r-1', name: 'Conference Room A', capacity: 8, openTime: 8, closeTime: 18, amenities: ['Projector', 'Whiteboard'],
+      isActive: true
+    },
+    {
+      id: 'r-2', name: 'Focus Room 2', capacity: 4, openTime: 8, closeTime: 18, amenities: ['Monitor'],
+      isActive: true
+    }
   ];
 
   form = this.fb.group({
@@ -76,7 +82,8 @@ export class NewBookingComponent {
       startTime: this.timeStringToHourNumber(vals.startTime!),
       endTime: this.timeStringToHourNumber(vals.endTime!),
       title: vals.title!,
-      description: vals.description || ''
+      description: vals.description || '',
+      userId: JSON.parse(localStorage.getItem('currentUser')!).id
     };
 
     this.bookingService.create(booking);

@@ -114,7 +114,8 @@ export class RoomBookModalComponent implements OnInit {
       startTime: start,
       endTime: end,
       title: 'Booking',
-      description: ''
+      description: '',
+      userId: JSON.parse(localStorage.getItem('currentUser')!).id
     };
     this.bookingService.create(booking);
     this.clearSelection();

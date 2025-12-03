@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './features/login/login.component';
-import { HomeComponent } from './features/home/home.component';
-import { AllRoomsComponent } from './features/all-rooms/all-rooms.component';
+import { LoginComponent } from './features/user/login/login.component';
+import { HomeComponent } from './features/user/home/home.component';
+import { AllRoomsComponent } from './features/user/all-rooms/all-rooms.component';
 import { ADMIN_ROUTES } from './features/admin/admin.routes';
 
 export const routes: Routes = [
@@ -32,7 +32,12 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'admin'
-  }
+    redirectTo: '404'
+  },
+//   {
+//     path: '404',
+//     title: 'Page Not Found',
+    
+//   }
 
 ];

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule } 
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -101,7 +101,8 @@ export class LoginComponent implements OnInit {
       console.log('Login:', this.loginForm.value);
 
       this.authService.login(this.loginForm.value).subscribe({
-        next: () => {
+        next: (response) => {
+          this.returnUrl =  response.user.role?.toLowerCase() === 'admin' ? '/admin' : '/home';
           this.router.navigate([this.returnUrl]);
         },
         error: (err) => {

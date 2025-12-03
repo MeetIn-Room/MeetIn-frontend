@@ -1,0 +1,130 @@
+
+.sidebar {
+  width: 280px;
+  background-color: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  gap: 8px;
+  padding: 16px 20px;
+  border-radius: 45px;
+  margin-bottom: 16px; 
+  position: fixed;
+  z-index: 999;
+}
+
+ .icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.menu-section-bottom {
+  margin-top: 30px;
+}
+
+.section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #683b21;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 18px 20px 0px 0px;
+  margin-bottom: 4px;
+}
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  position: relative;  
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 18px 18px 2px 18px;
+  color: #402e32;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.2s;
+  overflow: hidden;  
+}
+ 
+.nav-item::before {
+  position: absolute;
+  content: '';
+  height: 0;
+  width: 0;
+  top: 0;
+  left: 0;
+  background: linear-gradient(135deg,  rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.9) 50%, rgba(249,115,22,0.3) 50%, rgba(255, 136, 0, 0.61) 60%);
+  border-radius: 0 0 50px 0;
+  box-shadow: 0.2em 0.2em 0.2em rgba(0, 0, 0, 0.3);
+  transition: 0.3s;
+  z-index: 0;
+}
+
+.nav-item:hover::before {
+  width: 1.6em;
+  height: 1.6em;
+}
+ 
+.nav-item.active::before {
+  width: 1.6em;
+  height: 1.6em;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.3) 60%);
+}
+ 
+.nav-item .icon,
+.nav-item span {
+  position: relative;
+  z-index: 1;
+}
+ 
+.nav-item .icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+ 
+.nav-item .icon path,
+.nav-item .icon {
+  stroke: #683b21;
+  fill: #402e32;
+}
+ 
+.nav-item:hover {
+  color: #f97316;
+}
+
+.nav-item:hover .icon path,
+.nav-item:hover .icon {
+  stroke: #683b21;
+  fill: #f97316;
+}
+ 
+.nav-item.active {
+  background-color: #f97316;
+  color: white;
+}
+
+.nav-item.active .icon path,
+.nav-item.active .icon {
+  stroke: #b3b3b3;
+  fill: #ffffff;
+}
+
+.nav-item-logout {
+  color: #ff0000;
+} 

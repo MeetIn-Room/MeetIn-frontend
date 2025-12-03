@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
-import { HeaderComponent } from '../../../shared/components/navbar/navbar';
+import { HeaderComponent } from '../../../shared/components/navbarAdmin/navbar';
 
 
 @Component({

@@ -110,14 +110,16 @@ export class WeeklyCalendarComponent implements OnInit {
           name: 'Conference Room A', amenities: ['Projector', 'Whiteboard'], capacity: 10,
           id: '',
           openTime: 8,
-          closeTime: 17
+          closeTime: 17,
+          isActive: true,
         },
         date: new Date(2025, 11, 2),
         startTime: 9,
         endTime: 10.5,
         title: 'Team Standup',
         color: 'booking-blue',
-        description: ''
+        description: '',
+        userId: ''
       },
       {
         id: '2',
@@ -125,14 +127,16 @@ export class WeeklyCalendarComponent implements OnInit {
           name: 'Meeting Room', amenities: ['Projector'], capacity: 15,
           id: '',
           openTime: 8,
-          closeTime: 17
+          closeTime: 17,
+          isActive: true,
         },
         date: new Date(2025, 11, 2),
         startTime: 14,
         endTime: 15,
         title: 'Client Call',
         color: 'booking-purple',
-        description: ''
+        description: '',
+        userId: ''
       }
     ];
   }
