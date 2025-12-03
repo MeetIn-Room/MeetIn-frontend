@@ -22,8 +22,18 @@ export const ADMIN_ROUTES: Routes = [
       .then(m => m.BookingManagementComponent)
   },
   {
+    path: 'calendar',
+    loadComponent: () => import('./calendar/calendar')
+      .then(m => m.CalendarComponent)
+  },
+  {
+    path: 'settings',
+    loadComponent: () => import('./settings/settings')
+      .then(m => m.SettingsComponent)
+  },
+  {
     path: '',
-    redirectTo: 'bookings',
+    redirectTo: 'dashboard',
     pathMatch: 'full'
   }
 ];

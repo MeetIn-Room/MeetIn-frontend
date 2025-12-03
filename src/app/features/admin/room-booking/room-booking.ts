@@ -1,6 +1,10 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
+import { HeaderComponent } from '../../../shared/components/navbar/navbar';
+
 
 interface BookingStat {
   title: string;
@@ -37,12 +41,13 @@ interface Booking {
 @Component({
   selector: 'app-booking-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, SidebarComponent, HeaderComponent],
   templateUrl: './room-booking.html',
   styleUrls: ['./room-booking.css']
 })
 
 export class BookingManagementComponent implements OnInit {
+
   searchQuery: string = '';
   currentFilter: string = 'all';
   sortField: string = 'date';
@@ -290,7 +295,7 @@ export class BookingManagementComponent implements OnInit {
 
   filteredBookings: Booking[] = [];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder,) {}
 
   ngOnInit() {
     this.filteredBookings = [...this.bookings];
@@ -680,4 +685,10 @@ export class BookingManagementComponent implements OnInit {
       }
     }
   }
+
+  // logout(): void {
+  //   // Clear any auth tokens/data here
+  //   this.router.navigate(['/login']);
+  // }
+
 }

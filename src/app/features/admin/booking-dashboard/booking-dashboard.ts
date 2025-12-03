@@ -1,5 +1,9 @@
- import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
+import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
+import { HeaderComponent } from '../../../shared/components/navbar/navbar';
+
 
 interface Stat {
   title: string;
@@ -31,12 +35,14 @@ interface WeeklyData {
 @Component({
   selector: 'app-booking-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule, SidebarComponent, HeaderComponent],
   templateUrl: './booking-dashboard.html',
   styleUrls: ['./booking-dashboard.css']
 })
 export class BookingDashboardComponent implements OnInit {
-  activeNav: string = 'dashboard';
+  // constructor(private router: Router) {}
+
+  // activeNav: string = 'dashboard';
   
   // Header filter properties
   startDate: Date = new Date();

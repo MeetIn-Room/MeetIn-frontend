@@ -1,11 +1,21 @@
-import { Component } from '@angular/core';
+ import { Component, OnInit, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-calendar',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './calendar.html',
-  styleUrl: './calendar.css',
+  styleUrls: ['./calendar.css']
 })
-export class Calendar {
+
+export class CalendarComponent implements OnInit {
+
+  constructor() {}
+
+  ngOnInit(): void {
+    // Initialize component state here if needed
+  }
 
 }

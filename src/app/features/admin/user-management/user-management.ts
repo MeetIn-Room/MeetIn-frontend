@@ -1,6 +1,9 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
+import { HeaderComponent } from '../../../shared/components/navbar/navbar';
 
 interface UserStat {
   title: string;
@@ -48,11 +51,12 @@ interface PermissionCategory {
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, SidebarComponent, HeaderComponent],
   templateUrl: './user-management.html',
   styleUrls: ['./user-management.css']
 })
 export class UserManagementComponent implements OnInit {
+
   searchQuery: string = '';
   currentFilter: string = 'all';
   sortField: string = 'name';
@@ -266,7 +270,7 @@ export class UserManagementComponent implements OnInit {
 
   filteredUsers: User[] = [];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private router: Router) {
     this.userForm = this.createUserForm();
   }
 
@@ -741,4 +745,10 @@ export class UserManagementComponent implements OnInit {
       this.closeEditUserModal();
     }
   }
+
+  // logout(): void {
+  //   // Clear any auth tokens/data here
+  //   this.router.navigate(['/login']);
+  // }
+
 }

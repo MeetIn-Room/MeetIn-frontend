@@ -1,6 +1,10 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
+import { HeaderComponent } from '../../../shared/components/navbar/navbar';
+
 
 interface RoomStat {
   title: string;
@@ -45,7 +49,7 @@ interface Equipment {
 @Component({
   selector: 'app-room-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, SidebarComponent, HeaderComponent],
   templateUrl: './room-management.html',
   styleUrls: ['./room-management.css']
 })
@@ -285,7 +289,7 @@ export class RoomManagementComponent implements OnInit {
   filteredRooms: Room[] = [];
   filteredRoomsTable: Room[] = [];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder ) {
     this.roomForm = this.createRoomForm();
   }
 
@@ -711,4 +715,10 @@ export class RoomManagementComponent implements OnInit {
       this.closeAddRoomModal();
     }
   }
+
+  // logout(): void {
+  //   // Clear any auth tokens/data here
+  //   this.router.navigate(['/login']);
+  // }
+
 }
