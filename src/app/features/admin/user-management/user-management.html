@@ -1,0 +1,771 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <app-header></app-header>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Sidebar -->
+    <app-sidebar></app-sidebar>
+
+        <div class="sidecontent">
+            <!-- Dashboard Header Section -->
+            <div class="dashboard-header-section">
+                <div class="dashboard-header-content">
+                    <div class="dashboard-title-section">
+                        <h1 class="dashboard-title">User Management</h1>
+                        <p class="dashboard-subtitle">Manage system users, roles, and permissions</p>
+                    </div>
+                    
+                    <div class="dashboard-filters">
+                        <div class="date-range-filter">
+                            <div class="filter-header">
+                                <svg class="calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>User Statistics</span>
+                            </div>
+                            <div class="period-quick-filters">
+                                <button class="period-filter-btn active" (click)="filterUsers('all')">All Users</button>
+                                <button class="period-filter-btn" (click)="filterUsers('active')">Active</button>
+                                <button class="period-filter-btn" (click)="filterUsers('inactive')">Inactive</button>
+                                <button class="period-filter-btn" (click)="filterUsers('admin')">Admins</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div *ngFor="let stat of userStats; let i = index" class="stat-card" [style.--card-color]="stat.color">
+                    <div class="card-bg-shape shape-1"></div>
+                    <div class="card-bg-shape shape-2"></div>
+                    
+                    <div class="stat-content">
+                        <div class="stat-header">
+                            <div class="title-section">
+                                <span class="stat-title">{{ stat.title }}</span>
+                                <div class="trend-sparkline">
+                                    <svg width="60" height="20" viewBox="0 0 60 20">
+                                        <path [attr.d]="generateSparkline(stat.trend)" 
+                                              fill="none" 
+                                              stroke="currentColor" 
+                                              stroke-width="1.5"
+                                              stroke-linecap="round"
+                                              stroke-linejoin="round"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div class="icon-container" [style.background]="getIconGradient(stat.gradient)">
+                                <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <ng-container [ngSwitch]="stat.icon">
+                                        <g *ngSwitchCase="'users'">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </g>
+                                        <g *ngSwitchCase="'user-plus'">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="8.5" cy="7" r="4"></circle>
+                                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                                        </g>
+                                        <g *ngSwitchCase="'shield'">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                        </g>
+                                        <g *ngSwitchCase="'activity'">
+                                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                        </g>
+                                    </ng-container>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="value-section">
+                            <div class="stat-value">{{ stat.value }}</div>
+                            <div class="growth-indicator" [class.positive]="stat.isPositive" [class.negative]="!stat.isPositive">
+                                <svg class="indicator-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                    <path *ngIf="stat.isPositive" d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2"/>
+                                    <path *ngIf="!stat.isPositive" d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <span class="growth-text">{{ stat.change }}</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-footer">
+                            <div class="comparison">
+                                <span class="comparison-label">vs last month</span>
+                                <span class="comparison-value">{{ stat.lastMonth }}</span>
+                            </div>
+                            <div class="progress-indicator">
+                                <div class="progress-track">
+                                    <div class="progress-fill" [style.width.%]="getProgressWidth(stat)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Table -->
+            <div class="enhanced-table-card">
+                <div class="table-header-section">
+                    <div class="table-title-section">
+                        <h3 class="table-main-title">System Users</h3>
+                        <p class="table-subtitle">Manage user accounts, roles, and access permissions</p>
+                    </div>
+                    <div class="table-controls">
+                        <div class="table-search-box">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" placeholder="Search users..." class="search-input" [(ngModel)]="searchQuery" (input)="onSearch()" />
+                        </div>
+                        <div class="table-action-buttons">
+                            <button class="action-btn filter-btn" (click)="openFilterModal()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                </svg>
+                                Filter
+                            </button>
+                            <button class="action-btn sort-btn" (click)="openSortModal()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                                Sort
+                            </button>
+                            <button class="action-btn export-btn" (click)="exportUsers()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Export
+                            </button>
+                            <button class="action-btn add-user-btn" (click)="openAddUserModal()" style="background: #f97316; color: white; border-color: #f97316;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Add User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="enhanced-bookings-table">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-column">
+                                    <div class="checkbox-wrapper">
+                                        <input type="checkbox" class="table-checkbox" (change)="toggleSelectAll($event)" [checked]="allSelected" />
+                                    </div>
+                                </th>
+                                <th class="user-column">
+                                    <div class="column-header" (click)="sortUsers('name')">
+                                        <span>User</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'name' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="email-column">
+                                    <div class="column-header" (click)="sortUsers('email')">
+                                        <span>Email</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'email' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="role-column">
+                                    <div class="column-header" (click)="sortUsers('role')">
+                                        <span>Role</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'role' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="status-column">
+                                    <div class="column-header" (click)="sortUsers('status')">
+                                        <span>Status</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'status' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="date-column">
+                                    <div class="column-header" (click)="sortUsers('lastLogin')">
+                                        <span>Last Login</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'lastLogin' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="actions-column">
+                                    <div class="column-header">
+                                        <span>Actions</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let user of filteredUsers; let i = index" class="table-row">
+                                <td class="checkbox-cell">
+                                    <div class="checkbox-wrapper">
+                                        <input type="checkbox" class="table-checkbox" [checked]="user.selected" (change)="toggleUserSelection(user)" />
+                                    </div>
+                                </td>
+                                <td class="user-cell">
+                                    <div class="user-wrapper">
+                                        <div class="user-avatar-small" [style.background]="getUserAvatarColor(user.name)">
+                                            {{ getUserInitials(user.name) }}
+                                        </div>
+                                        <div class="user-details">
+                                            <span class="user-name">{{ user.name }}</span>
+                                            <span class="user-department">{{ user.department }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="email-cell">
+                                    <div class="email-wrapper">
+                                        <span class="email-text">{{ user.email }}</span>
+                                    </div>
+                                </td>
+                                <td class="role-cell">
+                                    <div class="role-wrapper">
+                                        <span class="role-badge" [ngClass]="getRoleClass(user.role)">
+                                            {{ user.role }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="status-cell">
+                                    <div class="status-wrapper">
+                                        <span class="status-badge-enhanced" [ngClass]="getStatusClass(user.status)">
+                                            <span class="status-dot"></span>
+                                            {{ user.status }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="date-cell">
+                                    <div class="date-wrapper">
+                                        <span class="date-text">{{ user.lastLogin }}</span>
+                                        <span class="login-ip" *ngIf="user.lastLoginIp">({{ user.lastLoginIp }})</span>
+                                    </div>
+                                </td>
+                                <td class="actions-cell">
+                                    <div class="actions-wrapper">
+                                        <button class="action-icon" (click)="editUser(user)" title="Edit User">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="action-icon" (click)="toggleUserStatus(user)" [title]="user.status === 'Active' ? 'Deactivate User' : 'Activate User'">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path *ngIf="user.status === 'Active'" d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                                                <path *ngIf="user.status !== 'Active'" d="M6 12h12"></path>
+                                                <line x1="9" y1="12" x2="15" y2="12"></line>
+                                            </svg>
+                                        </button>
+                                        <button class="action-icon delete-btn" (click)="deleteUser(user)" title="Delete User">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <div class="table-pagination">
+                        <button class="pagination-btn prev-btn" (click)="previousPage()" [disabled]="currentPage === 1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                            Previous
+                        </button>
+                        <div class="pagination-pages">
+                            <button *ngFor="let page of getPaginationPages()" 
+                                    class="page-btn" 
+                                    [class.active]="page === currentPage"
+                                    (click)="goToPage(page)">
+                                {{ page }}
+                            </button>
+                            <span *ngIf="showPaginationDots" class="page-dots">...</span>
+                        </div>
+                        <button class="pagination-btn next-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                            Next
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="table-summary">
+                        <span class="summary-text">
+                            Showing {{ getDisplayRange() }} of {{ totalUsers }} users
+                            <span *ngIf="selectedUsersCount > 0">({{ selectedUsersCount }} selected)</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal-overlay" *ngIf="showAddUserModal" (click)="closeAddUserModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title">Add New User</h3>
+            <button class="modal-close" (click)="closeAddUserModal()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+</button>
+        </div>
+        
+        <div class="modal-body">
+            <form [formGroup]="userForm" (ngSubmit)="saveUser()" class="user-form">
+                <div class="form-grid">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">Personal Information</h4>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">First Name *</label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       formControlName="firstName"
+                                       placeholder="Enter first name">
+                                <div class="error-message" *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched">
+                                    First name is required
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Last Name *</label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       formControlName="lastName"
+                                       placeholder="Enter last name">
+                                <div class="error-message" *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched">
+                                    Last name is required
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" 
+                                   class="form-input" 
+                                   formControlName="email"
+                                   placeholder="Enter email address">
+                            <div class="error-message" *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+                                Valid email is required
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" 
+                                   class="form-input" 
+                                   formControlName="phone"
+                                   placeholder="Enter phone number">
+                        </div>
+                    </div>
+                    
+                    <!-- Account Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">Account Information</h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Department *</label>
+                            <select class="form-select" formControlName="department">
+                                <option value="">Select Department</option>
+                                <option value="IT">IT</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="HR">Human Resources</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Operations">Operations</option>
+                                <option value="Management">Management</option>
+                            </select>
+                            <div class="error-message" *ngIf="userForm.get('department')?.invalid && userForm.get('department')?.touched">
+                                Department is required
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">User Role *</label>
+                            <div class="role-options">
+                                <label class="role-option" *ngFor="let role of roleOptions">
+                                    <input type="radio" 
+                                           [value]="role.value" 
+                                           formControlName="role">
+                                    <span class="role-label">
+                                        <span class="role-name">{{ role.name }}</span>
+                                        <span class="role-description">{{ role.description }}</span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="error-message" *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched">
+                                Role is required
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Initial Status</label>
+                            <div class="status-options">
+                                <label class="status-option">
+                                    <input type="radio" 
+                                           value="Active" 
+                                           formControlName="status">
+                                    <span class="status-indicator active"></span>
+                                    <span>Active</span>
+                                </label>
+                                <label class="status-option">
+                                    <input type="radio" 
+                                           value="Inactive" 
+                                           formControlName="status">
+                                    <span class="status-indicator inactive"></span>
+                                    <span>Inactive</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">Security Settings</h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Password *</label>
+                            <div class="password-input-container">
+                                <input [type]="showPassword ? 'text' : 'password'" 
+                                       class="form-input" 
+                                       formControlName="password"
+                                       placeholder="Enter password">
+                                <button type="button" 
+                                        class="password-toggle"
+                                        (click)="togglePasswordVisibility()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path *ngIf="!showPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle *ngIf="!showPassword" cx="12" cy="12" r="3"></circle>
+                                        <path *ngIf="showPassword" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line *ngIf="showPassword" x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="error-message" *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+                                Password must be at least 8 characters
+                            </div>
+                            <div class="password-strength" *ngIf="userForm.get('password')?.value">
+                                <div class="strength-bar" [class]="getPasswordStrengthClass()"></div>
+                                <span class="strength-text">{{ getPasswordStrengthText() }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password *</label>
+                            <input [type]="showConfirmPassword ? 'text' : 'password'" 
+                                   class="form-input" 
+                                   formControlName="confirmPassword"
+                                   placeholder="Confirm password">
+                            <div class="error-message" *ngIf="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched">
+                                Passwords do not match
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" 
+                                       formControlName="sendWelcomeEmail">
+                                <span class="checkmark"></span>
+                                Send welcome email with login instructions
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" 
+                            class="btn-secondary" 
+                            (click)="closeAddUserModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="btn-primary"
+                            [disabled]="userForm.invalid || isSubmitting">
+                        <span *ngIf="isSubmitting" class="loading-spinner"></span>
+                        {{ isEditing ? 'Update User' : 'Create User' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal-overlay" *ngIf="showEditUserModal" (click)="closeEditUserModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit User</h3>
+            <button class="modal-close" (click)="closeEditUserModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="user-profile-header" *ngIf="editingUser">
+                <div class="user-avatar-large" [style.background]="getUserAvatarColor(editingUser.name)">
+                    {{ getUserInitials(editingUser.name) }}
+                </div>
+                <div class="user-profile-info">
+                    <h4 class="user-profile-name">{{ editingUser.name }}</h4>
+                    <p class="user-profile-email">{{ editingUser.email }}</p>
+                    <div class="user-profile-meta">
+                        <span class="user-meta-item">User ID: {{ editingUser.id }}</span>
+                        <span class="user-meta-item">Last login: {{ editingUser.lastLogin }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <form [formGroup]="userForm" (ngSubmit)="saveUser()" class="user-form">
+                <div class="form-tabs">
+                    <button type="button" 
+                            class="tab-button" 
+                            [class.active]="activeTab === 'profile'"
+                            (click)="activeTab = 'profile'">
+                        Profile
+                    </button>
+                    <button type="button" 
+                            class="tab-button" 
+                            [class.active]="activeTab === 'security'"
+                            (click)="activeTab = 'security'">
+                        Security
+                    </button>
+                    <button type="button" 
+                            class="tab-button" 
+                            [class.active]="activeTab === 'permissions'"
+                            (click)="activeTab = 'permissions'">
+                        Permissions
+                    </button>
+                </div>
+                
+                <!-- Profile Tab -->
+                <div class="tab-content" *ngIf="activeTab === 'profile'">
+                    <div class="form-grid">
+                        <div class="form-section">
+                            <h4 class="section-title">Personal Information</h4>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">First Name *</label>
+                                    <input type="text" 
+                                           class="form-input" 
+                                           formControlName="firstName"
+                                           placeholder="Enter first name">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Last Name *</label>
+                                    <input type="text" 
+                                           class="form-input" 
+                                           formControlName="lastName"
+                                           placeholder="Enter last name">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Email Address *</label>
+                                <input type="email" 
+                                       class="form-input" 
+                                       formControlName="email"
+                                       placeholder="Enter email address">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" 
+                                       class="form-input" 
+                                       formControlName="phone"
+                                       placeholder="Enter phone number">
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h4 class="section-title">Account Information</h4>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Department *</label>
+                                <select class="form-select" formControlName="department">
+                                    <option value="">Select Department</option>
+                                    <option value="IT">IT</option>
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="HR">Human Resources</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Sales">Sales</option>
+                                    <option value="Operations">Operations</option>
+                                    <option value="Management">Management</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">User Role *</label>
+                                <div class="role-options">
+                                    <label class="role-option" *ngFor="let role of roleOptions">
+                                        <input type="radio" 
+                                               [value]="role.value" 
+                                               formControlName="role">
+                                        <span class="role-label">
+                                            <span class="role-name">{{ role.name }}</span>
+                                            <span class="role-description">{{ role.description }}</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Account Status</label>
+                                <div class="status-options">
+                                    <label class="status-option">
+                                        <input type="radio" 
+                                               value="Active" 
+                                               formControlName="status">
+                                        <span class="status-indicator active"></span>
+                                        <span>Active</span>
+                                    </label>
+                                    <label class="status-option">
+                                        <input type="radio" 
+                                               value="Inactive" 
+                                               formControlName="status">
+                                        <span class="status-indicator inactive"></span>
+                                        <span>Inactive</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Tab -->
+                <div class="tab-content" *ngIf="activeTab === 'security'">
+                    <div class="form-section">
+                        <h4 class="section-title">Password Management</h4>
+                        
+                        <div class="security-notice">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>User will receive an email to reset their password</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="button" 
+                                    class="btn-secondary full-width"
+                                    (click)="sendPasswordReset()">
+                                Send Password Reset Email
+                            </button>
+                        </div>
+                        
+                        <div class="form-divider">
+                            <span>Or set new password manually</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <div class="password-input-container">
+                                <input [type]="showPassword ? 'text' : 'password'" 
+                                       class="form-input" 
+                                       formControlName="password"
+                                       placeholder="Enter new password">
+                                <button type="button" 
+                                        class="password-toggle"
+                                        (click)="togglePasswordVisibility()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path *ngIf="!showPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle *ngIf="!showPassword" cx="12" cy="12" r="3"></circle>
+                                        <path *ngIf="showPassword" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line *ngIf="showPassword" x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="password-strength" *ngIf="userForm.get('password')?.value">
+                                <div class="strength-bar" [class]="getPasswordStrengthClass()"></div>
+                                <span class="strength-text">{{ getPasswordStrengthText() }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Confirm New Password</label>
+                            <input [type]="showConfirmPassword ? 'text' : 'password'" 
+                                   class="form-input" 
+                                   formControlName="confirmPassword"
+                                   placeholder="Confirm new password">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Permissions Tab -->
+                <div class="tab-content" *ngIf="activeTab === 'permissions'">
+                    <div class="form-section">
+                        <h4 class="section-title">User Permissions</h4>
+                        
+                        <div class="permissions-list">
+                            <div class="permission-category" *ngFor="let category of permissionCategories">
+                                <h5 class="permission-category-title">{{ category.name }}</h5>
+                                <div class="permission-options">
+                                    <label class="permission-option" *ngFor="let permission of category.permissions">
+                                        <input type="checkbox" 
+                                               [value]="permission.value"
+                                               [checked]="hasPermission(permission.value)"
+                                               (change)="togglePermission(permission.value, $event)">
+                                        <span class="permission-label">
+                                            <span class="permission-name">{{ permission.name }}</span>
+                                            <span class="permission-description">{{ permission.description }}</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" 
+                            class="btn-secondary" 
+                            (click)="closeEditUserModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="btn-primary"
+                            [disabled]="userForm.invalid || isSubmitting">
+                        <span *ngIf="isSubmitting" class="loading-spinner"></span>
+                        Update User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

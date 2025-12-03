@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './features/login/login.component';
 import { HomeComponent } from './features/home/home.component';
 import { AllRoomsComponent } from './features/all-rooms/all-rooms.component';
+import { ADMIN_ROUTES } from './features/admin/admin.routes';
 
 export const routes: Routes = [
     {
@@ -23,6 +24,15 @@ export const routes: Routes = [
         path: 'home',
         title: 'Home',
         component: HomeComponent
-    }
+    },
+  {
+    path: 'admin',
+    title: 'Admin Panel',
+    children: ADMIN_ROUTES
+  },
+  {
+    path: '**',
+    redirectTo: 'admin'
+  }
 
 ];

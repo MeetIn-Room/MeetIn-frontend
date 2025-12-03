@@ -6,4 +6,5 @@ export interface Room {
     closeTime: number;
     amenities: string[];// e.g., ['Projector', 'Whiteboard']
     description?: string;
+    isActive: boolean;
 }

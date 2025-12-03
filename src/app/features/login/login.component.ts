@@ -15,10 +15,10 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class LoginComponent implements OnInit {
   loading = false;
-
- isLoginMode = true;
-  loginForm: FormGroup;
+  loginForm!: FormGroup;
+  errorMessage = '';
   returnUrl = '/home'; //Default redirect URL after login
+  submitted = false;
 
   // Focus states
   emailFocused = false;
@@ -30,7 +30,6 @@ export class LoginComponent implements OnInit {
 
   // Password visibility
   showPassword = false;
-  showConfirmPassword = false;
 
   // SVG Icons
   icons: { [key: string]: SafeHtml } = {};
@@ -42,6 +41,7 @@ export class LoginComponent implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private sanitizer = inject(DomSanitizer);
+
   constructor() {
     this.initIcons();
     this.initFeatures();
@@ -84,20 +84,7 @@ export class LoginComponent implements OnInit {
     ];
   }
 
-  passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password')?.value;
-    const confirmPassword = form.get('confirmPassword')?.value;
-
-    if (password && confirmPassword && password !== confirmPassword) {
-      form.get('confirmPassword')?.setErrors({ passwordMismatch: true });
-      return { passwordMismatch: true };
-    }
-
-    return null;
-  }
-
   setMode(isLogin: boolean) {
-    this.isLoginMode = isLogin;
 
     // Reset focus states when switching modes
     this.emailFocused = false;
@@ -108,16 +95,18 @@ export class LoginComponent implements OnInit {
 
   onLogin(ev: Event) {
     ev.preventDefault()
-
+    this.submitted = true;
     this.loading = true;
     if (this.loginForm.valid) {
       console.log('Login:', this.loginForm.value);
+
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
           this.router.navigate([this.returnUrl]);
         },
         error: (err) => {
           console.error('Login error:', err);
+          this.loading = false
           alert('Login failed. Please check your credentials and try again.');
         },
         complete: () => {

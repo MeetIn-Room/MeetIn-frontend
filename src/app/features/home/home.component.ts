@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { WeeklyCalendarComponent } from '../../shared/components/weekly-calendar/weekly-calendar.component';
 import { BookingService } from '../../core/services/booking.service';
 import { NewBookingComponent } from '../../shared/components/new-booking/new-booking.component';
+import { BehaviorSubject } from 'rxjs';
+import { User } from '../../core/interfaces/auth';
 
 @Component({
   selector: 'app-home',
@@ -16,6 +18,12 @@ import { NewBookingComponent } from '../../shared/components/new-booking/new-boo
 export class HomeComponent implements OnInit {
 
   showCalendar = false;
+  showNewBookingModal = false;
+
+  currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser') || '{}'));
+
+  constructor(){
+  }
 
   toggleCalendar() {
     this.showCalendar = !this.showCalendar;
@@ -28,8 +36,10 @@ export class HomeComponent implements OnInit {
         name: 'Conference Room A', amenities: [], capacity: 0,
         id: '',
         openTime: 8,
-        closeTime: 17
+        closeTime: 17,
+        isActive: true
       },
+      userId: this.currentUserSubject.value.id,
       startTime: 9,
       endTime: 10.5,
       date: new Date(),
@@ -42,8 +52,10 @@ export class HomeComponent implements OnInit {
         name: 'Focus Room 2', amenities: [], capacity: 0,
         id: '',
         openTime: 8,
-        closeTime: 17
+        closeTime: 17,
+        isActive: true
       },
+      userId: this.currentUserSubject.value.id,
       startTime: 11,
       endTime: 14,
       date: new Date(),
@@ -52,7 +64,6 @@ export class HomeComponent implements OnInit {
     }
   ];
 
-  showNewBookingModal = false;
 
   private bookingService = inject(BookingService);
 

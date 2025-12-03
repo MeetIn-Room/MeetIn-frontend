@@ -1,0 +1,412 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <app-header></app-header>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Sidebar -->
+    <app-sidebar></app-sidebar>
+
+        <div class="sidecontent">
+            <!-- Dashboard Header Section -->
+            <div class="dashboard-header-section">
+                <div class="dashboard-header-content">
+                    <div class="dashboard-title-section">
+                        <h1 class="dashboard-title">Booking Management</h1>
+                        <p class="dashboard-subtitle">Manage and monitor all room bookings and reservations</p>
+                    </div>
+                    
+                    <div class="dashboard-filters">
+                        <div class="date-range-filter">
+                            <div class="filter-header">
+                                <svg class="calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>Booking Analytics</span>
+                            </div>
+                            <div class="period-quick-filters">
+                                <button class="period-filter-btn active" (click)="filterBookings('all')">All Bookings</button>
+                                <button class="period-filter-btn" (click)="filterBookings('today')">Today</button>
+                                <button class="period-filter-btn" (click)="filterBookings('upcoming')">Upcoming</button>
+                                <button class="period-filter-btn" (click)="filterBookings('pending')">Pending</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div *ngFor="let stat of bookingStats; let i = index" class="stat-card" [style.--card-color]="stat.color">
+                    <div class="card-bg-shape shape-1"></div>
+                    <div class="card-bg-shape shape-2"></div>
+                    
+                    <div class="stat-content">
+                        <div class="stat-header">
+                            <div class="title-section">
+                                <span class="stat-title">{{ stat.title }}</span>
+                                <div class="trend-sparkline">
+                                    <svg width="60" height="20" viewBox="0 0 60 20">
+                                        <path [attr.d]="generateSparkline(stat.trend)" 
+                                              fill="none" 
+                                              stroke="currentColor" 
+                                              stroke-width="1.5"
+                                              stroke-linecap="round"
+                                              stroke-linejoin="round"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div class="icon-container" [style.background]="getIconGradient(stat.gradient)">
+                                <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <ng-container [ngSwitch]="stat.icon">
+                                        <g *ngSwitchCase="'calendar'">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </g>
+                                        <g *ngSwitchCase="'check-circle'">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </g>
+                                        <g *ngSwitchCase="'clock'">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </g>
+                                        <g *ngSwitchCase="'alert-circle'">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </g>
+                                    </ng-container>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="value-section">
+                            <div class="stat-value">{{ stat.value }}</div>
+                            <div class="growth-indicator" [class.positive]="stat.isPositive" [class.negative]="!stat.isPositive">
+                                <svg class="indicator-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                    <path *ngIf="stat.isPositive" d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2"/>
+                                    <path *ngIf="!stat.isPositive" d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <span class="growth-text">{{ stat.change }}</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-footer">
+                            <div class="comparison">
+                                <span class="comparison-label">vs last week</span>
+                                <span class="comparison-value">{{ stat.lastWeek }}</span>
+                            </div>
+                            <div class="progress-indicator">
+                                <div class="progress-track">
+                                    <div class="progress-fill" [style.width.%]="getProgressWidth(stat)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Management Table -->
+            <div class="enhanced-table-card">
+                <div class="table-header-section">
+                    <div class="table-title-section">
+                        <h3 class="table-main-title">All Bookings</h3>
+                        <p class="table-subtitle">Manage and monitor all room reservations and bookings</p>
+                    </div>
+                    <div class="table-controls">
+                        <div class="table-search-box">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" placeholder="Search bookings..." class="search-input" [(ngModel)]="searchQuery" (input)="onSearch()" />
+                        </div>
+                        <div class="table-action-buttons">
+                            <button class="action-btn filter-btn" (click)="openAdvancedFilter()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                </svg>
+                                Filter
+                            </button>
+                            <button class="action-btn sort-btn" (click)="openSortModal()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                                Sort
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="enhanced-bookings-table">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-column">
+                                    <div class="checkbox-wrapper">
+                                        <input type="checkbox" class="table-checkbox" (change)="toggleSelectAll($event)" [checked]="allSelected" />
+                                    </div>
+                                </th>
+                                <th class="user-column">
+                                    <div class="column-header" (click)="sortBookings('userName')">
+                                        <span>User</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'userName' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="room-column">
+                                    <div class="column-header" (click)="sortBookings('roomName')">
+                                        <span>Room</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'roomName' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="date-column">
+                                    <div class="column-header" (click)="sortBookings('date')">
+                                        <span>Date</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'date' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="time-column">
+                                    <div class="column-header" (click)="sortBookings('startTime')">
+                                        <span>Time</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'startTime' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="duration-column">
+                                    <div class="column-header" (click)="sortBookings('duration')">
+                                        <span>Duration</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'duration' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="purpose-column">
+                                    <div class="column-header">
+                                        <span>Purpose</span>
+                                    </div>
+                                </th>
+                                <th class="actions-column">
+                                    <div class="column-header">
+                                        <span>Actions</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let booking of filteredBookings; let i = index" class="table-row">
+                                <td class="checkbox-cell">
+                                    <div class="checkbox-wrapper">
+                                        <input type="checkbox" class="table-checkbox" [checked]="booking.selected" (change)="toggleBookingSelection(booking)" />
+                                    </div>
+                                </td>
+                                <td class="user-cell">
+                                    <div class="user-wrapper">
+                                        <div class="user-avatar-small" [style.background]="getUserAvatarColor(booking.userName)">
+                                            {{ getUserInitials(booking.userName) }}
+                                        </div>
+                                        <div class="user-details">
+                                            <span class="user-name">{{ booking.userName }}</span>
+                                            <span class="user-department">{{ booking.userDepartment }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="room-cell">
+                                    <div class="room-wrapper">
+                                        <div class="room-avatar-small" [style.background]="getRoomColor(booking.roomName)">
+                                            {{ getRoomInitials(booking.roomName) }}
+                                        </div>
+                                        <span class="room-name">{{ booking.roomName }}</span>
+                                    </div>
+                                </td>
+                                <td class="date-cell">
+                                    <div class="date-wrapper">
+                                        <span class="date-text">{{ booking.date }}</span>
+                                        <span class="day-text">{{ getDayOfWeek(booking.date) }}</span>
+                                    </div>
+                                </td>
+                                <td class="time-cell">
+                                    <div class="time-wrapper">
+                                        <span class="time-text">{{ booking.startTime }} - {{ booking.endTime }}</span>
+                                    </div>
+                                </td>
+                                <td class="duration-cell">
+                                    <div class="duration-wrapper">
+                                        <span class="duration-text">{{ booking.duration }}</span>
+                                    </div>
+                                </td>
+                                <td class="purpose-cell">
+                                    <div class="purpose-wrapper">
+                                        <span class="purpose-text">{{ booking.purpose }}</span>
+                                    </div>
+                                </td>
+                                <td class="actions-cell">
+                                    <div class="actions-wrapper">
+                                        <button class="action-icon" (click)="viewBookingDetails(booking)" title="View Details">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
+                                        <button class="action-icon delete-btn" (click)="deleteBooking(booking)" title="Delete Booking">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <div class="table-pagination">
+                        <button class="pagination-btn prev-btn" (click)="previousPage()" [disabled]="currentPage === 1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                            Previous
+                        </button>
+                        <div class="pagination-pages">
+                            <button *ngFor="let page of getPaginationPages()" 
+                                    class="page-btn" 
+                                    [class.active]="page === currentPage"
+                                    (click)="goToPage(page)">
+                                {{ page }}
+                            </button>
+                            <span *ngIf="showPaginationDots" class="page-dots">...</span>
+                        </div>
+                        <button class="pagination-btn next-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                            Next
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="table-summary">
+                        <span class="summary-text">
+                            Showing {{ getDisplayRange() }} of {{ totalBookings }} bookings
+                            <span *ngIf="selectedBookingsCount > 0">({{ selectedBookingsCount }} selected)</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal-overlay" *ngIf="showBookingDetailsModal" (click)="closeBookingDetailsModal()">
+    <div class="modal-container large-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title">Booking Details</h3>
+            <button class="modal-close" (click)="closeBookingDetailsModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <div *ngIf="selectedBooking" class="booking-details">
+                <div class="details-grid">
+                    <div class="details-section">
+                        <h4 class="section-title">Booking Information</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Booking ID:</span>
+                            <span class="detail-value">{{ selectedBooking.id }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value status-badge" [ngClass]="getStatusBadgeClass(selectedBooking.status)">
+                                {{ selectedBooking.status }}
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Date & Time:</span>
+                            <span class="detail-value">{{ selectedBooking.date }} | {{ selectedBooking.startTime }} - {{ selectedBooking.endTime }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Duration:</span>
+                            <span class="detail-value">{{ selectedBooking.duration }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h4 class="section-title">Room & User</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Room:</span>
+                            <span class="detail-value">{{ selectedBooking.roomName }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Booked By:</span>
+                            <span class="detail-value">{{ selectedBooking.userName }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Department:</span>
+                            <span class="detail-value">{{ selectedBooking.userDepartment }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Contact:</span>
+                            <span class="detail-value">{{ selectedBooking.userEmail }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="details-section full-width">
+                        <h4 class="section-title">Meeting Details</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Purpose:</span>
+                            <span class="detail-value">{{ selectedBooking.purpose }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Description:</span>
+                            <span class="detail-value">{{ selectedBooking.description || 'No description provided' }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="details-section full-width">
+                        <h4 class="section-title">Additional Information</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Created:</span>
+                            <span class="detail-value">{{ selectedBooking.createdAt }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Last Updated:</span>
+                            <span class="detail-value">{{ selectedBooking.updatedAt }}</span>
+                        </div>
+                        <div class="detail-item" *ngIf="selectedBooking.specialRequirements">
+                            <span class="detail-label">Special Requirements:</span>
+                            <span class="detail-value">{{ selectedBooking.specialRequirements }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="details-actions">
+                    <button class="btn-secondary" (click)="closeBookingDetailsModal()">
+                        Close
+                    </button>
+                    <button class="btn-warning" (click)="cancelBooking(selectedBooking)" *ngIf="selectedBooking.status === 'Confirmed' || selectedBooking.status === 'Pending'">
+                        Cancel Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

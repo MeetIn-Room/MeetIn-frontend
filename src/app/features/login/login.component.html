@@ -48,16 +48,16 @@
       </div>
 
       <div class="form-header">
-        <h2>{{ isLoginMode ? 'Welcome back' : 'Create account' }}</h2>
-        <p>{{ isLoginMode ? 'Enter your credentials to access your account' : 'Start your journey with meetin today' }}</p>
+        <h2>Welcome back</h2>
+        <p>Enter your credentials to access your account</p>
       </div>
 
       <div class="toggle-tabs">
-        <button [class.active]="isLoginMode" (click)="setMode(true)">Sign In</button>
+        <div class="active text-center">Sign In</div>
       </div>
 
       <!-- Login Form -->
-      <form class="form-fields" [class.active]="isLoginMode" [formGroup]="loginForm" (ngSubmit)="onLogin($event)">
+      <form class="form-fields" class="active" [formGroup]="loginForm" (ngSubmit)="onLogin($event)">
         <div class="magic-input" [class.focused]="emailFocused" [class.filled]="loginEmail.value">
           <div class="input-icon" [innerHTML]="icons['mail']"></div>
           <label>Email Address</label>
@@ -97,10 +97,10 @@
       </form>
 
     
-      <p class="footer-text">
+      <!-- <p class="footer-text">
         {{ isLoginMode ? "Don't have an account?" : "Already have an account?" }}
         <span (click)="setMode(!isLoginMode)">{{ isLoginMode ? 'Sign up' : 'Sign in' }}</span>
-      </p>
+      </p> -->
     </div>
   </div>
 </div>

@@ -1,0 +1,485 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <app-header></app-header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+    
+      <!-- Sidebar -->
+    <app-sidebar></app-sidebar>
+
+        <div class="sidecontent">
+            <!-- Dashboard Header Section -->
+            <div class="dashboard-header-section">
+                <div class="dashboard-header-content">
+                    <div class="dashboard-title-section">
+                        <h1 class="dashboard-title">Room Management</h1>
+                        <p class="dashboard-subtitle">Manage meeting rooms, availability, and configurations</p>
+                    </div>
+                    
+                    <div class="dashboard-filters">
+                        <div class="date-range-filter">
+                            <div class="filter-header">
+                                <svg class="calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>Room Statistics</span>
+                            </div>
+                            <div class="period-quick-filters">
+                                <button class="period-filter-btn active" (click)="filterRooms('all')">All Rooms</button>
+                                <button class="period-filter-btn" (click)="filterRooms('available')">Available</button>
+                                <button class="period-filter-btn" (click)="filterRooms('occupied')">Occupied</button>
+                                <button class="period-filter-btn" (click)="filterRooms('maintenance')">Maintenance</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div *ngFor="let stat of roomStats; let i = index" class="stat-card" [style.--card-color]="stat.color">
+                    <div class="card-bg-shape shape-1"></div>
+                    <div class="card-bg-shape shape-2"></div>
+                    
+                    <div class="stat-content">
+                        <div class="stat-header">
+                            <div class="title-section">
+                                <span class="stat-title">{{ stat.title }}</span>
+                                <div class="trend-sparkline">
+                                    <svg width="60" height="20" viewBox="0 0 60 20">
+                                        <path [attr.d]="generateSparkline(stat.trend)" 
+                                              fill="none" 
+                                              stroke="currentColor" 
+                                              stroke-width="1.5"
+                                              stroke-linecap="round"
+                                              stroke-linejoin="round"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div class="icon-container" [style.background]="getIconGradient(stat.gradient)">
+                                <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <ng-container [ngSwitch]="stat.icon">
+                                        <g *ngSwitchCase="'building'">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <path d="M3 9h18M9 21V9"></path>
+                                        </g>
+                                        <g *ngSwitchCase="'users'">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </g>
+                                        <g *ngSwitchCase="'calendar'">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </g>
+                                        <g *ngSwitchCase="'trending-up'">
+                                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                            <polyline points="17 6 23 6 23 12"></polyline>
+                                        </g>
+                                    </ng-container>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="value-section">
+                            <div class="stat-value">{{ stat.value }}</div>
+                            <div class="growth-indicator" [class.positive]="stat.isPositive" [class.negative]="!stat.isPositive">
+                                <svg class="indicator-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                    <path *ngIf="stat.isPositive" d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2"/>
+                                    <path *ngIf="!stat.isPositive" d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <span class="growth-text">{{ stat.change }}</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-footer">
+                            <div class="comparison">
+                                <span class="comparison-label">vs last month</span>
+                                <span class="comparison-value">{{ stat.lastMonth }}</span>
+                            </div>
+                            <div class="progress-indicator">
+                                <div class="progress-track">
+                                    <div class="progress-fill" [style.width.%]="getProgressWidth(stat)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Management Table -->
+            <div class="enhanced-table-card">
+                <div class="table-header-section">
+                    <div class="table-title-section">
+                        <h3 class="table-main-title">All Rooms</h3>
+                        <p class="table-subtitle">Detailed view of all meeting rooms and their configurations</p>
+                    </div>
+                    <div class="table-controls">
+                        <div class="table-search-box">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" placeholder="Search rooms..." class="search-input" [(ngModel)]="searchQuery" (input)="onSearch()" />
+                        </div>
+                        <div class="table-action-buttons">
+                            <button class="action-btn filter-btn" (click)="openFilterModal()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                </svg>
+                                Filter
+                            </button>
+                            <button class="action-btn sort-btn" (click)="openSortModal()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                                Sort
+                            </button>
+                            <button class="action-btn add-room-btn" (click)="openAddRoomModal()" style="background: #f97316; color: white; border-color: #f97316;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Add Room
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="enhanced-bookings-table">
+                        <thead>
+                            <tr>
+                                <th class="room-name-column">
+                                    <div class="column-header" (click)="sortRooms('name')">
+                                        <span>Room Name</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'name' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="location-column">
+                                    <div class="column-header" (click)="sortRooms('location')">
+                                        <span>Location</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'location' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="capacity-column">
+                                    <div class="column-header" (click)="sortRooms('capacity')">
+                                        <span>Capacity</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'capacity' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="equipment-column">
+                                    <div class="column-header">
+                                        <span>Equipment</span>
+                                    </div>
+                                </th>
+                                <th class="availability-column">
+                                    <div class="column-header" (click)="sortRooms('availabilityHours')">
+                                        <span>Availability</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'availabilityHours' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="status-column">
+                                    <div class="column-header" (click)="sortRooms('status')">
+                                        <span>Status</span>
+                                        <svg class="sort-icon" [class.rotated]="sortField === 'status' && sortDirection === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                        </svg>
+                                    </div>
+                                </th>
+                                <th class="actions-column">
+                                    <div class="column-header">
+                                        <span>Actions</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let room of filteredRoomsTable; let i = index" class="table-row">
+                                <td class="room-name-cell">
+                                    <div class="room-name-wrapper">
+                                        <div class="room-avatar-small" [style.background]="getRoomColor(room.name)">
+                                            {{ getRoomInitials(room.name) }}
+                                        </div>
+                                        <span class="room-name-text">{{ room.name }}</span>
+                                    </div>
+                                </td>
+                                <td class="location-cell">
+                                    <div class="location-wrapper">
+                                        <span class="location-text">{{ room.location }}</span>
+                                    </div>
+                                </td>
+                                <td class="capacity-cell">
+                                    <div class="capacity-wrapper">
+                                        <span class="capacity-text">{{ room.capacity }}</span>
+                                        <span class="capacity-label">people</span>
+                                    </div>
+                                </td>
+                                <td class="equipment-cell">
+                                    <div class="equipment-wrapper">
+                                        <div class="equipment-tags">
+                                            <span *ngFor="let item of room.equipment.slice(0, 2)" class="equipment-tag">
+                                                {{ item }}
+                                            </span>
+                                            <span *ngIf="room.equipment.length > 2" class="equipment-more">
+                                                +{{ room.equipment.length - 2 }} more
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="availability-cell">
+                                    <div class="availability-wrapper">
+                                        <span class="availability-text">{{ room.availabilityHours }}</span>
+                                    </div>
+                                </td>
+                                <td class="status-cell">
+                                    <div class="status-wrapper">
+                                        <span class="status-badge-enhanced" [ngClass]="getStatusClass(room.status)">
+                                            <span class="status-dot"></span>
+                                            {{ room.status }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="actions-cell">
+                                    <div class="actions-wrapper">
+                                        <button class="action-icon" (click)="editRoom(room)" title="Edit Room">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="action-icon" (click)="toggleRoomStatus(room)" [title]="room.status === 'Available' ? 'Mark as Occupied' : 'Mark as Available'">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path *ngIf="room.status === 'Available'" d="M5 13l4 4L19 7"></path>
+                                                <path *ngIf="room.status !== 'Available'" d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="action-icon delete-btn" (click)="deleteRoom(room)" title="Delete Room">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <div class="table-pagination">
+                        <button class="pagination-btn prev-btn" (click)="previousPage()" [disabled]="currentPage === 1">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                            Previous
+                        </button>
+                        <div class="pagination-pages">
+                            <button *ngFor="let page of getPaginationPages()" 
+                                    class="page-btn" 
+                                    [class.active]="page === currentPage"
+                                    (click)="goToPage(page)">
+                                {{ page }}
+                            </button>
+                            <span *ngIf="showPaginationDots" class="page-dots">...</span>
+                        </div>
+                        <button class="pagination-btn next-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                            Next
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="table-summary">
+                        <span class="summary-text">
+                            Showing {{ getDisplayRange() }} of {{ totalRooms }} rooms
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Add Room Modal -->
+<div class="modal-overlay" *ngIf="showAddRoomModal" (click)="closeAddRoomModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title">Add New Room</h3>
+            <button class="modal-close" (click)="closeAddRoomModal()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+</button>
+        </div>
+        
+        <div class="modal-body">
+            <form [formGroup]="roomForm" (ngSubmit)="saveRoom()" class="room-form">
+                <div class="form-grid">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">Basic Information</h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Room Name *</label>
+                            <input type="text" 
+                                   class="form-input" 
+                                   formControlName="name"
+                                   placeholder="Enter room name">
+                            <div class="error-message" *ngIf="roomForm.get('name')?.invalid && roomForm.get('name')?.touched">
+                                Room name is required
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Location *</label>
+                            <select class="form-select" formControlName="location">
+                                <option value="">Select Location</option>
+                                <option value="Floor 1 - East Wing">Floor 1 - East Wing</option>
+                                <option value="Floor 1 - West Wing">Floor 1 - West Wing</option>
+                                <option value="Floor 2 - North Wing">Floor 2 - North Wing</option>
+                                <option value="Floor 2 - South Wing">Floor 2 - South Wing</option>
+                                <option value="Floor 3 - Executive Suite">Floor 3 - Executive Suite</option>
+                            </select>
+                            <div class="error-message" *ngIf="roomForm.get('location')?.invalid && roomForm.get('location')?.touched">
+                                Location is required
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Capacity *</label>
+                            <input type="number" 
+                                   class="form-input" 
+                                   formControlName="capacity"
+                                   placeholder="Enter room capacity"
+                                   min="1" max="100">
+                            <div class="error-message" *ngIf="roomForm.get('capacity')?.invalid && roomForm.get('capacity')?.touched">
+                                Valid capacity is required (1-100)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Room Configuration -->
+                    <div class="form-section">
+                        <h4 class="section-title">Room Configuration</h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Room Type</label>
+                            <div class="type-options">
+                                <label class="type-option" *ngFor="let type of roomTypes">
+                                    <input type="radio" 
+                                           [value]="type.value" 
+                                           formControlName="type">
+                                    <span class="type-label">
+                                        <span class="type-name">{{ type.name }}</span>
+                                        <span class="type-description">{{ type.description }}</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Available Equipment</label>
+                            <div class="equipment-options">
+                                <label class="equipment-option" *ngFor="let equipment of availableEquipment">
+                                    <input type="checkbox" 
+                                           [value]="equipment.value"
+                                           (change)="toggleEquipment(equipment.value, $event)">
+                                    <span class="equipment-label">
+                                        <span class="equipment-name">{{ equipment.name }}</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Availability Settings -->
+                    <div class="form-section">
+                        <h4 class="section-title">Availability Settings</h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Availability Hours *</label>
+                            <div class="time-range-picker">
+                                <div class="time-input-group">
+                                    <label class="time-label">From</label>
+                                    <input type="time" 
+                                           class="form-input time-input"
+                                           formControlName="availableFrom"
+                                           value="08:00">
+                                </div>
+                                <div class="time-input-group">
+                                    <label class="time-label">To</label>
+                                    <input type="time" 
+                                           class="form-input time-input"
+                                           formControlName="availableTo"
+                                           value="18:00">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Initial Status</label>
+                            <div class="status-options">
+                                <label class="status-option">
+                                    <input type="radio" 
+                                           value="Available" 
+                                           formControlName="status">
+                                    <span class="status-indicator available"></span>
+                                    <span>Available</span>
+                                </label>
+                                <label class="status-option">
+                                    <input type="radio" 
+                                           value="Maintenance" 
+                                           formControlName="status">
+                                    <span class="status-indicator maintenance"></span>
+                                    <span>Maintenance</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" 
+                                       formControlName="requiresApproval">
+                                <span class="checkmark"></span>
+                                Require approval for bookings
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" 
+                            class="btn-secondary" 
+                            (click)="closeAddRoomModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="btn-primary"
+                            [disabled]="roomForm.invalid || isSubmitting">
+                        <span *ngIf="isSubmitting" class="loading-spinner"></span>
+                        {{ isEditing ? 'Update Room' : 'Create Room' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
