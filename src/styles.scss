@@ -1,1 +1,150 @@
 /* You can add global styles to this file, and also import other style files */
+
+@use "tailwindcss";
+
+:root{
+
+    /* COLOR PALLETTE*/
+	--primary-0: #f6fafe;      /* Lightest - almost white */
+	--primary-50: #edf5fd;
+	--primary-100: #dbebfb;
+	--primary-200: #b7d7f7;
+	--primary-300: #93c3f3;
+	--primary-400: #6fa4e3;
+	--primary-500: #3b85d3;    /* Original color */
+	--primary-600: #2f6aaa;
+	--primary-700: #265481;
+	--primary-800: #1d3f60;
+	--primary-900: #142a3f;
+
+	--secondary: #d3d3d3;
+    --black: #000000;
+    --white: #ffffff;
+    --bg-light: #fcfcfc;
+
+	--white: #ffffff;
+ 
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+    /*TYPOGRAPHY */  
+    // Font Sizes
+    --font-sm: 16px;
+    --font-md: 24px;
+    --font-lg: 32px;
+    --font-xl: 48px;
+    --font-xxl: 64px;
+
+    font-family: 'Gill Sans MT', sans-serif;
+    font-size: var(--font-md);
+	background-color: var(--primary-0);
+
+}
+
+body{
+    padding: 0;
+    margin: 0;
+}
+
+button{
+    font-family: 'Gill Sans MT', sans-serif;
+}
+
+i{
+	box-sizing: border-box;
+	padding-top: 5px;
+}
+
+
+.logo { 
+  display: flex; 
+  align-items: center; 
+  gap: 16px;
+  margin-bottom: 3.5rem; 
+}
+
+.logo-icon {
+  width: 56px; 
+  height: 56px;
+  background: linear-gradient(135deg, var(--primary-400), var(--primary-600));
+  border-radius: 16px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 20px 40px var(--primary-500);
+}
+.logo-icon span { 
+  color: var(--white); 
+  font-size: 1.75rem; 
+  font-weight: 900; 
+  position: relative; 
+  z-index: 1; 
+}
+.logo-shine {
+  position: absolute; 
+  inset: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--secondary) 0%, transparent 50%);
+}
+.logo-text h1 { 
+  font-size: 2rem; 
+  font-weight: 900; 
+  color: var(--white); 
+  letter-spacing: -1px; 
+}
+.logo-badge { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  margin-top: 4px; 
+}
+.pulse-dot { 
+  width: 8px; 
+  height: 8px; 
+  background: var(--primary-300); 
+  border-radius: 50%; 
+  animation: pulse 2s ease-in-out infinite; 
+}
+.logo-badge span:last-child { 
+  font-size: 0.7rem; 
+  font-weight: 600; 
+  color: var(--primary-300); 
+  text-transform: uppercase; 
+  letter-spacing: 3px; 
+}
+
+
+.search-nav{
+    margin-left: 2rem;
+    border: var(--secondary) 1px solid;
+    border-radius: 10px;
+    width: 30%;
+    display: none;
+    border: 2px solid var(--secondary);
+	  color: var(--slate-400);
+
+
+    .search{
+      padding: 0 0.5rem;
+      width: 100%;
+      &:focus{
+        outline: none;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .search-nav {
+    display: flex;
+  }
+}
+

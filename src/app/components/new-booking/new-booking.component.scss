@@ -1,0 +1,81 @@
+dialog{
+  position: fixed;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(0,0,0,0.45);
+  z-index: 2200;
+  border-radius: 12px;
+  width: 50vw;
+  height: 36vw;
+  box-shadow: 2px 4px 8px gray;
+  &:focus{
+    border: none;
+    outline: none;
+  }
+}
+// .header{
+//     font-weight: bold;
+//     font-size: 1.2rem;
+// }
+
+//   .modal-panel{
+//     background: var(--white);
+//     padding: 1rem 1.2rem;
+//     border-radius: 10px;
+//     width: 92%;
+//     max-width: 520px;
+
+//     label{ display:block; margin-top:0.5rem; font-weight:600 }
+//     input, select, textarea{ width:100%; padding:0.4rem; margin-top:0.25rem; border-radius:6px; border:1px solid #ddd }
+
+//     .error{ color: #b00020; margin-top:0.25rem }
+//     .modal-actions{ display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.8rem }
+//     .btn{ padding:0.4rem 0.7rem; border-radius:6px; border:none; cursor:pointer }
+//   }
+
+
+// }
+// dialog::backdrop{
+//     transition: all 0.7s ease-in;
+//     background-color: rgba(0, 0, 0, 0.253);
+// }
+
+
+// // dialog{
+// //     animation: fade-in 0.7s ease-out;
+// // }
+
+// // dialog[open]{
+// //     animation: fade-out 0.7s ease-out;
+// // }
+
+
+// // @keyframes fade-out {
+// //     0% {
+// //         opacity: 0;
+// //         transform: scaleY(0);
+// //         display: none;
+// //     }
+
+// //     100% {
+// //         opacity: 1;
+// //         transform: scaleY(1);
+// //         display: block;
+// //     }
+// // }
+
+// // @keyframes fade-in {
+// //     0% {
+// //         opacity: 1;
+// //         transform: scaleY(1);
+// //         display: block;
+// //     }
+
+// //     100% {
+// //         opacity: 0;
+// //         transform: scaleY(0);
+// //         display: none;
+// //     }
+// // }

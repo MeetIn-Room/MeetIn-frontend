@@ -1,0 +1,15 @@
+<div class="side-panel-backdrop">
+  <aside class="side-panel">
+    <button class="close" (click)="closePanel()">✕</button>
+    <h3>{{ room?.name }}</h3>
+    <div class="row"><strong>Open:</strong> {{ room?.openTime }}:00</div>
+    <div class="row"><strong>Close:</strong> {{ room?.closeTime }}:00</div>
+    <div class="row"><strong>Capacity:</strong> {{ room?.capacity }}</div>
+    <div class="row"><strong>Amenities:</strong>
+      <ul>
+        <li *ngFor="let a of room?.amenities">{{ a }}</li>
+      </ul>
+    </div>
+    <div class="row"><strong>Description:</strong><div>{{ room?.description || '—' }}</div></div>
+  </aside>
+</div>

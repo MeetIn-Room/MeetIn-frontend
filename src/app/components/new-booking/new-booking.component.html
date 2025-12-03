@@ -1,0 +1,40 @@
+<dialog class="modal-backdrop" #dialog >
+  <div class="modal-panel">
+    <h3>Create new booking</h3>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label>Title</label>
+      <input type="text" formControlName="title" />
+      <div class="error" *ngIf="f.title.touched && f.title.invalid">
+        <small *ngIf="f.title.errors?.['required']">Title is required.</small>
+        <small *ngIf="f.title.errors?.['minlength']">Title is too short.</small>
+      </div>
+
+      <label>Date</label>
+      <input type="date" formControlName="date" />
+      <div class="error" *ngIf="f.date.touched && f.date.invalid"><small>Date is required.</small></div>
+
+      <label>Start time</label>
+      <input type="time" formControlName="startTime" />
+
+      <label>End time</label>
+      <input type="time" formControlName="endTime" />
+      <div class="error" *ngIf="form.errors?.['endBeforeStart']"><small>End time must be after start time.</small></div>
+
+      <label>Room</label>
+      <select formControlName="roomId">
+        <option value="">Select room</option>
+        <option *ngFor="let r of availableRooms" [value]="r.id">{{ r.name }} (cap: {{ r.capacity }})</option>
+      </select>
+      <div class="error" *ngIf="f.roomId.touched && f.roomId.invalid"><small>Room is required.</small></div>
+
+      <label>Description</label>
+      <textarea formControlName="description" rows="4"></textarea>
+
+      <div class="modal-actions">
+        <button type="submit" class="btn">Create</button>
+        <button type="button" class="btn" (click)="onCancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</dialog>

@@ -4,10 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
+    "deploy": "ng build --configuration production --base-href=/MeetIn-frontend/ && npx angular-cli-ghpages --dir=dist/MeetIn-frontend/browser --no-silent",
     "test": "ng test",
-    "serve:ssr:MeetIn-frontend": "node dist/meet-in-frontend/server/server.mjs"
+    "serve:ssr:MeetIn-frontend": "node dist/MeetIn-frontend/server/server.mjs"
   },
   "private": true,
   "dependencies": {
@@ -19,8 +20,12 @@
     "@angular/platform-browser": "^19.1.0",
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
+    "@tailwindcss/cli": "^4.1.17",
+    "@tailwindcss/postcss": "^4.1.17",
     "express": "^4.18.2",
+    "postcss": "^8.5.6",
     "rxjs": "~7.8.0",
+    "tailwindcss": "^4.1.17",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },

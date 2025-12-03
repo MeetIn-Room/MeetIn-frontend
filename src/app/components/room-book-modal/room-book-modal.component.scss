@@ -1,0 +1,13 @@
+.book-backdrop{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.45); z-index:2600;
+  .book-panel{ background:var(--white); padding:1rem; border-radius:8px; width:95%; max-width:980px; max-height:90vh; overflow:auto;
+    .panel-head{ display:flex; justify-content:space-between; align-items:center }
+    .calendar-grid{ margin-top:0.6rem; display:block; }
+    .header-row{ display:grid; grid-template-columns: 80px repeat(7,1fr); gap:4px; }
+    .slot-row{ display:grid; grid-template-columns: 80px repeat(7,1fr); gap:4px; align-items:stretch }
+    .time-col{ padding:6px; font-size:0.85rem; color:#333 }
+    .day-col{ padding:6px; border:1px solid #eee; min-height:28px; cursor:pointer }
+    .day-col.booked{ background:#ffdede; cursor:not-allowed }
+    .day-col.selected{ background: #d5f0ff }
+    .actions{ margin-top:0.8rem; display:flex; gap:0.5rem; justify-content:flex-end }
+  }
+}

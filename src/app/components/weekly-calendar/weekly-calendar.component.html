@@ -1,0 +1,73 @@
+<div class="calendar-container">
+  <!-- Header -->
+  <div class="calendar-header">
+    <div class="header-info">
+      <h1>My Bookings</h1>
+      <p class="month-year">{{ getMonthYear() }}</p>
+    </div>
+    <div class="navigation">
+      <button class="nav-btn" (click)="navigateWeek('prev')">
+        <span class="icon">‹</span>
+      </button>
+      <button class="today-btn" (click)="goToToday()">Today</button>
+      <button class="nav-btn" (click)="navigateWeek('next')">
+        <span class="icon">›</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Calendar Grid -->
+  <div class="calendar-grid">
+    <!-- Headers -->
+    <div class="grid-header">
+      <div class="time-header">
+        <span class="clock-icon">🕐</span>
+      </div>
+      <div *ngFor="let day of weekDays; let i = index"
+           class="day-header"
+           [class.today]="isToday(day)">
+        <div class="day-name">{{ dayNames[i] }}</div>
+        <div class="day-number">{{ day.getDate() }}</div>
+      </div>
+    </div>
+
+    <!-- Time Slots and Bookings -->
+    <div class="grid-body">
+      <!-- Time Column -->
+      <div class="time-column">
+        <div *ngFor="let time of timeSlots" class="time-slot">
+          {{ time }}
+        </div>
+      </div>
+
+      <!-- Day Columns -->
+      <div *ngFor="let day of weekDays"
+           class="day-column"
+           [class.today-column]="isToday(day)">
+        <!-- Time slot grid -->
+        <div *ngFor="let time of timeSlots"
+             class="time-cell"
+             (click)="onTimeSlotClick(day, time)">
+        </div>
+
+        <!-- Bookings overlay -->
+        <div *ngFor="let booking of getBookingsForDay(day)"
+             class="booking-item"
+             [class]="booking?.color"
+             [style.top]="calculatePosition(booking.startTime, booking.endTime).top"
+             [style.height]="calculatePosition(booking.startTime, booking.endTime).height"
+             (click)="onBookingClick(booking)">
+          <div class="booking-title">{{ booking.title }}</div>
+          <div class="booking-time">
+            <span class="icon">🕐</span>
+            {{ numberToTimeString(booking.startTime) }} - {{ numberToTimeString(booking.endTime) }}
+          </div>
+          <div class="booking-room">
+            <span class="icon">📍</span>
+            {{ booking.room.name }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

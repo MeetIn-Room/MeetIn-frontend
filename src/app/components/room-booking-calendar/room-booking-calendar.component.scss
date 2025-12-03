@@ -1,0 +1,177 @@
+
+.calendar-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.calendar-modal-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: auto;
+}
+
+.close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.close-button:hover {
+  background: #f3f4f6;
+  transform: scale(1.1);
+}
+
+.modal-header {
+  padding: 24px 24px 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.instruction-banner {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 12px 16px;
+  margin: 16px 24px;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 14px;
+}
+
+.calendar-content {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.time-slot {
+  position: relative;
+  height: 60px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.time-slot.available:hover {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.time-slot.selected {
+  background-color: #dbeafe;
+  border-color: #3b82f6;
+  border-width: 2px;
+}
+
+.time-slot.booked {
+  background-color: #f9fafb;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.time-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b5563;
+  z-index: 1;
+}
+
+.booking-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 12px;
+  color: white;
+  border-radius: 8px;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  overflow: hidden;
+}
+
+.booking-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.booking-time {
+  font-size: 12px;
+  opacity: 0.9;
+  margin-bottom: 4px;
+}
+
+.booking-description {
+  font-size: 11px;
+  opacity: 0.8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.booking-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.booking-form-content {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+input, textarea {
+  outline: none;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+}

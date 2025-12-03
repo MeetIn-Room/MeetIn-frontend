@@ -1,20 +1,24 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-login-register',
-  standalone: true,
+  selector: 'app-login',
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './login-register.html',
-  styleUrls: ['./login-register.css'],
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
   encapsulation: ViewEncapsulation.None
+
 })
-export class LoginRegisterComponent {
-  isLoginMode = true;
+export class LoginComponent implements OnInit {
+  loading = false;
+
+ isLoginMode = true;
   loginForm: FormGroup;
-  registerForm: FormGroup;
+  returnUrl = '/home'; //Default redirect URL after login
   
   // Focus states
   emailFocused = false;
@@ -33,7 +37,12 @@ export class LoginRegisterComponent {
 
   features: { icon: SafeHtml; title: string; description: string }[] = [];
 
-  constructor(private fb: FormBuilder, private sanitizer: DomSanitizer) {
+  private route =inject(ActivatedRoute)
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private sanitizer = inject(DomSanitizer);
+  constructor() {
     this.initIcons();
     this.initFeatures();
 
@@ -42,17 +51,12 @@ export class LoginRegisterComponent {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
 
-    this.registerForm = this.fb.group({
-      name: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]]
-    }, { validators: this.passwordMatchValidator });
   }
 
   ngOnInit() {
-    // Ensure only one form is visible on initial load
+    // Ensure form is visible on initial load
     this.setMode(true);
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
   }
 
   private initIcons() {
@@ -98,31 +102,31 @@ export class LoginRegisterComponent {
     // Reset focus states when switching modes
     this.emailFocused = false;
     this.passFocused = false;
-    this.nameFocused = false;
-    this.regEmailFocused = false;
-    this.regPassFocused = false;
+   
     this.confirmFocused = false;
   }
 
-  onLogin() {
+  onLogin(ev: Event) {
+    ev.preventDefault()
+
+    this.loading = true;
     if (this.loginForm.valid) {
       console.log('Login:', this.loginForm.value);
-      // Implement login logic here
+      this.authService.login(this.loginForm.value).subscribe({
+        next: () => {
+          this.router.navigate([this.returnUrl]);
+        },
+        error: (err) => {
+          console.error('Login error:', err);
+          alert('Login failed. Please check your credentials and try again.');
+        },
+        complete: () => {
+          this.loading = false;
+        }
+     })
     }
   }
-
-  onRegister() {
-    if (this.registerForm.valid) {
-      console.log('Register:', this.registerForm.value);
-      // Implement registration logic here
-    }
-  }
-
   // Form control getters
   get loginEmail() { return this.loginForm.get('email') as FormControl; }
   get loginPassword() { return this.loginForm.get('password') as FormControl; }
-  get registerName() { return this.registerForm.get('name') as FormControl; }
-  get registerEmail() { return this.registerForm.get('email') as FormControl; }
-  get registerPassword() { return this.registerForm.get('password') as FormControl; }
-  get registerConfirmPassword() { return this.registerForm.get('confirmPassword') as FormControl; }
 }

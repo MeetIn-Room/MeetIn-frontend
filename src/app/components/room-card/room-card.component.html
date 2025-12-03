@@ -1,0 +1,17 @@
+<div class="room-card">
+    <div class="image-header">
+        <i class="fi fi-rr-couch"></i>
+    </div>
+  <div class="header">
+    <h4 >{{ room.name }}</h4>
+    <div class="times">{{ room.openTime }}:00 — {{ room.closeTime }}:00</div>
+    <div class="meta">Capacity: {{ room.capacity }} people</div>
+  </div>
+
+  
+
+  <div class="actions">
+    <button class="btn primary" (click)="onBook()">Book</button>
+    <button class="btn" (click)="onViewDetails()">View details</button>
+  </div>
+</div>
