@@ -13,9 +13,9 @@ export class AuthService {
   private readonly API_URL = 'https://localhost:8088/api/auth/login';
   private http = inject(HttpClient);
   private router = inject(Router);
-    
+
   constructor() {
-  
+
    }
 
   login(loginReq: LoginRequest): Observable<AuthResponse> {
@@ -39,7 +39,7 @@ export class AuthService {
 
   private handleAuthSuccess(response: AuthResponse): void {
     // Store token in localStorage (persists across browser sessions)
-    localStorage.setItem('accessToken', response.accesstoken);    
+    localStorage.setItem('accessToken', response.accesstoken);
   }
 
 

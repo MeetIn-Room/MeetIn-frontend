@@ -1,9 +1,9 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { BookingService } from '../../services/booking.service';
-import { Room } from '../../interfaces/room';
-import { Booking } from '../../interfaces/booking';
+import { BookingService } from '../../../core/services/booking.service';
+import { Room } from '../../../core/interfaces/room';
+import { Booking } from '../../../core/interfaces/booking';
 
 function endAfterStartValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('startTime')?.value;

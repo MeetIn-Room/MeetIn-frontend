@@ -1,11 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { BookingItemComponent } from '../../components/booking-item/booking-item.component';
-import { Booking } from '../../interfaces/booking';
+import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
+import { BookingItemComponent } from '../../shared/components/booking-item/booking-item.component';
+import { Booking } from '../../core/interfaces/booking';
 import { CommonModule } from '@angular/common';
-import { WeeklyCalendarComponent } from '../../components/weekly-calendar/weekly-calendar.component';
-import { BookingService } from '../../services/booking.service';
-import { NewBookingComponent } from '../../components/new-booking/new-booking.component';
+import { WeeklyCalendarComponent } from '../../shared/components/weekly-calendar/weekly-calendar.component';
+import { BookingService } from '../../core/services/booking.service';
+import { NewBookingComponent } from '../../shared/components/new-booking/new-booking.component';
 
 @Component({
   selector: 'app-home',

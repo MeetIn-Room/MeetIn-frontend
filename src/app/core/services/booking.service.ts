@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Booking } from '../interfaces/booking';  
+import { Booking } from '../interfaces/booking';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
@@ -7,7 +7,7 @@ import { inject, Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class BookingService {
-  private apiUrl = 'https://api.example.com/bookings';  
+  private apiUrl = 'https://api.example.com/bookings';
 
   private httpClient = inject(HttpClient);
   private _bookings = new BehaviorSubject<Booking[]>([]);
@@ -21,7 +21,7 @@ constructor() {
   getUserBoookings(userId: number) {
     return this.httpClient.get(`${this.apiUrl}?userId=${userId}`);
   }
-  
+
   get bookings$(): Observable<Booking[]> {
     return this._bookings.asObservable();
   }

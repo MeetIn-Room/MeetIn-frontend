@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Room } from '../../interfaces/room';
+import { Room } from '../../../core/interfaces/room';
 
 @Component({
   selector: 'app-room-details',

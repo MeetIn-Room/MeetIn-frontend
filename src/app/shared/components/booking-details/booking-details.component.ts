@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Booking } from '../../interfaces/booking';
+import { Booking } from '../../../core/interfaces/booking';
 
 @Component({
   selector: 'app-booking-details',

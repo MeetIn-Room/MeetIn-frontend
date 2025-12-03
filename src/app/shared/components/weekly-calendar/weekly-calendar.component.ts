@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Booking } from '../../interfaces/booking';
+import { Booking } from '../../../core/interfaces/booking';
 
 @Component({
   selector: 'app-weekly-calendar',
@@ -148,6 +148,6 @@ export class WeeklyCalendarComponent implements OnInit {
   }
 
   numberToTimeString(time: number): string {
-    return `${time.toString().split('.')[0]}`.padStart(2, '0') + ':' + `${parseFloat('0.' + time.toString().split('.')[1]) * 60}`.padStart(2, '0');   
+    return `${time.toString().split('.')[0]}`.padStart(2, '0') + ':' + `${parseFloat('0.' + time.toString().split('.')[1]) * 60}`.padStart(2, '0');
   }
 }

@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Room } from '../../interfaces/room';
-import { Booking } from '../../interfaces/booking';
-import { BookingService } from '../../services/booking.service';
+import { Room } from '../../../core/interfaces/room';
+import { Booking } from '../../../core/interfaces/booking';
+import { BookingService } from '../../../core/services/booking.service';
 
 @Component({
   selector: 'app-room-book-modal',

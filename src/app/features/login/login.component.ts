@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule } 
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
  isLoginMode = true;
   loginForm: FormGroup;
   returnUrl = '/home'; //Default redirect URL after login
-  
+
   // Focus states
   emailFocused = false;
   passFocused = false;
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   regEmailFocused = false;
   regPassFocused = false;
   confirmFocused = false;
-  
+
   // Password visibility
   showPassword = false;
   showConfirmPassword = false;
@@ -87,22 +87,22 @@ export class LoginComponent implements OnInit {
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password')?.value;
     const confirmPassword = form.get('confirmPassword')?.value;
-    
+
     if (password && confirmPassword && password !== confirmPassword) {
       form.get('confirmPassword')?.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
     }
-    
+
     return null;
   }
 
   setMode(isLogin: boolean) {
     this.isLoginMode = isLogin;
-    
+
     // Reset focus states when switching modes
     this.emailFocused = false;
     this.passFocused = false;
-   
+
     this.confirmFocused = false;
   }
 

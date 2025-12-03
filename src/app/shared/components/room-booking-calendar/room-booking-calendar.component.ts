@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Room } from '../../interfaces/room';
-import { Booking } from '../../interfaces/booking';
+import { Room } from '../../../core/interfaces/room';
+import { Booking } from '../../../core/interfaces/booking';
 
 interface TimeSlot {
   time: number;
@@ -24,14 +24,14 @@ export class RoomBookingCalendarComponent implements OnInit {
   @Input() selectedDate: Date = new Date();
   @Input() bookings: Booking[] = [];
   @Input() isOpen: boolean = false;
-  
+
   @Output() close = new EventEmitter<void>();
   @Output() bookingCreated = new EventEmitter<Booking>();
 
   timeSlots: TimeSlot[] = [];
   selectedSlots: TimeSlot[] = [];
   isSelecting: boolean = false;
-  
+
   // Booking form modal state
   showBookingForm: boolean = false;
   bookingTitle: string = '';
@@ -75,17 +75,17 @@ export class RoomBookingCalendarComponent implements OnInit {
   }
 
   isSlotBooked(time: number): boolean {
-    return this.bookings.some(booking => 
+    return this.bookings.some(booking =>
       this.isSameDate(booking.date, this.selectedDate) &&
-      time >= booking.startTime && 
+      time >= booking.startTime &&
       time < booking.endTime
     );
   }
 
   getBookingForSlot(time: number): Booking | undefined {
-    return this.bookings.find(booking => 
+    return this.bookings.find(booking =>
       this.isSameDate(booking.date, this.selectedDate) &&
-      time >= booking.startTime && 
+      time >= booking.startTime &&
       time < booking.endTime
     );
   }
@@ -96,7 +96,7 @@ export class RoomBookingCalendarComponent implements OnInit {
 
   onSlotMouseDown(slot: TimeSlot): void {
     if (slot.isBooked) return;
-    
+
     this.isSelecting = true;
     this.selectedSlots = [slot];
     slot.isSelected = true;
@@ -127,7 +127,7 @@ export class RoomBookingCalendarComponent implements OnInit {
 
   onSlotMouseUp(): void {
     this.isSelecting = false;
-    
+
     if (this.selectedSlots.length > 0) {
       this.showBookingForm = true;
     }
@@ -190,11 +190,11 @@ export class RoomBookingCalendarComponent implements OnInit {
   }
 
   formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   }
 

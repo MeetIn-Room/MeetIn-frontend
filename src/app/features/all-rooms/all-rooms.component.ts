@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Room } from '../../interfaces/room';
-import { RoomCardComponent } from '../../components/room-card/room-card.component';
-import { RoomDetailsComponent } from '../../components/room-details/room-details.component';
-import { RoomBookModalComponent } from '../../components/room-book-modal/room-book-modal.component';
-import { BookingService } from '../../services/booking.service';
-import { NavbarComponent } from "../../components/navbar/navbar.component";
-import { RoomBookingCalendarComponent } from '../../components/room-booking-calendar/room-booking-calendar.component';
-import { Booking } from '../../interfaces/booking';
+import { Room } from '../../core/interfaces/room';
+import { RoomCardComponent } from '../../shared/components/room-card/room-card.component';
+import { RoomDetailsComponent } from '../../shared/components/room-details/room-details.component';
+import { RoomBookModalComponent } from '../../shared/components/room-book-modal/room-book-modal.component';
+import { BookingService } from '../../core/services/booking.service';
+import { NavbarComponent } from "../../shared/components/navbar/navbar.component";
+import { RoomBookingCalendarComponent } from '../../shared/components/room-booking-calendar/room-booking-calendar.component';
+import { Booking } from '../../core/interfaces/booking';
 
 @Component({
   selector: 'app-all-rooms',
