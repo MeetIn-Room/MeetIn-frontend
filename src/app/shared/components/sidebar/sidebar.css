@@ -14,6 +14,11 @@
   z-index: 999;
 }
 
+ .icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
 
 .menu-section {
   display: flex;
@@ -116,7 +121,7 @@
 
 .nav-item.active .icon path,
 .nav-item.active .icon {
-  stroke: #ffffff;
+  stroke: #b3b3b3;
   fill: #ffffff;
 }
 
