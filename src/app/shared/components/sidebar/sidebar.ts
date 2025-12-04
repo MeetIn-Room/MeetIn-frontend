@@ -19,6 +19,7 @@ interface MenuItem {
 })
 export class SidebarComponent {
   private router = inject(Router);
+  
 
   menuItems: MenuItem[] = [
     {

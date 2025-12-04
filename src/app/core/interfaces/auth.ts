@@ -2,8 +2,10 @@ export interface User {
     id: string;
     name: string;
     email: string;
-    role?: 'admin' | 'user';
-
+    role: 'ADMIN' | 'USER';
+    department: string;
+    isActive: boolean;
+    createdAt: string;
 }
 
 export interface AuthResponse {

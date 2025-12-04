@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { AuthResponse, LoginRequest, User } from '../interfaces/auth';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { Router } from '@angular/router';
 export class AuthService {
 
   // private readonly API_URL = 'https://meetin-backend.onrender.com/api/auth/login';
-  private readonly API_URL = 'http://localhost:8088/api/auth/login';
+  private readonly API_URL = environment.apiUrl + '/api/auth/login';
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private http = inject(HttpClient);
@@ -20,7 +21,7 @@ export class AuthService {
     this.loadUserFromStorage();
 
    }
-  
+
   login(loginReq: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}`, loginReq).pipe(
       tap(response => this.handleAuthSuccess(response)
@@ -58,11 +59,11 @@ export class AuthService {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expirationDate = new Date(payload.exp * 1000);
       const isExpired = expirationDate < new Date();
-      
+
       if (isExpired) {
         console.log('⚠️ Token expired at:', expirationDate);
       }
-      
+
       return isExpired;
     } catch (e) {
       console.error('❌ Error checking token expiration', e);
@@ -80,7 +81,7 @@ export class AuthService {
    private loadUserFromStorage(): void {
     const token = localStorage.getItem('accessToken');
     const userStr = localStorage.getItem('currentUser');
-    
+
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr);
