@@ -1,10 +1,12 @@
 export interface Room {
-    id: string;
-    name: string;
-    capacity: number;
-    openTime: Date; 
-    closeTime: Date;
-    amenities?: string[]; // e.g., ['Projector', 'Whiteboard']
-    description?: string;
-    isActive: boolean;
+  id: string;
+  name: string;
+  location?: string;
+  capacity: number;
+  type?: string;
+  openTime: number;      // Timestamp
+  closeTime: number;     // Timestamp
+  amenities: string[];
+  description?: string;
+  isActive: boolean;
 }
