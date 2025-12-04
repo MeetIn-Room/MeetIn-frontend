@@ -54,13 +54,13 @@
         <div *ngFor="let booking of getBookingsForDay(day)"
              class="booking-item"
              [class]="booking?.color"
-             [style.top]="calculatePosition(booking.startTime, booking.endTime).top"
-             [style.height]="calculatePosition(booking.startTime, booking.endTime).height"
+             [style.top]="calculatePosition(booking.startTime.getHours() + booking.startTime.getMinutes()/60, booking.endTime.getHours() + booking.endTime.getMinutes()/60).top"
+             [style.height]="calculatePosition(booking.startTime.getHours() + booking.startTime.getMinutes()/60, booking.endTime.getHours() + booking.endTime.getMinutes()/60).height"
              (click)="onBookingClick(booking)">
           <div class="booking-title">{{ booking.title }}</div>
           <div class="booking-time">
             <span class="icon">🕐</span>
-            {{ numberToTimeString(booking.startTime) }} - {{ numberToTimeString(booking.endTime) }}
+            {{ booking.startTime.getHours() + ':' + booking.startTime.getMinutes() }} - {{ booking.endTime.getHours() + ':' + booking.endTime.getMinutes() }}
           </div>
           <div class="booking-room">
             <span class="icon">📍</span>

@@ -1,25 +1,36 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor{
-
-  private authService = inject(AuthService);
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.authService.getAccessToken();
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  const token = authService.getAccessToken();
 
     if (token) {
-      const clonedReq = req.clone({
+       req = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
         }
       });
-      return next.handle(clonedReq);
-    }
-    return next.handle(req);
-  }
+      console.log('✅ Authorization header added to request');
 
-}
+    } else{
+      console.log('⚠️ No token found - request will be sent without auth');
+    }
+    return next(req).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          console.error('🚫 401 Unauthorized - Token invalid or expired');
+          authService.logout();
+          router.navigate(['/auth']);
+        } else if (error.status === 403) {
+          console.error('🚫 403 Forbidden - Access denied');
+        }
+        return throwError(() => error);
+      })
+    );
+};
+

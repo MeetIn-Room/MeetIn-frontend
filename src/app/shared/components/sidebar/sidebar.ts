@@ -58,7 +58,10 @@ export class SidebarComponent {
 
   logout(): void {
     // Add your logout logic here (clear tokens, etc.)
-    localStorage.removeItem('authToken');
-    this.router.navigate(['/login']);
+    if(confirm("Do you really wish to Log out?")){
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem("currentUser")
+      this.router.navigate(['/auth']);
+    }
   }
 }

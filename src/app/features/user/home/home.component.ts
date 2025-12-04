@@ -8,6 +8,7 @@ import { BookingService } from '../../../core/services/booking.service';
 import { NewBookingComponent } from '../../../shared/components/new-booking/new-booking.component';
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../../../core/interfaces/auth';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +23,8 @@ export class HomeComponent implements OnInit {
 
   currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser') || '{}'));
 
+  router = inject(Router)
+
   constructor(){
   }
 
@@ -29,54 +32,53 @@ export class HomeComponent implements OnInit {
     this.showCalendar = !this.showCalendar;
   }
 
-  bookings: Booking[] = [
-    {
-      id: 'bkg-001',
-      room: {
-        name: 'Conference Room A', amenities: [], capacity: 0,
-        id: '',
-        openTime: 8,
-        closeTime: 17,
-        isActive: true
-      },
-      userId: this.currentUserSubject.value.id,
-      startTime: 9,
-      endTime: 10.5,
-      date: new Date(),
-      title: 'Scrum Meeting',
-      description: 'Daily team sync-up',
-    },
-    {
-      id: 'bkg-002',
-      room: {
-        name: 'Focus Room 2', amenities: [], capacity: 0,
-        id: '',
-        openTime: 8,
-        closeTime: 17,
-        isActive: true
-      },
-      userId: this.currentUserSubject.value.id,
-      startTime: 11,
-      endTime: 14,
-      date: new Date(),
-      title: 'Project Work',
-      description: 'Working on project tasks',
-    }
-  ];
+  // bookings: Booking[] = [
+  //   {
+  //     id: 'bkg-001',
+  //     room: {
+  //       name: 'Conference Room A', amenities: [], capacity: 0,
+  //       id: '',
+  //       openTime: 8,
+  //       closeTime: 17,
+  //       isActive: true
+  //     },
+  //     userId: this.currentUserSubject.value.id,
+  //     startTime: 9,
+  //     endTime: 10.5,
+  //     date: new Date(),
+  //     title: 'Scrum Meeting',
+  //     description: 'Daily team sync-up',
+  //   },
+  //   {
+  //     id: 'bkg-002',
+  //     room: {
+  //       name: 'Focus Room 2', amenities: [], capacity: 0,
+  //       id: '',
+  //       openTime: 8,
+  //       closeTime: 17,
+  //       isActive: true
+  //     },
+  //     userId: this.currentUserSubject.value.id,
+  //     startTime: 11,
+  //     endTime: 14,
+  //     date: new Date(),
+  //     title: 'Project Work',
+  //     description: 'Working on project tasks',
+  //   }
+  // ];
+
+  bookings: Booking[] = [];
 
 
   private bookingService = inject(BookingService);
 
   ngOnInit(): void {
-    // If service has no bookings, seed with existing sample set
-    const snap = this.bookingService.getSnapshot();
-    if (!snap || snap.length === 0) {
-      this.bookingService.create(this.bookings[0]);
-      this.bookingService.create(this.bookings[1]);
-    }
-
+  
     // subscribe to service updates
-    this.bookingService.bookings$.subscribe(list => this.bookings = list);
+    this.bookingService.getBoookings().subscribe({
+      next: (response) => this.bookings = response.filter((book) => book.userId === this.currentUserSubject.value.id),
+      error: (err) => { alert("Error fetching bookings "+ err); console.error(err); }
+    })
   }
 
   onCancelBooking(id: string) {
@@ -96,4 +98,5 @@ export class HomeComponent implements OnInit {
   }
 
   onNewCancelled() { this.showNewBookingModal = false; }
+
 }

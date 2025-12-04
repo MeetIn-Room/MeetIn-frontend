@@ -22,11 +22,11 @@ export class BookingDetailsComponent {
 
   ngOnChanges() {
     if (this.booking) {
-      this.editStart = this.booking.startTime;
-      this.editEnd = this.booking.endTime;
+      this.editStart = this.booking.startTime.getHours() + this.booking.startTime.getMinutes()/60;
+      this.editEnd = this.booking.endTime.getHours() + this.booking.endTime.getMinutes()/60;
       this.editDescription = this.booking.description || '';
     }
-    parseFloat('0.' + 10.5.toString().split('.')[1]);
+    // parseFloat('0.' + 10.5.toString().split('.')[1]);
   }
 
   toLocalInput(iso?: string) {
@@ -49,8 +49,8 @@ export class BookingDetailsComponent {
 
   startEdit() {
     this.editing = true;
-    this.editStart = this.booking.startTime;
-    this.editEnd = this.booking.endTime;
+    this.editStart = this.booking.startTime.getHours() + this.booking.startTime.getMinutes()/60;
+    this.editEnd = this.booking.endTime.getHours() + this.booking.endTime.getMinutes()/60;
     this.editDescription = this.booking.description || '';
   }
 
@@ -61,8 +61,8 @@ export class BookingDetailsComponent {
   saveEdit() {
     const updated: Booking = {
       ...this.booking,
-      startTime: this.editStart,
-      endTime: this.editEnd,
+      startTime: new Date(this.booking.startTime.setHours(Math.floor(this.editStart), (this.editStart % 1) * 60)),
+      endTime: new Date(this.booking.endTime.setHours(Math.floor(this.editEnd), (this.editEnd % 1) * 60)),
       description: this.editDescription
     };
     this.update.emit(updated);
@@ -71,5 +71,15 @@ export class BookingDetailsComponent {
 
   doClose() {
     this.close.emit();
+  }
+
+  timeStringtoNumber(t: string): number{
+    if (!t) return 0;
+    const splitted = t.split(':') //e.g 10:30 -> 10 + 30/60 = 10.5
+    return parseFloat(splitted[0]) + (parseFloat(splitted[1])/60)
+  }
+
+   numberToTimeString(t: number): string {
+    return t.toString().split('.')[0].padStart(2, '0') + ':' + `${parseFloat('0.' + t.toString().split('.')[1]) * 60}`.padStart(2, '0');
   }
 }

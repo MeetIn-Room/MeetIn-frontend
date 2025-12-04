@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Booking } from '../../../core/interfaces/booking';
+import { BookingService } from '../../../core/services/booking.service';
+import { User } from '../../../core/interfaces/auth';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-weekly-calendar',
@@ -19,6 +22,8 @@ export class WeeklyCalendarComponent implements OnInit {
   ];
 
   bookings: Booking[] = []; // Will be populated from your API
+  bookingService = inject(BookingService)
+  currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser') || '{}'));
 
   ngOnInit(): void {
     this.updateWeekDays();
@@ -97,48 +102,47 @@ export class WeeklyCalendarComponent implements OnInit {
   }
 
   loadBookings(): void {
-    // Replace with your actual API call
-    // this.bookingService.getUserBookings().subscribe(bookings => {
-    //   this.bookings = bookings;
-    // });
-
-    // Sample data for testing
-    this.bookings = [
-      {
-        id: '1',
-        room: {
-          name: 'Conference Room A', amenities: ['Projector', 'Whiteboard'], capacity: 10,
-          id: '',
-          openTime: 8,
-          closeTime: 17,
-          isActive: true,
-        },
-        date: new Date(2025, 11, 2),
-        startTime: 9,
-        endTime: 10.5,
-        title: 'Team Standup',
-        color: 'booking-blue',
-        description: '',
-        userId: ''
-      },
-      {
-        id: '2',
-        room: {
-          name: 'Meeting Room', amenities: ['Projector'], capacity: 15,
-          id: '',
-          openTime: 8,
-          closeTime: 17,
-          isActive: true,
-        },
-        date: new Date(2025, 11, 2),
-        startTime: 14,
-        endTime: 15,
-        title: 'Client Call',
-        color: 'booking-purple',
-        description: '',
-        userId: ''
+    
+    this.bookingService.getBoookings().subscribe({
+      next: (response) => {
+        this.bookings = response.filter((book) => book.userId === this.currentUserSubject.value.id)
       }
-    ];
+    })
+      // {
+      //   id: '1',
+      //   room: {
+      //     name: 'Conference Room A', amenities: ['Projector', 'Whiteboard'], capacity: 10,
+      //     id: '',
+      //     openTime: 8,
+      //     closeTime: 17,
+      //     isActive: true,
+      //   },
+      //   date: new Date(2025, 11, 2),
+      //   startTime: '09:00',
+      //   endTime: '10:30',
+      //   title: 'Team Standup',
+      //   color: 'booking-blue',
+      //   description: '',
+      //   userId: ''
+      // },
+      // {
+      //   id: '2',
+      //   room: {
+      //     name: 'Meeting Room', amenities: ['Projector'], capacity: 15,
+      //     id: '',
+      //     openTime: 8,
+      //     closeTime: 17,
+      //     isActive: true,
+      //   },
+      //   date: new Date(2025, 11, 2),
+      //   startTime: '14:00',
+      //   endTime: '15:00',
+      //   title: 'Client Call',
+      //   color: 'booking-purple',
+      //   description: '',
+      //   userId: ''
+      // }
+    
   }
 
   onBookingClick(booking: Booking): void {
@@ -153,5 +157,11 @@ export class WeeklyCalendarComponent implements OnInit {
 
   numberToTimeString(time: number): string {
     return `${time.toString().split('.')[0]}`.padStart(2, '0') + ':' + `${parseFloat('0.' + time.toString().split('.')[1]) * 60}`.padStart(2, '0');
+  }
+
+  timeStringtoNumber(t: string): number{
+    if (!t) return 0;
+    const splitted = t.split(':') //e.g 10:30 -> 10 + 30/60 = 10.5
+    return parseFloat(splitted[0]) + (parseFloat(splitted[1])/60)
   }
 }

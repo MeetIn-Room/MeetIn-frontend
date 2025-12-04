@@ -26,7 +26,6 @@ function endAfterStartValidator(group: AbstractControl): ValidationErrors | null
 export class NewBookingComponent {
   @Output() created = new EventEmitter<Booking>();
   @Output() cancel = new EventEmitter<void>();
-  @Input({required: true}) isOpen = false;
 
   private fb = inject(FormBuilder);
   private bookingService = inject(BookingService);
@@ -35,14 +34,14 @@ export class NewBookingComponent {
 
   // In a real app the room list would be retrieved from a service. Expose a simple list here.
   availableRooms: Room[] = [
-    {
-      id: 'r-1', name: 'Conference Room A', capacity: 8, openTime: 8, closeTime: 18, amenities: ['Projector', 'Whiteboard'],
-      isActive: true
-    },
-    {
-      id: 'r-2', name: 'Focus Room 2', capacity: 4, openTime: 8, closeTime: 18, amenities: ['Monitor'],
-      isActive: true
-    }
+    // {
+    //   id: 'r-1', name: 'Conference Room A', capacity: 8, openTime: 8, closeTime: 18, amenities: ['Projector', 'Whiteboard'],
+    //   isActive: true
+    // },
+    // {
+    //   id: 'r-2', name: 'Focus Room 2', capacity: 4, openTime: 8, closeTime: 18, amenities: ['Monitor'],
+    //   isActive: true
+    // }
   ];
 
   form = this.fb.group({
@@ -79,8 +78,8 @@ export class NewBookingComponent {
       id: `bkg-${Date.now()}`,
       room,
       date: new Date(vals.date!),
-      startTime: this.timeStringToHourNumber(vals.startTime!),
-      endTime: this.timeStringToHourNumber(vals.endTime!),
+      startTime: new Date(new Date(vals.date!).setHours(Math.floor(this.timeStringToHourNumber(vals.startTime!)), (this.timeStringToHourNumber(vals.startTime!) % 1) * 60)),
+      endTime: new Date(new Date(vals.date!).setHours(Math.floor(this.timeStringToHourNumber(vals.endTime!)), (this.timeStringToHourNumber(vals.endTime!) % 1) * 60)),
       title: vals.title!,
       description: vals.description || '',
       userId: JSON.parse(localStorage.getItem('currentUser')!).id
