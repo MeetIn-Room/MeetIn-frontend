@@ -24,6 +24,7 @@ interface Room {
   id: string;
   name: string;
   location: string;
+  description: string;
   capacity: number;
   type: string;
   equipment: string[];

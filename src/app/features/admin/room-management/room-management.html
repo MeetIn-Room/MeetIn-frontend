@@ -4,7 +4,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-    
+
       <!-- Sidebar -->
     <app-sidebar></app-sidebar>
 
@@ -16,7 +16,7 @@
                         <h1 class="dashboard-title">Room Management</h1>
                         <p class="dashboard-subtitle">Manage meeting rooms, availability, and configurations</p>
                     </div>
-                    
+
                     <div class="dashboard-filters">
                         <div class="date-range-filter">
                             <div class="filter-header">
@@ -44,23 +44,23 @@
                 <div *ngFor="let stat of roomStats; let i = index" class="stat-card" [style.--card-color]="stat.color">
                     <div class="card-bg-shape shape-1"></div>
                     <div class="card-bg-shape shape-2"></div>
-                    
+
                     <div class="stat-content">
                         <div class="stat-header">
                             <div class="title-section">
                                 <span class="stat-title">{{ stat.title }}</span>
                                 <div class="trend-sparkline">
                                     <svg width="60" height="20" viewBox="0 0 60 20">
-                                        <path [attr.d]="generateSparkline(stat.trend)" 
-                                              fill="none" 
-                                              stroke="currentColor" 
+                                        <path [attr.d]="generateSparkline(stat.trend)"
+                                              fill="none"
+                                              stroke="currentColor"
                                               stroke-width="1.5"
                                               stroke-linecap="round"
                                               stroke-linejoin="round"></path>
                                     </svg>
                                 </div>
                             </div>
-                            
+
                             <div class="icon-container" [style.background]="getIconGradient(stat.gradient)">
                                 <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <ng-container [ngSwitch]="stat.icon">
@@ -292,8 +292,8 @@
                             Previous
                         </button>
                         <div class="pagination-pages">
-                            <button *ngFor="let page of getPaginationPages()" 
-                                    class="page-btn" 
+                            <button *ngFor="let page of getPaginationPages()"
+                                    class="page-btn"
                                     [class.active]="page === currentPage"
                                     (click)="goToPage(page)">
                                 {{ page }}
@@ -330,25 +330,25 @@
     </svg>
 </button>
         </div>
-        
+
         <div class="modal-body">
             <form [formGroup]="roomForm" (ngSubmit)="saveRoom()" class="room-form">
                 <div class="form-grid">
                     <!-- Basic Information -->
                     <div class="form-section">
                         <h4 class="section-title">Basic Information</h4>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Room Name *</label>
-                            <input type="text" 
-                                   class="form-input" 
+                            <input type="text"
+                                   class="form-input"
                                    formControlName="name"
                                    placeholder="Enter room name">
                             <div class="error-message" *ngIf="roomForm.get('name')?.invalid && roomForm.get('name')?.touched">
                                 Room name is required
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Location *</label>
                             <select class="form-select" formControlName="location">
@@ -363,11 +363,11 @@
                                 Location is required
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Capacity *</label>
-                            <input type="number" 
-                                   class="form-input" 
+                            <input type="number"
+                                   class="form-input"
                                    formControlName="capacity"
                                    placeholder="Enter room capacity"
                                    min="1" max="100">
@@ -375,18 +375,31 @@
                                 Valid capacity is required (1-100)
                             </div>
                         </div>
+
+                        <div class="form-group">
+                        <label class="form-label">Description *</label>
+                        <input type="number"
+                               class="form-input"
+                               formControlName="description"
+                               placeholder="Enter description"
+                               >
+                        <div class="error-message" *ngIf="roomForm.get('description')?.invalid && roomForm.get('description')?.touched">
+                        Description is required.
+                        </div>
+                      </div>
+
                     </div>
-                    
+
                     <!-- Room Configuration -->
                     <div class="form-section">
                         <h4 class="section-title">Room Configuration</h4>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Room Type</label>
                             <div class="type-options">
                                 <label class="type-option" *ngFor="let type of roomTypes">
-                                    <input type="radio" 
-                                           [value]="type.value" 
+                                    <input type="radio"
+                                           [value]="type.value"
                                            formControlName="type">
                                     <span class="type-label">
                                         <span class="type-name">{{ type.name }}</span>
@@ -395,12 +408,12 @@
                                 </label>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Available Equipment</label>
                             <div class="equipment-options">
                                 <label class="equipment-option" *ngFor="let equipment of availableEquipment">
-                                    <input type="checkbox" 
+                                    <input type="checkbox"
                                            [value]="equipment.value"
                                            (change)="toggleEquipment(equipment.value, $event)">
                                     <span class="equipment-label">
@@ -410,54 +423,54 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Availability Settings -->
                     <div class="form-section">
                         <h4 class="section-title">Availability Settings</h4>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Availability Hours *</label>
                             <div class="time-range-picker">
                                 <div class="time-input-group">
                                     <label class="time-label">From</label>
-                                    <input type="time" 
+                                    <input type="time"
                                            class="form-input time-input"
                                            formControlName="availableFrom"
                                            value="08:00">
                                 </div>
                                 <div class="time-input-group">
                                     <label class="time-label">To</label>
-                                    <input type="time" 
+                                    <input type="time"
                                            class="form-input time-input"
                                            formControlName="availableTo"
                                            value="18:00">
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Initial Status</label>
                             <div class="status-options">
                                 <label class="status-option">
-                                    <input type="radio" 
-                                           value="Available" 
+                                    <input type="radio"
+                                           value="Available"
                                            formControlName="status">
                                     <span class="status-indicator available"></span>
                                     <span>Available</span>
                                 </label>
                                 <label class="status-option">
-                                    <input type="radio" 
-                                           value="Maintenance" 
+                                    <input type="radio"
+                                           value="Maintenance"
                                            formControlName="status">
                                     <span class="status-indicator maintenance"></span>
                                     <span>Maintenance</span>
                                 </label>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="checkbox-label">
-                                <input type="checkbox" 
+                                <input type="checkbox"
                                        formControlName="requiresApproval">
                                 <span class="checkmark"></span>
                                 Require approval for bookings
@@ -465,14 +478,14 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="form-actions">
-                    <button type="button" 
-                            class="btn-secondary" 
+                    <button type="button"
+                            class="btn-secondary"
                             (click)="closeAddRoomModal()">
                         Cancel
                     </button>
-                    <button type="submit" 
+                    <button type="submit"
                             class="btn-primary"
                             [disabled]="roomForm.invalid || isSubmitting">
                         <span *ngIf="isSubmitting" class="loading-spinner"></span>
