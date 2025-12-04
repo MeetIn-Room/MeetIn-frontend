@@ -20,26 +20,26 @@ export interface FrontendRoom {
 
 export class RoomMapper {
 
-  // Helper to convert time string (HH:MM) to timestamp
-  private static timeStringToTimestamp(timeStr: string): number {
-    const [hours, minutes] = timeStr.split(':').map(Number);
-    const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
-    return date.getTime();
-  }
+  // Helper to parse time string from backend (could be Date or string)
+  private static parseTimeToString(time: Date | string): string {
+    if (typeof time === 'string') {
+      // If it's already a string like "08:00" or "08:00:00", extract HH:MM
+      const timePart = time.includes('T') ? time.split('T')[1] : time;
+      const [hours, minutes] = timePart.split(':');
+      return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+    }
 
-  // Helper to convert timestamp to time string (HH:MM)
-  private static timestampToTimeString(timestamp: number): string {
-    const date = new Date(timestamp);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
+    // If it's a Date object
+    const dateObj = new Date(time);
+    const hours = dateObj.getHours().toString().padStart(2, '0');
+    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
   }
 
   // Convert backend Room to frontend Room
   static toFrontend(backendRoom: BackendRoom): FrontendRoom {
-    const openTime = this.timestampToTimeString(backendRoom.openTime);
-    const closeTime = this.timestampToTimeString(backendRoom.closeTime);
+    const openTime = this.parseTimeToString(backendRoom.openTime);
+    const closeTime = this.parseTimeToString(backendRoom.closeTime);
 
     return {
       id: backendRoom.id || '',
@@ -49,17 +49,24 @@ export class RoomMapper {
       type: backendRoom.type || 'meeting',
       equipment: backendRoom.amenities || [],
       availabilityHours: `${openTime} - ${closeTime}`,
-      utilization: Math.floor(Math.random() * 40) + 40, // Generate random until backend provides it
+      utilization: Math.floor(Math.random() * 40) + 40,
       status: backendRoom.isActive ? 'Available' : 'Maintenance',
       requiresApproval: false
     };
   }
 
   // Convert frontend Room to backend Room
-  static toBackend(frontendRoom: Partial<FrontendRoom>): Partial<BackendRoom> {
+  // Backend expects time strings like "08:00" (HH:mm format)
+  static toBackend(frontendRoom: Partial<FrontendRoom>): any {
     const [openTimeStr, closeTimeStr] = frontendRoom.availabilityHours
       ? frontendRoom.availabilityHours.split(' - ').map(s => s.trim())
       : ['08:00', '18:00'];
+
+    // Format time as HH:MM for backend (no seconds)
+    const formatTime = (timeStr: string): string => {
+      const [hours, minutes] = timeStr.split(':');
+      return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+    };
 
     return {
       id: frontendRoom.id || undefined,
@@ -68,9 +75,9 @@ export class RoomMapper {
       capacity: frontendRoom.capacity || 0,
       type: frontendRoom.type,
       amenities: frontendRoom.equipment || [],
-      openTime: this.timeStringToTimestamp(openTimeStr),
-      closeTime: this.timeStringToTimestamp(closeTimeStr),
-      isActive: frontendRoom.status === 'Available' || frontendRoom.status === 'Occupied'
+      openTime: formatTime(openTimeStr),
+      closeTime: formatTime(closeTimeStr),
+      isActive: frontendRoom.status === 'Available' || frontendRoom.status === 'Maintenance'
     };
   }
 

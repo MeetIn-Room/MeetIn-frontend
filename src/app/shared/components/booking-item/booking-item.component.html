@@ -4,7 +4,7 @@
       <div class="room">{{ booking.room.name }}</div>
       <div class="time"> {{booking.date | date:'fullDate'}} </div>
 
-      <div class="id">{{ numberToTimeString(booking.startTime) }} — {{ numberToTimeString(booking.endTime) }}</div>
+      <div class="id">{{ booking.startTime.getHours() + ':' + booking.startTime.getMinutes() }} — {{ booking.endTime.getHours() + ':' +  booking.endTime.getMinutes()}}</div>
     </div>
 
     <div class="actions">
