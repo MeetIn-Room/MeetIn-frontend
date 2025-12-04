@@ -4,6 +4,8 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { RouterModule, Router } from '@angular/router';
 import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
 import { HeaderComponent } from '../../../shared/components/navbarAdmin/navbar';
+import {RoomServiceService} from '../../../core/services/room.service.service';
+import {RoomMapper, FrontendRoom} from '../../../core/services/room-mapper';
 
 
 interface RoomStat {
@@ -61,16 +63,17 @@ export class RoomManagementComponent implements OnInit {
   currentPage: number = 1;
   pageSize: number = 8;
   totalRooms: number = 0;
-  
+
   // Modal states
   showAddRoomModal: boolean = false;
   isEditing: boolean = false;
   isSubmitting: boolean = false;
+  isLoading: boolean = false;
   editingRoom: Room | null = null;
-  
+
   roomForm: FormGroup;
   selectedEquipment: string[] = [];
-  
+
   roomTypes: RoomType[] = [
     { value: 'conference', name: 'Conference Room', description: 'Large room for formal meetings and presentations' },
     { value: 'meeting', name: 'Meeting Room', description: 'Standard room for team meetings and discussions' },
@@ -289,15 +292,49 @@ export class RoomManagementComponent implements OnInit {
   filteredRooms: Room[] = [];
   filteredRoomsTable: Room[] = [];
 
-  constructor(private fb: FormBuilder ) {
+  constructor(private fb: FormBuilder, private roomService: RoomServiceService) {
     this.roomForm = this.createRoomForm();
   }
 
   ngOnInit() {
-    this.filteredRooms = [...this.rooms];
-    this.filteredRoomsTable = [...this.rooms];
-    this.totalRooms = this.rooms.length;
+    this.loadRooms();
   }
+
+  loadRooms(): void {
+    this.isLoading = true;
+    this.roomService.getRooms().subscribe({
+      next: (backendRooms) => {
+        // Convert backend rooms to frontend format
+        this.rooms = RoomMapper.toFrontendArray(backendRooms);
+        this.filteredRooms = [...this.rooms];
+        this.filteredRoomsTable = [...this.rooms];
+        this.totalRooms = this.rooms.length;
+        this.updateStats();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading rooms:', error);
+        this.showNotification('Error loading rooms. Please try again.');
+        this.isLoading = false;
+      }
+    });
+  }
+
+  updateStats(): void {
+    const totalRooms = this.rooms.length;
+    const availableRooms = this.rooms.filter(r => r.status === 'Available').length;
+    const avgUtilization = totalRooms > 0
+      ? Math.round(this.rooms.reduce((sum, r) => sum + (r.utilization || 0), 0) / totalRooms)
+      : 0;
+
+    // Update stats
+    this.roomStats[0].value = totalRooms.toString();
+    this.roomStats[1].value = availableRooms.toString();
+    this.roomStats[2].value = `${avgUtilization}%`;
+    // Bookings today would need to come from a separate API endpoint
+  }
+
+
 
   createRoomForm(): FormGroup {
     return this.fb.group({
@@ -338,10 +375,10 @@ export class RoomManagementComponent implements OnInit {
     this.showAddRoomModal = true;
     this.editingRoom = room;
     this.selectedEquipment = [...room.equipment];
-    
+
     // Parse availability hours
     const [availableFrom, availableTo] = this.parseAvailabilityHours(room.availabilityHours);
-    
+
     this.roomForm.patchValue({
       name: room.name,
       location: room.location,
@@ -354,6 +391,7 @@ export class RoomManagementComponent implements OnInit {
     });
   }
 
+
   // Form Actions
   saveRoom(): void {
     if (this.roomForm.invalid) {
@@ -362,56 +400,65 @@ export class RoomManagementComponent implements OnInit {
     }
 
     this.isSubmitting = true;
-    
-    // Simulate API call
-    setTimeout(() => {
-      const formValue = this.roomForm.value;
-      const availabilityHours = `${formValue.availableFrom} - ${formValue.availableTo}`;
-      
-      if (this.isEditing && this.editingRoom) {
-        // Update existing room
-        const updatedRoom: Room = {
-          ...this.editingRoom,
-          name: formValue.name,
-          location: formValue.location,
-          capacity: formValue.capacity,
-          type: formValue.type,
-          equipment: this.selectedEquipment,
-          availabilityHours: availabilityHours,
-          status: formValue.status,
-          requiresApproval: formValue.requiresApproval
-        };
-        
-        const index = this.rooms.findIndex(r => r.id === this.editingRoom!.id);
-        if (index > -1) {
-          this.rooms[index] = updatedRoom;
+    const formValue = this.roomForm.value;
+    const availabilityHours = `${formValue.availableFrom} - ${formValue.availableTo}`;
+
+    const frontendRoomData: Partial<FrontendRoom> = {
+      name: formValue.name,
+      location: formValue.location,
+      capacity: formValue.capacity,
+      type: formValue.type,
+      equipment: this.selectedEquipment,
+      availabilityHours: availabilityHours,
+      status: formValue.status,
+      requiresApproval: formValue.requiresApproval,
+      utilization: this.isEditing ? this.editingRoom?.utilization : Math.floor(Math.random() * 30) + 40
+    };
+
+    // Convert to backend format
+    const backendRoomData = RoomMapper.toBackend(frontendRoomData);
+
+    if (this.isEditing && this.editingRoom?.id) {
+      const roomId = parseInt(this.editingRoom.id);
+      this.roomService.updateRoom(roomId, backendRoomData as any).subscribe({
+        next: (updatedBackendRoom) => {
+          const updatedFrontendRoom = RoomMapper.toFrontend(updatedBackendRoom);
+          const index = this.rooms.findIndex(r => r.id === this.editingRoom!.id);
+          if (index > -1) {
+            this.rooms[index] = updatedFrontendRoom;
+          }
+          this.applyFilters();
+          this.applyTableFilters();
+          this.updateStats();
+          this.isSubmitting = false;
+          this.closeAddRoomModal();
+          this.showNotification('Room updated successfully!');
+        },
+        error: (error) => {
+          console.error('Error updating room:', error);
+          this.showNotification('Error updating room. Please try again.');
+          this.isSubmitting = false;
         }
-      } else {
-        // Create new room
-        const newRoom: Room = {
-          id: 'RM' + (this.rooms.length + 1).toString().padStart(3, '0'),
-          name: formValue.name,
-          location: formValue.location,
-          capacity: formValue.capacity,
-          type: formValue.type,
-          equipment: this.selectedEquipment,
-          availabilityHours: availabilityHours,
-          utilization: Math.floor(Math.random() * 30) + 40, // Random utilization between 40-70%
-          status: formValue.status,
-          requiresApproval: formValue.requiresApproval
-        };
-        
-        this.rooms.unshift(newRoom);
-      }
-      
-      this.applyFilters();
-      this.applyTableFilters();
-      this.isSubmitting = false;
-      this.closeAddRoomModal();
-      
-      this.showNotification(`${this.isEditing ? 'Updated' : 'Created'} room successfully!`);
-      
-    }, 1500);
+      });
+    } else {
+      this.roomService.createRoom(backendRoomData as any).subscribe({
+        next: (newBackendRoom) => {
+          const newFrontendRoom = RoomMapper.toFrontend(newBackendRoom);
+          this.rooms.unshift(newFrontendRoom);
+          this.applyFilters();
+          this.applyTableFilters();
+          this.updateStats();
+          this.isSubmitting = false;
+          this.closeAddRoomModal();
+          this.showNotification('Room created successfully!');
+        },
+        error: (error) => {
+          console.error('Error creating room:', error);
+          this.showNotification('Error creating room. Please try again.');
+          this.isSubmitting = false;
+        }
+      });
+    }
   }
 
   markFormGroupTouched(): void {
@@ -453,7 +500,7 @@ export class RoomManagementComponent implements OnInit {
     // Apply search filter
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(room => 
+      filtered = filtered.filter(room =>
         room.name.toLowerCase().includes(query) ||
         room.location.toLowerCase().includes(query) ||
         room.type.toLowerCase().includes(query)
@@ -482,7 +529,7 @@ export class RoomManagementComponent implements OnInit {
     // Apply search filter to table
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(room => 
+      filtered = filtered.filter(room =>
         room.name.toLowerCase().includes(query) ||
         room.location.toLowerCase().includes(query) ||
         room.type.toLowerCase().includes(query)
@@ -506,9 +553,9 @@ export class RoomManagementComponent implements OnInit {
     filtered.sort((a, b) => {
       let aValue = a[this.sortField as keyof Room];
       let bValue = b[this.sortField as keyof Room];
-      
+
       if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return this.sortDirection === 'asc' 
+        return this.sortDirection === 'asc'
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue);
       } else if (typeof aValue === 'number' && typeof bValue === 'number') {
@@ -545,7 +592,9 @@ export class RoomManagementComponent implements OnInit {
     // Implement detailed view modal
   }
 
-  toggleRoomStatus(room: Room): void {
+  toggleRoomStatus(room: FrontendRoom): void {
+    const originalStatus = room.status;
+
     if (room.status === 'Available') {
       room.status = 'Occupied';
     } else if (room.status === 'Occupied') {
@@ -553,19 +602,47 @@ export class RoomManagementComponent implements OnInit {
     } else if (room.status === 'Maintenance') {
       room.status = 'Available';
     }
-    this.showNotification(`${room.name} is now ${room.status.toLowerCase()}`);
-    this.applyFilters();
-    this.applyTableFilters();
+
+    if (room.id) {
+      const frontendData: Partial<FrontendRoom> = { ...room };
+      const backendData = RoomMapper.toBackend(frontendData);
+      const roomId = parseInt(room.id);
+
+      this.roomService.updateRoom(roomId, backendData as any).subscribe({
+        next: () => {
+          this.showNotification(`${room.name} is now ${room.status.toLowerCase()}`);
+          this.applyFilters();
+          this.applyTableFilters();
+        },
+        error: (error) => {
+          console.error('Error updating room status:', error);
+          room.status = originalStatus;
+          this.showNotification('Error updating room status. Please try again.');
+        }
+      });
+    }
   }
 
-  deleteRoom(room: Room): void {
+  deleteRoom(room: FrontendRoom): void {
     if (confirm(`Are you sure you want to delete ${room.name}? This action cannot be undone.`)) {
-      const index = this.rooms.findIndex(r => r.id === room.id);
-      if (index > -1) {
-        this.rooms.splice(index, 1);
-        this.applyFilters();
-        this.applyTableFilters();
-        this.showNotification(`Room ${room.name} has been deleted`);
+      if (room.id) {
+        const roomId = parseInt(room.id);
+        this.roomService.deleteRoom(roomId).subscribe({
+          next: () => {
+            const index = this.rooms.findIndex(r => r.id === room.id);
+            if (index > -1) {
+              this.rooms.splice(index, 1);
+              this.applyFilters();
+              this.applyTableFilters();
+              this.updateStats();
+              this.showNotification(`Room ${room.name} has been deleted`);
+            }
+          },
+          error: (error) => {
+            console.error('Error deleting room:', error);
+            this.showNotification('Error deleting room. Please try again.');
+          }
+        });
       }
     }
   }
