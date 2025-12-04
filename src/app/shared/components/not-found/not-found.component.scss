@@ -1,0 +1,169 @@
+$primary-color: #6fa4e3;
+$primary-light: #93c3f3;
+$primary-dark: #5479a0;
+$dark-bg: #1a1a2e;
+$dark-bg-secondary: #16213e;
+$text-light: #a5b3c7;
+$text-white: #ffffff;
+
+.not-found-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $dark-bg 0%, $dark-bg-secondary 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  padding: 20px;
+  
+  .content {
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+  }
+
+  // 404 Title
+  .title-404 {
+    font-size: clamp(80px, 15vw, 180px);
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-light 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -5px;
+    animation: fadeIn 1s ease-in;
+  }
+
+  // SVG Illustration
+  .illustration {
+    margin: 40px 0;
+    animation: fadeIn 1s ease-in;
+
+    .jazz-svg {
+      width: 100%;
+      max-width: 700px;
+      height: auto;
+    }
+  }
+
+  // Message section
+  .message {
+    margin-top: 40px;
+    animation: fadeIn 1.5s ease-in;
+
+    .subtitle {
+      font-size: clamp(24px, 5vw, 36px);
+      color: $primary-color;
+      font-weight: 600;
+      margin: 0 0 15px 0;
+      line-height: 1.4;
+    }
+
+    .description {
+      color: $text-light;
+      font-size: clamp(14px, 3vw, 18px);
+      margin-bottom: 40px;
+    }
+  }
+
+  // Button group
+  .button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  // Button styles
+  .btn {
+    padding: 15px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+
+    &.btn-primary {
+      color: $text-white;
+      background: linear-gradient(135deg, $primary-color 0%, $primary-light 100%);
+      box-shadow: 0 8px 20px rgba(111, 164, 227, 0.3);
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(111, 164, 227, 0.4);
+      }
+
+      &:active {
+        transform: translateY(-1px);
+      }
+    }
+
+    &.btn-secondary {
+      color: $primary-color;
+      background: transparent;
+      border: 2px solid $primary-color;
+
+      &:hover {
+        background: $primary-color;
+        color: $text-white;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .not-found-container {
+    .button-group {
+      flex-direction: column;
+      align-items: stretch;
+      
+      .btn {
+        width: 100%;
+      }
+    }
+
+    .message .subtitle {
+      br {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .not-found-container {
+    padding: 15px;
+
+    .illustration {
+      margin: 30px 0;
+    }
+
+    .message {
+      margin-top: 30px;
+
+      .description {
+        margin-bottom: 30px;
+      }
+    }
+  }
+}
+

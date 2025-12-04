@@ -94,7 +94,7 @@
             [style.background-color]="slot.booking?.color">
             <div class="booking-title">{{ slot.booking?.title }}</div>
             <div class="booking-time">
-              {{ formatTime(slot.booking!.startTime) }} - {{ formatTime(slot.booking!.endTime) }}
+              {{ formatTime(slot.booking!.startTime.getHours() + slot.booking!.startTime.getMinutes()/60) }} - {{ formatTime(slot.booking!.endTime.getHours() + slot.booking!.endTime.getMinutes()/60) }}
             </div>
             <div class="booking-description" *ngIf="slot.booking?.description">
               {{ slot.booking?.description }}

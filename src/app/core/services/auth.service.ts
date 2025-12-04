@@ -44,14 +44,37 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('accessToken')
+    const token = localStorage.getItem('accessToken')
+     if (token && this.isTokenExpired(token)) {
+      console.log('⚠️ Token expired');
+      this.logout();
+      return null;
+    }
+    return token;
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expirationDate = new Date(payload.exp * 1000);
+      const isExpired = expirationDate < new Date();
+      
+      if (isExpired) {
+        console.log('⚠️ Token expired at:', expirationDate);
+      }
+      
+      return isExpired;
+    } catch (e) {
+      console.error('❌ Error checking token expiration', e);
+      return true;
+    }
   }
 
   private handleAuthSuccess(response: AuthResponse): void {
     // Store token in localStorage (persists across browser sessions)
     console.log('Auth response:', response);
     localStorage.setItem('currentUser', JSON.stringify(response.user));
-    localStorage.setItem('accessToken', response.accesstoken);
+    localStorage.setItem('accessToken', response.token);
   }
 
    private loadUserFromStorage(): void {

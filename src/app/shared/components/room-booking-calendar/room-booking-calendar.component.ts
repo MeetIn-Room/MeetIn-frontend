@@ -51,8 +51,8 @@ export class RoomBookingCalendarComponent implements OnInit {
 
   generateTimeSlots(): void {
     this.timeSlots = [];
-    const openTime = this.room.openTime;
-    const closeTime = this.room.closeTime;
+    const openTime = this.room.openTime.getHours() + this.room.openTime.getMinutes()/60;
+    const closeTime = this.room.closeTime.getHours() + this.room.closeTime.getMinutes()/60;
 
     for (let time = openTime; time < closeTime; time += 0.5) {
       const slot: TimeSlot = {
@@ -69,24 +69,24 @@ export class RoomBookingCalendarComponent implements OnInit {
   formatTime(time: number): string {
     const hours = Math.floor(time);
     const minutes = (time % 1) * 60;
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
-    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+    
+    const displayHours = hours > 12 ? hours : (hours === 0 ? 12 : hours);
+    return `${displayHours}:${minutes.toString().padStart(2, '0')}`;
   }
 
   isSlotBooked(time: number): boolean {
     return this.bookings.some(booking =>
       this.isSameDate(booking.date, this.selectedDate) &&
-      time >= booking.startTime &&
-      time < booking.endTime
+      time >= booking.startTime.getHours() + booking.startTime.getMinutes()/60 &&
+      time < booking.endTime.getHours() + booking.endTime.getMinutes()/60
     );
   }
 
   getBookingForSlot(time: number): Booking | undefined {
     return this.bookings.find(booking =>
       this.isSameDate(booking.date, this.selectedDate) &&
-      time >= booking.startTime &&
-      time < booking.endTime
+      time >= booking.startTime.getHours() + booking.startTime.getMinutes()/60 &&
+      time < booking.endTime.getHours() + booking.endTime.getMinutes()/60
     );
   }
 
@@ -140,14 +140,14 @@ export class RoomBookingCalendarComponent implements OnInit {
     }
 
     const startTime = Math.min(...this.selectedSlots.map(s => s.time));
-    const endTime = Math.max(...this.selectedSlots.map(s => s.time)) + 0.5;
+    const endTime = Math.max(...this.selectedSlots.map(s => s.time)) + 1;
 
     const newBooking: Booking = {
       id: Date.now().toString(),
       room: this.room,
       date: new Date(this.selectedDate),
-      startTime: startTime,
-      endTime: endTime,
+      startTime: new Date(this.selectedDate.setHours(Math.floor(startTime), (startTime % 1) * 60)),
+      endTime: new Date(this.selectedDate.setHours(Math.floor(endTime), (endTime % 1) * 60)),
       title: this.bookingTitle,
       description: this.bookingDescription,
       color: this.getRandomColor(),
@@ -175,7 +175,7 @@ export class RoomBookingCalendarComponent implements OnInit {
 
   isFirstSlotOfBooking(slot: TimeSlot): boolean {
     if (!slot.booking) return false;
-    return slot.time === slot.booking.startTime;
+    return slot.time === slot.booking.startTime.getHours() + slot.booking.startTime.getMinutes()/60;
   }
 
   changeDate(days: number): void {
@@ -206,4 +206,16 @@ export class RoomBookingCalendarComponent implements OnInit {
   onModalClick(event: MouseEvent): void {
     event.stopPropagation();
   }
+
+  timeStringtoNumber(t: string): number{
+    if (!t) return 0;
+    const splitted = t.split(':') //e.g 10:30 -> 10 + 30/60 = 10.5
+    return parseFloat(splitted[0]) + (parseFloat(splitted[1])/60)
+  }
+
+  numberToTimeString(t: number): string {
+    return t.toString().split('.')[0].padStart(2, '0') + ':' + `${parseFloat('0.' + t.toString().split('.')[1]) * 60}`.padStart(2, '0');
+  }
+
+  
 }
