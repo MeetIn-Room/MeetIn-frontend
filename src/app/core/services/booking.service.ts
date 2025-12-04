@@ -2,19 +2,20 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Booking } from '../interfaces/booking';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookingService {
-  private apiUrl = 'http://localhost:8088/api/bookings';
+  private apiUrl = environment.apiUrl + '/api/bookings';
 
   private httpClient = inject(HttpClient);
   private _bookings = new BehaviorSubject<Booking[]>([]);
 
 constructor() {
     // initialize with empty or sample data if needed
-    
+
   }
 
   getBoookings(): Observable<Booking[]>{
@@ -22,7 +23,7 @@ constructor() {
   }
 
 
- 
+
 
   create(booking: Booking) {
     // this._bookings.next(next);
@@ -42,5 +43,5 @@ constructor() {
   }
 
 
- 
+
 }
