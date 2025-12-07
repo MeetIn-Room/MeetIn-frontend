@@ -9,10 +9,17 @@ import { NewBookingComponent } from '../../../shared/components/new-booking/new-
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../../../core/interfaces/auth';
 import { Router } from '@angular/router';
+import { BookingDetailsComponent } from '../../../shared/components/booking-details/booking-details.component';
 
 @Component({
   selector: 'app-home',
-  imports: [NavbarComponent, BookingItemComponent, CommonModule, WeeklyCalendarComponent, NewBookingComponent],
+  imports: [
+    NavbarComponent,
+    BookingItemComponent,
+    CommonModule,
+    WeeklyCalendarComponent,
+    NewBookingComponent,
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -76,8 +83,12 @@ export class HomeComponent implements OnInit {
   
     // subscribe to service updates
     this.bookingService.getBoookings().subscribe({
-      next: (response) => this.bookings = response.filter((book) => book.userId === this.currentUserSubject.value.id),
-      error: (err) => { alert("Error fetching bookings "+ err); console.error(err); }
+      next: (response) => {
+        this.bookings = response.filter((book) => book.userId === this.currentUserSubject.getValue().id.toString())
+        console.log("Bookings " + this.bookings.length, this.bookings);
+
+      },
+      error: (err) => { alert("Error fetching bookings "+ err); console.error('error', err); }
     })
   }
 

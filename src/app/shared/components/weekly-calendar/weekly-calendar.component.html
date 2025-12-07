@@ -49,23 +49,28 @@
              class="time-cell"
              (click)="onTimeSlotClick(day, time)">
         </div>
-
         <!-- Bookings overlay -->
         <div *ngFor="let booking of getBookingsForDay(day)"
+            (click)="toggleDetails()"
              class="booking-item"
-             [class]="booking?.color"
-             [style.top]="calculatePosition(booking.startTime.getHours() + booking.startTime.getMinutes()/60, booking.endTime.getHours() + booking.endTime.getMinutes()/60).top"
-             [style.height]="calculatePosition(booking.startTime.getHours() + booking.startTime.getMinutes()/60, booking.endTime.getHours() + booking.endTime.getMinutes()/60).height"
-             (click)="onBookingClick(booking)">
+             [style.background-color]="randomColor()"
+             [style.top]="calculatePosition(booking.startTime , booking.endTime).top"
+             [style.height]="calculatePosition(booking.startTime, booking.endTime).height"
+            >
           <div class="booking-title">{{ booking.title }}</div>
           <div class="booking-time">
             <span class="icon">🕐</span>
-            {{ booking.startTime.getHours() + ':' + booking.startTime.getMinutes() }} - {{ booking.endTime.getHours() + ':' + booking.endTime.getMinutes() }}
+            {{ booking.startTime.toString().split('T')[1].split(':')[0] +':' + booking.startTime.toString().split('T')[1].split(':')[1]}}
+             - {{ booking.endTime.toString().split('T')[1].split(':')[0] + ':' + booking.endTime.toString().split('T')[1].split(':')[1]}}
           </div>
           <div class="booking-room">
             <span class="icon">📍</span>
             {{ booking.room.name }}
           </div>
+
+          <app-booking-details *ngIf="showBookingDetails" [booking]="booking" (close)="toggleDetails()"></app-booking-details>
+
+
         </div>
       </div>
     </div>

@@ -31,7 +31,7 @@
             <div class="flex">
                 @if (showCalendar) {
                     <div style="width: 100%; height: 100%;">
-                        <app-weekly-calendar></app-weekly-calendar>
+                        <app-weekly-calendar [bookings]="bookings" ></app-weekly-calendar>
                     </div>
                 }@else {
                     <div style="width: 100%; height: 400px;" class="flex justify-between">
@@ -55,7 +55,7 @@
             <!-- New Booking (standalone component) -->
             <app-new-booking *ngIf="showNewBookingModal" (created)="onNewCreated($event)" (cancel)="onNewCancelled()"></app-new-booking>
             
-            
+
         </section>
     </div>
 

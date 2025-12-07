@@ -56,7 +56,7 @@ export class NewBookingComponent {
   constructor() {
     // default values
     const today = new Date();
-    this.form.patchValue({ date: this.toDateInput(today), startTime: '09:00', endTime: '10:00', roomId: this.availableRooms[0].id });
+    // this.form.patchValue({ date: this.toDateInput(today), startTime: '09:00', endTime: '10:00', roomId: this.availableRooms[0].id });
   }
 
   toDateInput(d: Date) {
