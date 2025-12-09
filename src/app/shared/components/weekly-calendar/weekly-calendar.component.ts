@@ -1,8 +1,7 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Booking } from '../../../core/interfaces/booking';
 import { BookingDetailsComponent } from '../booking-details/booking-details.component';
-
 
 export function timeToHours(time: string): number {
     const [hours, minutes] = time.split(':').map(Number);
@@ -14,7 +13,7 @@ export function timeToHours(time: string): number {
   standalone: true,
   imports: [
     CommonModule,
-    BookingDetailsComponent
+    BookingDetailsComponent,
   ],
   templateUrl: './weekly-calendar.component.html',
   styleUrls: ['./weekly-calendar.component.scss']
@@ -29,17 +28,29 @@ export class WeeklyCalendarComponent implements OnInit {
   ];
 
   @Input({required: true}) bookings: Booking[] = [];
-  @Output() bookingClicked = new EventEmitter<Booking>()
+  @Output() bookingUpdate = new EventEmitter<Booking>()
+
+  @ViewChild('dialog') dialog!: ElementRef<HTMLDialogElement>;
 
   showBookingDetails = false
+  selectedBooking!: Booking;
+  colorValue = 400;
+
+  onBookingUpdate(b: Booking){
+    this.bookingUpdate.emit(b);
+  }
+
 
   ngOnInit(): void {
     this.updateWeekDays();
     console.log(this.bookings)
   }
 
-  toggleDetails(){
+  toggleDetails(b: Booking){
+    console.log('toggling details: ', b)
+    this.selectedBooking = b;
     this.showBookingDetails = !this.showBookingDetails
+    // this.dialog.nativeElement.showPopover()
   }
 
   updateWeekDays(): void {
@@ -61,7 +72,12 @@ export class WeeklyCalendarComponent implements OnInit {
   }
 
   randomColor(): string{
-    return `rgb(${Math.floor(Math.random()*256)},${Math.floor(Math.random()*256)}, 250)`
+    if(this.colorValue === 1000){
+      this.colorValue = 400;
+    }
+    let color =  `var(--primary-${this.colorValue})`
+    this.colorValue += 100;
+    return color;
   }
 
   navigateWeek(direction: 'next' | 'prev'): void {
@@ -91,7 +107,8 @@ export class WeeklyCalendarComponent implements OnInit {
 
   isToday(date: Date): boolean {
     console.log(date, new Date(), this.isSameDay(date, new Date()))
-    return this.isSameDay(date, new Date());
+    return date.toDateString() === new Date().toDateString();
+    // return this.isSameDay(date, new Date());
   }
 
   calculatePosition(startTime: Date, endTime: Date): { top: string; height: string } {
@@ -130,4 +147,6 @@ export class WeeklyCalendarComponent implements OnInit {
     const splitted = t.split(':') //e.g 10:30 -> 10 + 30/60 = 10.5
     return parseFloat(splitted[0]) + (parseFloat(splitted[1])/60)
   }
+
+
 }

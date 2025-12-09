@@ -51,9 +51,9 @@
         </div>
         <!-- Bookings overlay -->
         <div *ngFor="let booking of getBookingsForDay(day)"
-            (click)="toggleDetails()"
+            (click)="toggleDetails(booking)"
              class="booking-item"
-             [style.background-color]="randomColor()"
+             [style.background]="randomColor()"
              [style.top]="calculatePosition(booking.startTime , booking.endTime).top"
              [style.height]="calculatePosition(booking.startTime, booking.endTime).height"
             >
@@ -66,13 +66,12 @@
           <div class="booking-room">
             <span class="icon">📍</span>
             {{ booking.room.name }}
-          </div>
-
-          <app-booking-details *ngIf="showBookingDetails" [booking]="booking" (close)="toggleDetails()"></app-booking-details>
-
-
+          </div>          
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<app-booking-details *ngIf="showBookingDetails" [booking]="selectedBooking" (update)="onBookingUpdate($event)"  (close)="showBookingDetails = false" style="z-index: 1000;"></app-booking-details>
+          <!-- <app-room-details *ngIf="showBookingDetails"></app-room-details> -->

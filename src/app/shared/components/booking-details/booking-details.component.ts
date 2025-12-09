@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Booking } from '../../../core/interfaces/booking';
+import { formatTime } from '../booking-item/booking-item.component';
 
 @Component({
   selector: 'app-booking-details',
@@ -10,24 +11,40 @@ import { Booking } from '../../../core/interfaces/booking';
   templateUrl: './booking-details.component.html',
   styleUrls: ['./booking-details.component.scss']
 })
-export class BookingDetailsComponent {
+export class BookingDetailsComponent implements OnChanges {
+  
   @Input() booking!: Booking;
   @Output() close = new EventEmitter<void>();
   @Output() update = new EventEmitter<Booking>();
+  // @ViewChild('dialog') dialog!: ElementRef<HTMLDialogElement>;
 
   editing = false;
-  editStart = 0;
-  editEnd = 0;
+  editDate!: Date;
+  editStart!: Date;
+  editEnd!: Date;
   editDescription = '';
+  startTimeString = '';
+  endTimeString = '';
 
   ngOnChanges() {
     if (this.booking) {
-      this.editStart = this.booking.startTime.getHours() + this.booking.startTime.getMinutes()/60;
-      this.editEnd = this.booking.endTime.getHours() + this.booking.endTime.getMinutes()/60;
+      this.editDate = this.booking.date;
+      this.editStart = this.booking.startTime;
+      this.editEnd = this.booking.endTime;
       this.editDescription = this.booking.description || '';
     }
+   
     // parseFloat('0.' + 10.5.toString().split('.')[1]);
   }
+
+
+
+  ngOnInit(){
+    this.startTimeString = formatTime(this.booking.startTime);
+    this.endTimeString = formatTime(this.booking.endTime);
+  }
+
+
 
   toLocalInput(iso?: string) {
     if (!iso) return '';
@@ -49,20 +66,20 @@ export class BookingDetailsComponent {
 
   startEdit() {
     this.editing = true;
-    this.editStart = this.booking.startTime.getHours() + this.booking.startTime.getMinutes()/60;
-    this.editEnd = this.booking.endTime.getHours() + this.booking.endTime.getMinutes()/60;
+    this.editStart = this.booking.startTime;
+    this.editEnd = this.booking.endTime;
     this.editDescription = this.booking.description || '';
+    this.editDate = this.booking.date;
   }
 
   cancelEdit() {
-    this.editing = false;
   }
 
   saveEdit() {
     const updated: Booking = {
       ...this.booking,
-      startTime: new Date(this.booking.startTime.setHours(Math.floor(this.editStart), (this.editStart % 1) * 60)),
-      endTime: new Date(this.booking.endTime.setHours(Math.floor(this.editEnd), (this.editEnd % 1) * 60)),
+      startTime: new Date(this.editStart),
+      endTime: new Date(this.editEnd),
       description: this.editDescription
     };
     this.update.emit(updated);
@@ -70,6 +87,7 @@ export class BookingDetailsComponent {
   }
 
   doClose() {
+    this.editing = false;
     this.close.emit();
   }
 

@@ -151,7 +151,8 @@ export class RoomBookingCalendarComponent implements OnInit {
       title: this.bookingTitle,
       description: this.bookingDescription,
       color: this.getRandomColor(),
-      userId: JSON.parse(localStorage.getItem('currentUser')!).id
+      userId: JSON.parse(localStorage.getItem('currentUser')!).id,
+      isActive: true
     };
 
     this.bookingCreated.emit(newBooking);

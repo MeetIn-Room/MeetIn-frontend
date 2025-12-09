@@ -1,4 +1,4 @@
-<dialog class="modal-backdrop" #dialog >
+<div class="modal-backdrop" #dialog >
   <div class="modal-panel">
     <h3>Create new booking</h3>
 
@@ -32,9 +32,9 @@
       <textarea formControlName="description" rows="4"></textarea>
 
       <div class="modal-actions">
-        <button type="submit" class="btn">Create</button>
-        <button type="button" class="btn" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn save">Create</button>
+        <button type="button" class="btn close" (click)="onCancel()">Cancel</button>
       </div>
     </form>
   </div>
-</dialog>
+</div>

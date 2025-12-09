@@ -10,4 +10,5 @@ export interface Booking {
     description: string;
     color?: string;
     userId: string;
+    isActive: boolean;
 }

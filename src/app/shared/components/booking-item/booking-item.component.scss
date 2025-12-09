@@ -16,6 +16,7 @@
     .room {
       font-weight: 600;
       font-size: 1rem;
+      color: var(--primary-600);
     }
     .time {
       color: #666;
@@ -25,6 +26,14 @@
       color: #999;
       font-size: 0.8rem;
     }
+  }
+
+  transition: all 0.3s ease-in-out;
+
+  &:hover:not(.active){
+    box-shadow: 2px 2px 4px lightgray;
+    border: 1px var(--primary-400) solid;
+    translate: 2px 4px;
   }
 
   .actions {
@@ -67,3 +76,11 @@
     }
   }
 }
+
+.active{
+  box-shadow: 2px 2px 4px lightgray;
+  border: 2px var(--primary-400) solid;
+  translate: 2px 4px;
+}
+
+

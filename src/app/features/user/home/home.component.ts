@@ -1,6 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnInit, QueryList, ViewChild, ViewChildren, viewChildren } from '@angular/core';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { BookingItemComponent } from '../../../shared/components/booking-item/booking-item.component';
+import { BookingItemComponent, formatTime } from '../../../shared/components/booking-item/booking-item.component';
 import { Booking } from '../../../core/interfaces/booking';
 import { CommonModule } from '@angular/common';
 import { WeeklyCalendarComponent } from '../../../shared/components/weekly-calendar/weekly-calendar.component';
@@ -8,8 +8,6 @@ import { BookingService } from '../../../core/services/booking.service';
 import { NewBookingComponent } from '../../../shared/components/new-booking/new-booking.component';
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../../../core/interfaces/auth';
-import { Router } from '@angular/router';
-import { BookingDetailsComponent } from '../../../shared/components/booking-details/booking-details.component';
 
 @Component({
   selector: 'app-home',
@@ -27,69 +25,63 @@ export class HomeComponent implements OnInit {
 
   showCalendar = false;
   showNewBookingModal = false;
+  showDetails = false;
+  bookingDetails!: Booking;
+  selected!: Element
 
   currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser') || '{}'));
+  latest = true;
+  _latest = this.latest; //Previous state of the ordering of bookings to detect ordering changes from the select input
 
-  router = inject(Router)
-
-  constructor(){
-  }
-
-  toggleCalendar() {
-    this.showCalendar = !this.showCalendar;
-  }
-
-  // bookings: Booking[] = [
-  //   {
-  //     id: 'bkg-001',
-  //     room: {
-  //       name: 'Conference Room A', amenities: [], capacity: 0,
-  //       id: '',
-  //       openTime: 8,
-  //       closeTime: 17,
-  //       isActive: true
-  //     },
-  //     userId: this.currentUserSubject.value.id,
-  //     startTime: 9,
-  //     endTime: 10.5,
-  //     date: new Date(),
-  //     title: 'Scrum Meeting',
-  //     description: 'Daily team sync-up',
-  //   },
-  //   {
-  //     id: 'bkg-002',
-  //     room: {
-  //       name: 'Focus Room 2', amenities: [], capacity: 0,
-  //       id: '',
-  //       openTime: 8,
-  //       closeTime: 17,
-  //       isActive: true
-  //     },
-  //     userId: this.currentUserSubject.value.id,
-  //     startTime: 11,
-  //     endTime: 14,
-  //     date: new Date(),
-  //     title: 'Project Work',
-  //     description: 'Working on project tasks',
-  //   }
-  // ];
-
+  @ViewChild('sortSelect') sortSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('details') details!: ElementRef<HTMLDivElement>;
+  startTimeString: any;
+  endTimeString: any;
   bookings: Booking[] = [];
 
-
   private bookingService = inject(BookingService);
+  showMoreOptions!: boolean;
 
   ngOnInit(): void {
-  
     // subscribe to service updates
     this.bookingService.getBoookings().subscribe({
       next: (response) => {
-        this.bookings = response.filter((book) => book.userId === this.currentUserSubject.getValue().id.toString())
+        this.bookings = response.filter((book) => book.userId === this.currentUserSubject.getValue().id.toString() && book.isActive)
+        this.sortElements(this.latest ? -1 : 1);
         console.log("Bookings " + this.bookings.length, this.bookings);
 
       },
       error: (err) => { alert("Error fetching bookings "+ err); console.error('error', err); }
     })
+  }
+
+  // ngAfterViewInit(): void {
+  //   this.viewBookings.forEach((b) => {
+  //     if(b.isClicked) this.selected = b;
+  //   })
+  // }
+
+  toggleCalendar() {
+    this.showCalendar = !this.showCalendar;
+  }
+
+  onShowBookingDetails(b: Booking){
+    this.bookingDetails = b
+    this.showDetails = true
+    this.startTimeString = formatTime(b.startTime)
+    this.endTimeString = formatTime(b.endTime)
+  }
+
+  sortBookings(){
+    this.latest = this.sortSelect.nativeElement.value === 'latest';
+    if(this._latest !== this.latest){ //Sort only if there is a change in the ordering
+      this._latest = this.latest;
+      this.sortElements(this.latest ? -1 : 1);
+    }
+  }
+
+  sortElements(val: number){
+    this.bookings = this.bookings.sort((a, b) => a.date.toString() > b.date.toString() && a.startTime.toString() > b.startTime.toString() ? val : -val);
   }
 
   onCancelBooking(id: string) {
@@ -101,7 +93,9 @@ export class HomeComponent implements OnInit {
   }
 
   openNewBookingModal() { this.showNewBookingModal = true; }
-  closeNewBookingModal() { this.showNewBookingModal = false; }
+  closeNewBookingModal() { 
+    this.showNewBookingModal = false;
+  }
 
   onNewCreated(b: Booking) {
     this.showNewBookingModal = false;
@@ -109,5 +103,22 @@ export class HomeComponent implements OnInit {
   }
 
   onNewCancelled() { this.showNewBookingModal = false; }
+
+  doClose(){
+    this.showDetails = false;
+    this.selected.firstElementChild!.classList.remove('active')
+    this.showMoreOptions = false
+  }
+
+  handleClick(bookItemId: number){
+    if(this.selected) this.selected.firstElementChild!.classList.remove('active')
+    this.selected = document.querySelector("#book-" + bookItemId)!
+    this.selected!.firstElementChild!.classList.add('active')
+    console.log(this.selected)
+  }
+
+  onShowTooltips(){
+    this.showMoreOptions = true
+  }
 
 }

@@ -82,7 +82,8 @@ export class NewBookingComponent {
       endTime: new Date(new Date(vals.date!).setHours(Math.floor(this.timeStringToHourNumber(vals.endTime!)), (this.timeStringToHourNumber(vals.endTime!) % 1) * 60)),
       title: vals.title!,
       description: vals.description || '',
-      userId: JSON.parse(localStorage.getItem('currentUser')!).id
+      userId: JSON.parse(localStorage.getItem('currentUser')!).id,
+      isActive: true
     };
 
     this.bookingService.create(booking);

@@ -1,17 +1,11 @@
-<li class="booking-item">
+<li class="booking-item" (click)="toggleDetails()">
   <div class="main">
     <div class="info">
-      <div class="room">{{ booking.room.name }}</div>
+      <div class="room">{{ booking.title }}</div>
       <div class="time"> {{booking.date | date:'fullDate'}} </div>
 
       <div class="id">{{ startTime }} — {{ endTime  }}</div>
     </div>
-
-    <div class="actions">
-      <button class="btn cancel" (click)="emitCancel()">Cancel booking</button>
-      <button class="btn details" (click)="toggleDetails()">View booking details</button>
-    </div>
   </div>
 
-  <app-booking-details *ngIf="showDetails" [booking]="booking" (close)="toggleDetails()" (update)="onUpdate($event)"></app-booking-details>
 </li>

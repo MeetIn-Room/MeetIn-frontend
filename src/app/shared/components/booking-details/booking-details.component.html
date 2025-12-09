@@ -1,34 +1,39 @@
 <div class="details-backdrop">
   <div class="details-panel">
-    <h3>Booking details</h3>
-
-    <div class="row"><strong>Room:</strong> {{ booking.room.name }}</div>
+    <h3 class="header">{{booking.title}}</h3>
 
     <div class="row">
-      <strong>Period:</strong>
+      <strong style="margin-right: 0.5rem;">Date:</strong>
       <ng-container *ngIf="!editing">
-        {{ booking.startTime | date:'full' }} — {{ booking.endTime | date:'full' }}
+        {{booking.date | date:'fullDate'}}
       </ng-container>
+
       <ng-container *ngIf="editing">
-        <input type="datetime-local" [(ngModel)]="editStart" />
+        <input type="date" [(ngModel)]="editStart" />
         <span> — </span>
         <input type="datetime-local" [(ngModel)]="editEnd" />
       </ng-container>
     </div>
 
-    <div class="row"><strong>Capacity:</strong> {{ booking.room || '—' }}</div>
+    <div *ngIf="!editing" class="row">
+      <div><strong style="margin-right: 0.5rem;">Period: </strong>{{startTimeString}} — {{endTimeString}}</div>
+    </div>
+
+    <div class="row"><strong>Room:</strong> {{ booking.room.name }}</div>
+
+    <div class="row"><strong>Capacity:</strong> {{ booking.room.capacity }} people</div>
 
     <div class="row"><strong>Amenities:</strong>
       <ng-container *ngIf="booking.room.amenities && booking.room.amenities.length; else noAmenities">
-        <ul>
-          <li *ngFor="let a of booking.room.amenities">{{ a }}</li>
+        <ul style="display: flex; gap: 0.5rem;">
+          <li class="amenity" *ngFor="let a of booking.room.amenities">{{ a }}</li>
         </ul>
       </ng-container>
       <ng-template #noAmenities>—</ng-template>
     </div>
 
     <div class="row description">
-      <strong>Description:</strong>
+      <strong style="display: block;">Description:</strong>
       <ng-container *ngIf="!editing">{{ booking.description || '—' }}</ng-container>
       <ng-container *ngIf="editing">
         <textarea rows="4" [(ngModel)]="editDescription"></textarea>
@@ -36,10 +41,9 @@
     </div>
 
     <div class="actions">
-      <button class="btn" *ngIf="!editing" (click)="startEdit()">Edit</button>
-      <button class="btn" *ngIf="editing" (click)="saveEdit()">Save</button>
-      <button class="btn" *ngIf="editing" (click)="cancelEdit()">Cancel</button>
-      <button class="btn" (click)="doClose()">Close</button>
+      <button class="btn edit" *ngIf="!editing" (click)="startEdit()">Edit</button>
+      <button class="btn save" *ngIf="editing" (click)="saveEdit()">Save</button>
+      <button class="btn close" (click)="doClose()">Close</button>
     </div>
   </div>
 </div>
