@@ -32,9 +32,9 @@
         <p>My Profile</p>
 
         <div class="profile-dropdown" role="menu">
-          <div class="pd-user">{{ userName || 'User' }}</div>
-          <a class="pd-link" [routerLink]="['/', settingsRoute]">Settings</a>
-          <button class="pd-link logout" (click)="logout()">Logout</button>
+          <div class="pd-user hov">{{ userName || 'User' }}</div>
+          <a class="pd-link hov" [routerLink]="['/', settingsRoute]">Settings</a>
+          <button class="pd-link logout hov" (click)="logout()">Logout</button>
         </div>
     </div>
   </div>  

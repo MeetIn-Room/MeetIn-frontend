@@ -6,18 +6,20 @@ import { Room } from '../interfaces/room';
 @Injectable({
   providedIn: 'root'
 })
-export class RoomServiceService {
+export class RoomService {
   private apiUrl = 'http://localhost:8088/api/rooms';
 
   private httpClient = inject(HttpClient);
-  private _rooms = new BehaviorSubject<Room[]>([]);
 
-  rooms$ = this._rooms.asObservable();
 
   constructor() { }
 
   getRooms(): Observable<Room[]> {
     return this.httpClient.get<Room[]>(this.apiUrl);
+  }
+
+  getRoom(id: string): Observable<Room>{
+    return this.httpClient.get<Room>(this.apiUrl+`/${id}`)
   }
 
   createRoom(room: Partial<Room>): Observable<Room> {

@@ -41,7 +41,7 @@
     </div>
 
     <div class="actions">
-      <button class="btn edit" *ngIf="!editing" (click)="startEdit()">Edit</button>
+      <button class="btn edit" *ngIf="!editing && isValid() " (click)="startEdit()">Edit</button>
       <button class="btn save" *ngIf="editing" (click)="saveEdit()">Save</button>
       <button class="btn close" (click)="doClose()">Close</button>
     </div>

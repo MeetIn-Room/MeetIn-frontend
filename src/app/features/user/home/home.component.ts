@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, inject, OnInit, QueryList, ViewChild, ViewChildren, viewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, QueryList, ViewChild, ViewChildren, viewChildren } from '@angular/core';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { BookingItemComponent, formatTime } from '../../../shared/components/booking-item/booking-item.component';
+import { BookingItemComponent, formatToStandardTime } from '../../../shared/components/booking-item/booking-item.component';
 import { Booking } from '../../../core/interfaces/booking';
 import { CommonModule } from '@angular/common';
 import { WeeklyCalendarComponent } from '../../../shared/components/weekly-calendar/weekly-calendar.component';
@@ -8,6 +8,8 @@ import { BookingService } from '../../../core/services/booking.service';
 import { NewBookingComponent } from '../../../shared/components/new-booking/new-booking.component';
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../../../core/interfaces/auth';
+import { RoomBookingCalendarComponent } from '../../../shared/components/room-booking-calendar/room-booking-calendar.component';
+import { RoomService } from '../../../core/services/room.service';
 
 @Component({
   selector: 'app-home',
@@ -28,6 +30,8 @@ export class HomeComponent implements OnInit {
   showDetails = false;
   bookingDetails!: Booking;
   selected!: Element
+  showMoreOptions!: boolean;
+
 
   currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser') || '{}'));
   latest = true;
@@ -35,12 +39,13 @@ export class HomeComponent implements OnInit {
 
   @ViewChild('sortSelect') sortSelect!: ElementRef<HTMLSelectElement>;
   @ViewChild('details') details!: ElementRef<HTMLDivElement>;
+  @ViewChild('options') options!: ElementRef<HTMLDivElement>
   startTimeString: any;
   endTimeString: any;
   bookings: Booking[] = [];
 
   private bookingService = inject(BookingService);
-  showMoreOptions!: boolean;
+  private roomService = inject(RoomService)
 
   ngOnInit(): void {
     // subscribe to service updates
@@ -48,18 +53,18 @@ export class HomeComponent implements OnInit {
       next: (response) => {
         this.bookings = response.filter((book) => book.userId === this.currentUserSubject.getValue().id.toString() && book.isActive)
         this.sortElements(this.latest ? -1 : 1);
-        console.log("Bookings " + this.bookings.length, this.bookings);
 
       },
       error: (err) => { alert("Error fetching bookings "+ err); console.error('error', err); }
     })
   }
 
-  // ngAfterViewInit(): void {
-  //   this.viewBookings.forEach((b) => {
-  //     if(b.isClicked) this.selected = b;
-  //   })
-  // }
+  @HostListener('document:click', ['$event'])
+  handleOutClick(ev: MouseEvent){
+    const target = ev.target as HTMLElement;
+    if(!this.options.nativeElement.contains(target)) this.showMoreOptions = false
+
+  }
 
   toggleCalendar() {
     this.showCalendar = !this.showCalendar;
@@ -68,8 +73,8 @@ export class HomeComponent implements OnInit {
   onShowBookingDetails(b: Booking){
     this.bookingDetails = b
     this.showDetails = true
-    this.startTimeString = formatTime(b.startTime)
-    this.endTimeString = formatTime(b.endTime)
+    this.startTimeString = formatToStandardTime(b.startTime)
+    this.endTimeString = formatToStandardTime(b.endTime)
   }
 
   sortBookings(){
@@ -98,8 +103,10 @@ export class HomeComponent implements OnInit {
   }
 
   onNewCreated(b: Booking) {
+    console.log('New booking created:', b);
+    this.bookingService.create(b);
     this.showNewBookingModal = false;
-    // booking already added by service; if you need extra handling, do it here
+    location.reload()
   }
 
   onNewCancelled() { this.showNewBookingModal = false; }
@@ -114,7 +121,6 @@ export class HomeComponent implements OnInit {
     if(this.selected) this.selected.firstElementChild!.classList.remove('active')
     this.selected = document.querySelector("#book-" + bookItemId)!
     this.selected!.firstElementChild!.classList.add('active')
-    console.log(this.selected)
   }
 
   onShowTooltips(){

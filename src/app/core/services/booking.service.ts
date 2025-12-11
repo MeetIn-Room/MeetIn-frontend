@@ -8,10 +8,9 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class BookingService {
-  private apiUrl = environment.apiUrl + '/api/bookings';
+  private apiUrl = environment.apiUrl + '/api/bookings'
 
   private httpClient = inject(HttpClient);
-  private _bookings = new BehaviorSubject<Booking[]>([]);
 
 constructor() {
     // initialize with empty or sample data if needed
@@ -22,12 +21,25 @@ constructor() {
     return this.httpClient.get<Booking[]>(`${this.apiUrl}`)
   }
 
+  getBookingsByRoom(roomId: string): Observable<Booking[]>{
+    return this.httpClient.get<Booking[]>(`${this.apiUrl}/room?roomId=${roomId}`)
+  }
+
 
 
 
   create(booking: Booking) {
-    // this._bookings.next(next);
-    // this.saveToStorage(next);
+    console.log('Creating booking:', booking);
+    return this.httpClient.post<Booking>(`${this.apiUrl}`, booking).pipe(
+      tap({
+        next: (createdBooking) => { 
+          console.log('Booking created:', createdBooking);
+        },
+        error: (error) => {
+          console.error('Error creating booking:', error);
+        }
+      })
+    ).subscribe();
   }
 
   update(updated: Booking) {

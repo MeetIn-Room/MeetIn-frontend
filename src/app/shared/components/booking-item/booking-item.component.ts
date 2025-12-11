@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BookingDetailsComponent } from '../booking-details/booking-details.component';
 import { Booking } from '../../../core/interfaces/booking';
 
-export function formatTime(t: Date): string{
+export function formatToStandardTime(t: Date): string{
   let time = t.toString().split("T")[1]
   return time.split(':')[0] +':' + time.split(':')[1]
 }
@@ -47,8 +47,8 @@ export class BookingItemComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.startTime = formatTime(this.booking.startTime)
-    this.endTime = formatTime(this.booking.endTime)
+    this.startTime = formatToStandardTime(this.booking.startTime)
+    this.endTime = formatToStandardTime(this.booking.endTime)
   }
 
 

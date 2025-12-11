@@ -1,5 +1,5 @@
 <!-- Main Calendar Modal -->
-<div *ngIf="isOpen" class="calendar-modal-overlay" (click)="closeModal()">
+<div *ngIf="isOpen" ngClass="calendar_modal-overlay" class="" (click)="closeModal()">
   <div class="calendar-modal-content" (click)="onModalClick($event)">
     <!-- Close Button -->
     <button 
@@ -90,8 +90,7 @@
           <div class="time-label">{{ slot.displayTime }}</div>
           
           <div *ngIf="slot.isBooked && isFirstSlotOfBooking(slot)" 
-            class="booking-card"
-            [style.background-color]="slot.booking?.color">
+            class="booking-card">
             <div class="booking-title">{{ slot.booking?.title }}</div>
             <div class="booking-time">
               {{ formatTime(slot.booking!.startTime.getHours() + slot.booking!.startTime.getMinutes()/60) }} - {{ formatTime(slot.booking!.endTime.getHours() + slot.booking!.endTime.getMinutes()/60) }}

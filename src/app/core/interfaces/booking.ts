@@ -8,7 +8,6 @@ export interface Booking {
     endTime: Date; // in hours, e.g., 10.5 for 11:30 AM
     title: string;
     description: string;
-    color?: string;
     userId: string;
     isActive: boolean;
 }

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, O
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Booking } from '../../../core/interfaces/booking';
-import { formatTime } from '../booking-item/booking-item.component';
+import { formatToStandardTime } from '../booking-item/booking-item.component';
 
 @Component({
   selector: 'app-booking-details',
@@ -37,11 +37,15 @@ export class BookingDetailsComponent implements OnChanges {
     // parseFloat('0.' + 10.5.toString().split('.')[1]);
   }
 
+  isValid(){
+    return this.booking.date > new Date()
+  }
+
 
 
   ngOnInit(){
-    this.startTimeString = formatTime(this.booking.startTime);
-    this.endTimeString = formatTime(this.booking.endTime);
+    this.startTimeString = formatToStandardTime(this.booking.startTime);
+    this.endTimeString = formatToStandardTime(this.booking.endTime);
   }
 
 

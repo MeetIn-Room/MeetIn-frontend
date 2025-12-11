@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Room } from '../../../core/interfaces/room';
 import { Booking } from '../../../core/interfaces/booking';
 
-interface TimeSlot {
+export interface TimeSlot {
   time: number;
   displayTime: string;
   isBooked: boolean;
@@ -31,6 +31,7 @@ export class RoomBookingCalendarComponent implements OnInit {
   timeSlots: TimeSlot[] = [];
   selectedSlots: TimeSlot[] = [];
   isSelecting: boolean = false;
+  className: string = '';
 
   // Booking form modal state
   showBookingForm: boolean = false;
@@ -150,7 +151,6 @@ export class RoomBookingCalendarComponent implements OnInit {
       endTime: new Date(this.selectedDate.setHours(Math.floor(endTime), (endTime % 1) * 60)),
       title: this.bookingTitle,
       description: this.bookingDescription,
-      color: this.getRandomColor(),
       userId: JSON.parse(localStorage.getItem('currentUser')!).id,
       isActive: true
     };
