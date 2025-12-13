@@ -103,7 +103,7 @@ export class BookingDashboardComponent implements OnInit {
     }).subscribe({
       next: ({ users, bookings, rooms }) => {
         this.allBookings = bookings;
-        const activeBookings = bookings.filter(b => b.isActive);
+        const activeBookings = bookings.filter(b => b.isActive ?? (b as any).active ?? true);
 
         // Calculate occupancy rate (active bookings / total possible slots)
         const occupancyRate = this.calculateOccupancyRate(activeBookings, rooms.length);
@@ -341,7 +341,7 @@ export class BookingDashboardComponent implements OnInit {
   updateDataByDateRange(): void {
     // Recalculate analytics based on the new date range using cached data
     if (this.allBookings.length > 0) {
-      const activeBookings = this.allBookings.filter(b => b.isActive);
+      const activeBookings = this.allBookings.filter(b => b.isActive ?? (b as any).active ?? true);
       this.calculateWeeklyData(activeBookings);
       this.recentBookings = this.processRecentBookings(activeBookings);
 

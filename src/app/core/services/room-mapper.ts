@@ -52,7 +52,7 @@ export class RoomMapper {
       equipment: backendRoom.amenities || [],
       availabilityHours: `${openTime} - ${closeTime}`,
       utilization: Math.floor(Math.random() * 40) + 40,
-      status: backendRoom.active ? 'Available' : 'Maintenance',
+      status: (backendRoom.isActive ?? backendRoom.active ?? true) ? 'Available' : 'Maintenance',
       requiresApproval: false
     };
   }
@@ -80,7 +80,8 @@ export class RoomMapper {
       amenities: frontendRoom.equipment || [],
       openTime: formatTime(openTimeStr),
       closeTime: formatTime(closeTimeStr),
-      isActive: frontendRoom.status === 'Available' || frontendRoom.status === 'Maintenance'
+      isActive: frontendRoom.status === 'Available',
+      active: frontendRoom.status === 'Available'
     };
   }
 

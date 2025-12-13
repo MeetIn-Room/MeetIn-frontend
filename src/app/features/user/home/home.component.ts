@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
     // subscribe to service updates
     this.bookingService.getBookings().subscribe({
       next: (response) => {
-        this.bookings = response.filter((book) => book.userId === this.currentUserSubject.getValue().id.toString() && book.isActive)
+        this.bookings = response.filter((book) => book.userId === this.currentUserSubject.getValue().id.toString() && (book.isActive ?? book.active ?? true))
         this.sortElements(this.latest ? -1 : 1);
 
       },
@@ -68,7 +68,7 @@ export class HomeComponent implements OnInit {
         error: (err) => alert(err)
       })
     }
-    
+
     location.reload()
   }
 

@@ -8,7 +8,7 @@ import { RoomBookingCalendarComponent, TimeSlot } from '../room-booking-calendar
 import { RoomServiceService } from '../../../core/services/room.service';
 import { formatToStandardTime } from '../booking-item/booking-item.component';
 
-function endAfterStartValidator(group: AbstractControl): ValidationErrors | null {
+export function endAfterStartValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('startTime')?.value;
   const end = group.get('endTime')?.value;
   if (!start || !end) return null;
@@ -19,7 +19,7 @@ function endAfterStartValidator(group: AbstractControl): ValidationErrors | null
   return e > s ? null : { endBeforeStart: true };
 }
 
-function formatOpenCloseTime(time: string): string {
+export function formatOpenCloseTime(time: string): string {
   const [hours, minutes] = time.toString().split(':').map(Number);
   // const period = hours < 12 ? 'AM' : 'PM';
   // const formattedHours = hours % 12 || 12;
@@ -266,6 +266,7 @@ export class NewBookingComponent implements OnInit {
       description: this.bookingDescription(),
       userId: JSON.parse(localStorage.getItem('currentUser')!).id,
       isActive: true,
+      active: true,
     };
 
     this.created.emit(newBooking);

@@ -81,7 +81,7 @@ export class BookingMapper {
       purpose: backendBooking.title || 'No title',
       description: backendBooking.description || '',
       attendees: [],
-      status: backendBooking.isActive ? 'Confirmed' : 'Cancelled',
+      status: (backendBooking.isActive ?? (backendBooking as any).active ?? true) ? 'Confirmed' : 'Cancelled',
       createdAt: new Date().toLocaleString(),
       updatedAt: new Date().toLocaleString(),
       specialRequirements: '',
@@ -108,7 +108,8 @@ export class BookingMapper {
       endTime: endDateTime as any,
       title: frontendBooking.purpose || '',
       description: frontendBooking.description || '',
-      isActive: frontendBooking.status !== 'Cancelled'
+      isActive: frontendBooking.status !== 'Cancelled',
+      active: frontendBooking.status !== 'Cancelled'
     };
   }
 

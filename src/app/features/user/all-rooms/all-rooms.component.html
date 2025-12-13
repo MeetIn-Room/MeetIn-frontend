@@ -4,12 +4,12 @@
     <div class="body">
         <h1 style="font-size: 2rem;" class="">Welcome back, {{currentUser.name.substring(0,1).toUpperCase() + currentUser.name.substring(1).toLowerCase()}} !</h1>
         <section class="bookings">
-            <div class="flex justify-between mb-5"> 
+            <div class="flex justify-between mb-5">
                 <div>
                     <h2 style="font-weight: bold;">All rooms</h2>
                 </div>
                 <div class="flex gap-6 justify-between">
-                    <div class="flex search-nav magic-input"> 
+                    <div class="flex search-nav magic-input">
                         <input class="search" type="text" placeholder="Search a room..." />
                         <button class="search-book">
                             <i class="fi fi-rr-search"></i>
@@ -36,8 +36,8 @@
                 <app-room-card *ngFor="let r of rooms" [room]="r" (book)="openBook($event)" (viewDetails)="openDetails($event)"></app-room-card>
             </div>
             <!-- <app-room-book-modal *ngIf="showBookModal" [room]="selectedRoom" (close)="closeBook()"></app-room-book-modal> -->
-            <app-room-details *ngIf="showDetails" [room]="selectedRoom" (close)="closeDetails()"></app-room-details>
-            <app-room-booking-calendar  [isOpen]="showBookModal" [room]="selectedRoom!" [selectedDate]="currentDate" (close)="closeBook()" (bookingCreated)="onBookingCreated($event)"></app-room-booking-calendar>
+            <app-room-details *ngIf="showDetails" [room]="selected" (close)="closeDetails()"></app-room-details>
+            <app-room-booking-calendar  *ngIf="showBookModal" [selectedRoom]="selected!" (close)="closeBook()" (created)="onBookingCreated($event)"></app-room-booking-calendar>
 
 
         </section>

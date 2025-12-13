@@ -13,5 +13,6 @@ export interface Booking {
   title: string;
   description: string;
   isActive?: boolean;
+  active?: boolean;
   color?: string;
 }
