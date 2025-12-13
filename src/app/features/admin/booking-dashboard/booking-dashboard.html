@@ -210,11 +210,11 @@
       <div class="chart-stats">
         <div class="stat-item">
           <span class="stat-label">Peak Day</span>
-          <span class="stat-value">Friday</span>
+          <span class="stat-value">{{ peakDay }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">Avg. Bookings</span>
-          <span class="stat-value">16</span>
+          <span class="stat-value">{{ avgBookings }}</span>
         </div>
       </div>
     </div>
@@ -253,7 +253,7 @@
       <div class="utilization-stats">
         <div class="stat-item">
           <span class="stat-label">Current Rate</span>
-          <span class="stat-value">78%</span>
+          <span class="stat-value">{{ currentOccupancyRate }}%</span>
         </div>
       </div>
     </div>
@@ -273,8 +273,10 @@
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <input type="text" placeholder="Search bookings..." class="search-input" />
+        <input type="text" placeholder="Search bookings..." class="search-input" disabled />
       </div>
+      <!-- Filter, Sort, Export buttons commented out - no backend support -->
+      <!--
       <div class="table-action-buttons">
         <button class="action-btn filter-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -297,6 +299,7 @@
           Export
         </button>
       </div>
+      -->
     </div>
     </div>
 
@@ -403,6 +406,8 @@
   </div>
 
   <div class="table-footer">
+    <!-- Pagination commented out - no backend pagination support -->
+    <!--
     <div class="table-pagination">
       <button class="pagination-btn prev-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -424,8 +429,9 @@
         </svg>
       </button>
     </div>
+    -->
     <div class="table-summary">
-      <span class="summary-text">Showing 1-8 of 1247 bookings</span>
+      <span class="summary-text">Showing {{ recentBookings.length }} recent bookings</span>
     </div>
   </div>
 </div>

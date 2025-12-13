@@ -21,15 +21,13 @@ constructor() {
   getBoookings(): Observable<Booking[]>{
     return this.httpClient.get<Booking[]>(`${this.apiUrl}`)
   }
-
-
-
+  // $2a$12$VNRXuazv6HqgUG.OiZy89usWBtVlVIpGCNZwkY9vYJ9zWFffiAoBi
 
   create(booking: Booking) {
     // this._bookings.next(next);
     // this.saveToStorage(next);
   }
-
+// postgresql://alex:VUbKHdvaSEQaRcUCWCt95qpIP4TBqaTe@dpg-d4gvvs7diees73b7pcvg-a.frankfurt-postgres.render.com/ninjadb
   update(updated: Booking) {
     // const list = this.getSnapshot().map(b => (b.id === updated.id ? updated : b));
     // this._bookings.next(list);
