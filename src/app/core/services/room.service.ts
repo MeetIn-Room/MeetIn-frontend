@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Room } from '../interfaces/room';
-import {environment} from '../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +15,23 @@ export class RoomServiceService {
 
   rooms$ = this._rooms.asObservable();
 
-  constructor() { }
+  getRooms(filters?: { minCapacity?: number; startTime?: string; endTime?: string }): Observable<Room[]> {
+    let params = new HttpParams();
+    if (filters?.minCapacity) params = params.set('minCapacity', filters.minCapacity);
+    if (filters?.startTime) params = params.set('startTime', filters.startTime);
+    if (filters?.endTime) params = params.set('endTime', filters.endTime);
+    return this.httpClient.get<Room[]>(this.apiUrl, { params });
+  }
+  getRoomById(id: number): Observable<Room> {
+    return this.httpClient.get<Room>(`${this.apiUrl}/${id}`);
+  }
 
-  getRooms(): Observable<Room[]> {
-    return this.httpClient.get<Room[]>(this.apiUrl);
+  searchRooms(keyword: string): Observable<Room[]> {
+    return this.httpClient.get<Room[]>(`${this.apiUrl}/search`, { params: { keyword } });
+  }
+
+  getRoom(id: string): Observable<Room>{
+    return this.httpClient.get<Room>(this.apiUrl+`/${id}`)
   }
 
   createRoom(room: Partial<Room>): Observable<Room> {
@@ -29,7 +42,11 @@ export class RoomServiceService {
     return this.httpClient.put<Room>(`${this.apiUrl}/${id}`, room);
   }
 
-  deleteRoom(id: number): Observable<any> {
-    return this.httpClient.put<any>(`${this.apiUrl}/delete/${id}`, {});
+  deleteRoom(id: number): Observable<string> {
+    return this.httpClient.put<string>(`${this.apiUrl}/delete/${id}`, {});
+  }
+
+  setAvailability(id: number, openTime: string, closeTime: string): Observable<{ message: string }> {
+    return this.httpClient.post<{ message: string }>(`${this.apiUrl}/${id}/availability`, { openTime, closeTime });
   }
 }

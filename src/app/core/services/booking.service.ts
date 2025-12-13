@@ -6,7 +6,7 @@ import { tap } from 'rxjs';
 import {environment} from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BookingService {
   private apiUrl = `${environment.apiUrl}/api/bookings`;
@@ -27,22 +27,30 @@ export class BookingService {
     return this.httpClient.get<Booking[]>(this.apiUrl)
   }
 
-  getBookingsByRoom(roomId: string): Observable<Booking[]>{
-    return this.httpClient.get<Booking[]>(`${this.apiUrl}/room?roomId=${roomId}`)
+  getBookingsByRoom(roomId: string): Observable<Booking[]> {
+    return this.httpClient.get<Booking[]>(
+      `${this.apiUrl}/room?roomId=${roomId}`
+    );
   }
+
+
+
 
   create(booking: Booking) {
     console.log('Creating booking:', booking);
-    return this.httpClient.post<Booking>(this.apiUrl, booking).pipe(
-      tap({
-        next: (createdBooking) => {
-          console.log('Booking created:', createdBooking);
-        },
-        error: (error) => {
-          console.error('Error creating booking:', error);
-        }
-      })
-    ).subscribe();
+    return this.httpClient
+      .post<Booking>(`${this.apiUrl}`, booking)
+      .pipe(
+        tap({
+          next: (createdBooking) => {
+            console.log('Booking created:', createdBooking);
+          },
+          error: (error) => {
+            console.error('Error creating booking:', error);
+          },
+        })
+      )
+      .subscribe();
   }
 
   // Get booking by ID
