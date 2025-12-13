@@ -1,13 +1,17 @@
-import { Room } from "./room";
+// src/app/core/interfaces/booking.ts
+// This matches your actual backend BookingDTO structure
+
+import {Room} from './room';
 
 export interface Booking {
-    id: string;
-    room: Room;
-    date: Date;
-    startTime: Date; // in hours, e.g., 9 for 9 AM
-    endTime: Date; // in hours, e.g., 10.5 for 11:30 AM
-    title: string;
-    description: string;
-    color?: string;
-    userId: string;
+  id: string;
+  room: Room
+  userId: string;
+  date: Date ;
+  startTime: Date;
+  endTime: Date;
+  title: string;
+  description: string;
+  isActive?: boolean;
+  color?: string;
 }

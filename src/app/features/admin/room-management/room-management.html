@@ -28,12 +28,20 @@
                                 </svg>
                                 <span>Room Statistics</span>
                             </div>
-                            <div class="period-quick-filters">
-                                <button class="period-filter-btn active" (click)="filterRooms('all')">All Rooms</button>
-                                <button class="period-filter-btn" (click)="filterRooms('available')">Available</button>
-                                <button class="period-filter-btn" (click)="filterRooms('occupied')">Occupied</button>
-                                <button class="period-filter-btn" (click)="filterRooms('maintenance')">Maintenance</button>
-                            </div>
+                          <div class="period-quick-filters">
+                            <button class="period-filter-btn"
+                                    [class.active]="currentFilter === 'all'"
+                                    (click)="filterRooms('all')">All Rooms</button>
+                            <button class="period-filter-btn"
+                                    [class.active]="currentFilter === 'available'"
+                                    (click)="filterRooms('available')">Available</button>
+                            <button class="period-filter-btn"
+                                    [class.active]="currentFilter === 'occupied'"
+                                    (click)="filterRooms('occupied')">Occupied</button>
+                            <button class="period-filter-btn"
+                                    [class.active]="currentFilter === 'maintenance'"
+                                    (click)="filterRooms('maintenance')">Maintenance</button>
+                          </div>
                         </div>
                     </div>
                 </div>
@@ -378,7 +386,7 @@
 
                         <div class="form-group">
                         <label class="form-label">Description *</label>
-                        <input type="number"
+                        <input type="text"
                                class="form-input"
                                formControlName="description"
                                placeholder="Enter description"

@@ -5,6 +5,7 @@ export interface FrontendRoom {
   id: string;
   name: string;
   location: string;
+  description: string;
   capacity: number;
   type: string;
   equipment: string[];
@@ -45,6 +46,7 @@ export class RoomMapper {
       id: backendRoom.id || '',
       name: backendRoom.name,
       location: backendRoom.location || 'Unknown Location',
+      description: backendRoom.description || '',
       capacity: backendRoom.capacity,
       type: backendRoom.type || 'meeting',
       equipment: backendRoom.amenities || [],
@@ -72,6 +74,7 @@ export class RoomMapper {
       id: frontendRoom.id || undefined,
       name: frontendRoom.name || '',
       location: frontendRoom.location,
+      description: frontendRoom.description,
       capacity: frontendRoom.capacity || 0,
       type: frontendRoom.type,
       amenities: frontendRoom.equipment || [],

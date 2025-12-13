@@ -4,9 +4,9 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { RouterModule, Router } from '@angular/router';
 import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
 import { HeaderComponent } from '../../../shared/components/navbarAdmin/navbar';
-import {RoomServiceService} from '../../../core/services/room.service.service';
-import {RoomMapper, FrontendRoom} from '../../../core/services/room-mapper';
-
+import { RoomServiceService } from '../../../core/services/room.service.service';
+import { FrontendRoom, RoomMapper } from '../../../core/services/room-mapper';
+import { Room } from '../../../core/interfaces/room';
 
 interface RoomStat {
   title: string;
@@ -18,24 +18,6 @@ interface RoomStat {
   trend: number[];
   color: string;
   gradient: string[];
-}
-
-interface Room {
-  id: string;
-  name: string;
-  location: string;
-  description: string;
-  capacity: number;
-  type: string;
-  equipment: string[];
-  availabilityHours: string;
-  utilization: number;
-  status: string;
-  nextBooking?: {
-    time: string;
-    user: string;
-  };
-  requiresApproval?: boolean;
 }
 
 interface RoomType {
@@ -70,7 +52,7 @@ export class RoomManagementComponent implements OnInit {
   isEditing: boolean = false;
   isSubmitting: boolean = false;
   isLoading: boolean = false;
-  editingRoom: Room | null = null;
+  editingRoom: FrontendRoom | null = null;
 
   roomForm: FormGroup;
   selectedEquipment: string[] = [];
@@ -99,33 +81,33 @@ export class RoomManagementComponent implements OnInit {
   roomStats: RoomStat[] = [
     {
       title: 'Total Rooms',
-      value: '24',
+      value: '0',
       icon: 'building',
       isPositive: true,
-      change: '+8.3%',
-      lastMonth: '22',
+      change: '+0%',
+      lastMonth: '0',
       trend: [18, 19, 20, 21, 22, 23, 24],
       color: '#FF6B35',
       gradient: ['#FF6B35', '#FF8C42']
     },
     {
       title: 'Available Now',
-      value: '18',
+      value: '0',
       icon: 'users',
       isPositive: true,
-      change: '+12.5%',
-      lastMonth: '16',
+      change: '+0%',
+      lastMonth: '0',
       trend: [14, 15, 16, 17, 16, 17, 18],
       color: '#FF8C42',
       gradient: ['#FF8C42', '#FFA62E']
     },
     {
       title: 'Avg Utilization',
-      value: '72%',
+      value: '0%',
       icon: 'trending-up',
       isPositive: true,
-      change: '+5.8%',
-      lastMonth: '68%',
+      change: '+0%',
+      lastMonth: '0%',
       trend: [65, 67, 68, 70, 71, 72, 72],
       color: '#E2725B',
       gradient: ['#E2725B', '#FF8C42']
@@ -135,20 +117,22 @@ export class RoomManagementComponent implements OnInit {
       value: '0',
       icon: 'calendar',
       isPositive: true,
-      change: '+14.6%',
-      lastMonth: '41',
+      change: '+0%',
+      lastMonth: '0',
       trend: [35, 38, 40, 42, 44, 46, 47],
       color: '#B7410E',
       gradient: ['#B7410E', '#D86F39']
     }
   ];
 
-  rooms: Room[] = [];
+  rooms: FrontendRoom[] = [];
+  filteredRooms: FrontendRoom[] = [];
+  filteredRoomsTable: FrontendRoom[] = [];
 
-  filteredRooms: Room[] = [];
-  filteredRoomsTable: Room[] = [];
-
-  constructor(private fb: FormBuilder, private roomService: RoomServiceService) {
+  constructor(
+    private fb: FormBuilder,
+    private roomService: RoomServiceService
+  ) {
     this.roomForm = this.createRoomForm();
   }
 
@@ -159,7 +143,7 @@ export class RoomManagementComponent implements OnInit {
   loadRooms(): void {
     this.isLoading = true;
     this.roomService.getRooms().subscribe({
-      next: (backendRooms) => {
+      next: (backendRooms: Room[]) => {
         // Convert backend rooms to frontend format
         this.rooms = RoomMapper.toFrontendArray(backendRooms);
         this.filteredRooms = [...this.rooms];
@@ -168,7 +152,7 @@ export class RoomManagementComponent implements OnInit {
         this.updateStats();
         this.isLoading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading rooms:', error);
         this.showNotification('Error loading rooms. Please try again.');
         this.isLoading = false;
@@ -187,16 +171,14 @@ export class RoomManagementComponent implements OnInit {
     this.roomStats[0].value = totalRooms.toString();
     this.roomStats[1].value = availableRooms.toString();
     this.roomStats[2].value = `${avgUtilization}%`;
-    // Bookings today would need to come from a separate API endpoint
   }
-
-
 
   createRoomForm(): FormGroup {
     return this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       location: ['', Validators.required],
       capacity: ['', [Validators.required, Validators.min(1), Validators.max(100)]],
+      description: [''],
       type: ['meeting'],
       availableFrom: ['08:00'],
       availableTo: ['18:00'],
@@ -226,14 +208,13 @@ export class RoomManagementComponent implements OnInit {
     this.selectedEquipment = [];
   }
 
-  openEditRoomModal(room: Room): void {
+  openEditRoomModal(room: FrontendRoom): void {
     this.isEditing = true;
     this.showAddRoomModal = true;
     this.editingRoom = room;
-    this.selectedEquipment = [...room.equipment];
+    this.selectedEquipment = [...(room.equipment || [])];
 
-    // Parse availability hours
-    const [availableFrom, availableTo] = this.parseAvailabilityHours(room.availabilityHours);
+    const [availableFrom, availableTo] = this.parseAvailabilityHours(room.availabilityHours || '08:00 - 18:00');
 
     this.roomForm.patchValue({
       name: room.name,
@@ -247,7 +228,6 @@ export class RoomManagementComponent implements OnInit {
       requiresApproval: room.requiresApproval || false
     });
   }
-
 
   // Form Actions
   saveRoom(): void {
@@ -276,10 +256,13 @@ export class RoomManagementComponent implements OnInit {
     // Convert to backend format
     const backendRoomData = RoomMapper.toBackend(frontendRoomData);
 
+    console.log('Frontend data:', frontendRoomData);
+    console.log('Backend payload:', backendRoomData);
+
     if (this.isEditing && this.editingRoom?.id) {
-      const roomId = parseInt(this.editingRoom.id);
+      const roomId = parseInt(this.editingRoom.id, 10);
       this.roomService.updateRoom(roomId, backendRoomData as any).subscribe({
-        next: (updatedBackendRoom) => {
+        next: (updatedBackendRoom: Room) => {
           const updatedFrontendRoom = RoomMapper.toFrontend(updatedBackendRoom);
           const index = this.rooms.findIndex(r => r.id === this.editingRoom!.id);
           if (index > -1) {
@@ -292,7 +275,7 @@ export class RoomManagementComponent implements OnInit {
           this.closeAddRoomModal();
           this.showNotification('Room updated successfully!');
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error updating room:', error);
           this.showNotification('Error updating room. Please try again.');
           this.isSubmitting = false;
@@ -300,7 +283,7 @@ export class RoomManagementComponent implements OnInit {
       });
     } else {
       this.roomService.createRoom(backendRoomData as any).subscribe({
-        next: (newBackendRoom) => {
+        next: (newBackendRoom: Room) => {
           const newFrontendRoom = RoomMapper.toFrontend(newBackendRoom);
           this.rooms.unshift(newFrontendRoom);
           this.applyFilters();
@@ -310,7 +293,7 @@ export class RoomManagementComponent implements OnInit {
           this.closeAddRoomModal();
           this.showNotification('Room created successfully!');
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error creating room:', error);
           this.showNotification('Error creating room. Please try again.');
           this.isSubmitting = false;
@@ -350,12 +333,12 @@ export class RoomManagementComponent implements OnInit {
     this.currentFilter = filter;
     this.currentPage = 1;
     this.applyFilters();
+    this.applyTableFilters();
   }
 
   applyFilters(): void {
     let filtered = this.rooms;
 
-    // Apply search filter
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       filtered = filtered.filter(room =>
@@ -365,7 +348,6 @@ export class RoomManagementComponent implements OnInit {
       );
     }
 
-    // Apply status filter
     switch (this.currentFilter) {
       case 'available':
         filtered = filtered.filter(room => room.status === 'Available');
@@ -384,7 +366,6 @@ export class RoomManagementComponent implements OnInit {
   applyTableFilters(): void {
     let filtered = this.rooms;
 
-    // Apply search filter to table
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       filtered = filtered.filter(room =>
@@ -394,7 +375,6 @@ export class RoomManagementComponent implements OnInit {
       );
     }
 
-    // Apply status filter to table
     switch (this.currentFilter) {
       case 'available':
         filtered = filtered.filter(room => room.status === 'Available');
@@ -407,10 +387,9 @@ export class RoomManagementComponent implements OnInit {
         break;
     }
 
-    // Apply sorting to table
     filtered.sort((a, b) => {
-      let aValue = a[this.sortField as keyof Room];
-      let bValue = b[this.sortField as keyof Room];
+      let aValue = a[this.sortField as keyof FrontendRoom];
+      let bValue = b[this.sortField as keyof FrontendRoom];
 
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         return this.sortDirection === 'asc'
@@ -422,14 +401,12 @@ export class RoomManagementComponent implements OnInit {
       return 0;
     });
 
-    // Apply pagination
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.filteredRoomsTable = filtered.slice(startIndex, endIndex);
     this.totalRooms = filtered.length;
   }
 
-  // Sorting functionality
   sortRooms(field: string): void {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -440,14 +417,12 @@ export class RoomManagementComponent implements OnInit {
     this.applyTableFilters();
   }
 
-  // Room actions
-  editRoom(room: Room): void {
+  editRoom(room: FrontendRoom): void {
     this.openEditRoomModal(room);
   }
 
-  viewRoomDetails(room: Room): void {
+  viewRoomDetails(room: FrontendRoom): void {
     this.showNotification(`Viewing details for ${room.name}`);
-    // Implement detailed view modal
   }
 
   toggleRoomStatus(room: FrontendRoom): void {
@@ -464,15 +439,14 @@ export class RoomManagementComponent implements OnInit {
     if (room.id) {
       const frontendData: Partial<FrontendRoom> = { ...room };
       const backendData = RoomMapper.toBackend(frontendData);
-      const roomId = parseInt(room.id);
-
+      const roomId = parseInt(room.id, 10);
       this.roomService.updateRoom(roomId, backendData as any).subscribe({
         next: () => {
           this.showNotification(`${room.name} is now ${room.status.toLowerCase()}`);
           this.applyFilters();
           this.applyTableFilters();
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error updating room status:', error);
           room.status = originalStatus;
           this.showNotification('Error updating room status. Please try again.');
@@ -484,7 +458,7 @@ export class RoomManagementComponent implements OnInit {
   deleteRoom(room: FrontendRoom): void {
     if (confirm(`Are you sure you want to delete ${room.name}? This action cannot be undone.`)) {
       if (room.id) {
-        const roomId = parseInt(room.id);
+        const roomId = parseInt(room.id, 10);
         this.roomService.deleteRoom(roomId).subscribe({
           next: () => {
             const index = this.rooms.findIndex(r => r.id === room.id);
@@ -496,7 +470,7 @@ export class RoomManagementComponent implements OnInit {
               this.showNotification(`Room ${room.name} has been deleted`);
             }
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Error deleting room:', error);
             this.showNotification('Error deleting room. Please try again.');
           }
@@ -505,7 +479,6 @@ export class RoomManagementComponent implements OnInit {
     }
   }
 
-  // Utility functions
   parseAvailabilityHours(hours: string): [string, string] {
     const [from, to] = hours.split(' - ');
     return [from, to];
@@ -555,7 +528,6 @@ export class RoomManagementComponent implements OnInit {
     return colors[index];
   }
 
-  // Pagination functionality
   get totalPages(): number {
     return Math.ceil(this.totalRooms / this.pageSize);
   }
@@ -608,7 +580,6 @@ export class RoomManagementComponent implements OnInit {
     this.applyTableFilters();
   }
 
-  // Chart methods
   generateSparkline(trend: number[]): string {
     const points = trend.map((value, index) => {
       const x = (index / (trend.length - 1)) * 60;
@@ -628,7 +599,6 @@ export class RoomManagementComponent implements OnInit {
     return Math.min((current / (last * 1.5)) * 100, 100);
   }
 
-  // Export functionality
   openFilterModal(): void {
     this.showNotification('Room filter options would open here');
   }
@@ -637,23 +607,14 @@ export class RoomManagementComponent implements OnInit {
     this.showNotification('Room sort options would open here');
   }
 
-  // Utility Methods
   showNotification(message: string): void {
-    // In a real app, you might use a toast service
     alert(message);
   }
 
-  // Keyboard navigation
   @HostListener('document:keydown.escape')
   onEscapePress(): void {
     if (this.showAddRoomModal) {
       this.closeAddRoomModal();
     }
   }
-
-  // logout(): void {
-  //   // Clear any auth tokens/data here
-  //   this.router.navigate(['/login']);
-  // }
-
 }

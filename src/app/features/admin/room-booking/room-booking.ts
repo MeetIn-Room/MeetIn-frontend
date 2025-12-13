@@ -1,10 +1,12 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
 import { HeaderComponent } from '../../../shared/components/navbarAdmin/navbar';
-
+import { BookingService } from '../../../core/services/booking.service';
+import { FrontendBooking, BookingMapper } from '../../../core/services/booking-mapper';
+import { Booking } from '../../../core/interfaces/booking';
 
 interface BookingStat {
   title: string;
@@ -18,26 +20,6 @@ interface BookingStat {
   gradient: string[];
 }
 
-interface Booking {
-  id: string;
-  userName: string;
-  userEmail: string;
-  userDepartment: string;
-  roomName: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  duration: string;
-  purpose: string;
-  description?: string;
-  attendees: string[];
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  specialRequirements?: string;
-  selected: boolean;
-}
-
 @Component({
   selector: 'app-booking-management',
   standalone: true,
@@ -45,7 +27,6 @@ interface Booking {
   templateUrl: './room-booking.html',
   styleUrls: ['./room-booking.css']
 })
-
 export class BookingManagementComponent implements OnInit {
 
   searchQuery: string = '';
@@ -57,250 +38,218 @@ export class BookingManagementComponent implements OnInit {
   totalBookings: number = 0;
   allSelected: boolean = false;
   selectedBookingsCount: number = 0;
-  
+  isLoading: boolean = false;
+
   // Modal states
   showBookingDetailsModal: boolean = false;
-  selectedBooking: Booking | null = null;
+  selectedBooking: FrontendBooking | null = null;
 
   bookingStats: BookingStat[] = [
     {
       title: 'Total Bookings',
-      value: '1,247',
+      value: '0',
       icon: 'calendar',
       isPositive: true,
-      change: '+12.5%',
-      lastWeek: '1,108',
+      change: '+0%',
+      lastWeek: '0',
       trend: [65, 70, 75, 80, 82, 85, 89],
       color: '#FF6B35',
       gradient: ['#FF6B35', '#FF8C42']
     },
     {
       title: 'Confirmed Today',
-      value: '47',
+      value: '0',
       icon: 'check-circle',
       isPositive: true,
-      change: '+8.1%',
-      lastWeek: '43',
+      change: '+0%',
+      lastWeek: '0',
       trend: [35, 38, 40, 42, 44, 46, 47],
       color: '#FF8C42',
       gradient: ['#FF8C42', '#FFA62E']
     },
     {
       title: 'Pending Approval',
-      value: '12',
+      value: '0',
       icon: 'clock',
       isPositive: false,
-      change: '-2.3%',
-      lastWeek: '14',
+      change: '0%',
+      lastWeek: '0',
       trend: [16, 15, 14, 13, 13, 12, 12],
       color: '#E2725B',
       gradient: ['#E2725B', '#FF8C42']
     },
     {
       title: 'Cancellation Rate',
-      value: '4.2%',
+      value: '0%',
       icon: 'alert-circle',
       isPositive: true,
-      change: '-1.8%',
-      lastWeek: '6.0%',
+      change: '0%',
+      lastWeek: '0%',
       trend: [8, 7, 6, 5, 5, 4.5, 4.2],
       color: '#B7410E',
       gradient: ['#B7410E', '#D86F39']
     }
   ];
 
-  bookings: Booking[] = [
-    {
-      id: 'BK001',
-      userName: 'Alex Nelson Ryan',
-      userEmail: 'alex.nelson@company.com',
-      userDepartment: 'IT',
-      roomName: 'Conference Room A',
-      date: '2024-12-15',
-      startTime: '09:00',
-      endTime: '11:00',
-      duration: '2 hours',
-      purpose: 'Project Kickoff Meeting',
-      description: 'Quarterly project planning and team alignment session',
-      attendees: ['Sarah Johnson', 'Mike Chen', 'Lisa Wang', 'David Brown'],
-      status: 'Confirmed',
-      createdAt: '2024-12-10 14:30',
-      updatedAt: '2024-12-10 14:30',
-      specialRequirements: 'Projector and video conferencing setup required',
-      selected: false
-    },
-    {
-      id: 'BK002',
-      userName: 'Weber Kengne',
-      userEmail: 'weber.kengne@company.com',
-      userDepartment: 'Engineering',
-      roomName: 'Meeting Room B',
-      date: '2024-12-15',
-      startTime: '14:00',
-      endTime: '15:30',
-      duration: '1.5 hours',
-      purpose: 'Sprint Planning',
-      description: 'Weekly sprint planning and task allocation',
-      attendees: ['Emma Davis', 'Tom Wilson', 'Rachel Green'],
-      status: 'Confirmed',
-      createdAt: '2024-12-11 09:15',
-      updatedAt: '2024-12-11 09:15',
-      selected: false
-    },
-    {
-      id: 'BK003',
-      userName: 'Marie Louise',
-      userEmail: 'marie.louise@company.com',
-      userDepartment: 'HR',
-      roomName: 'Board Room',
-      date: '2024-12-16',
-      startTime: '10:00',
-      endTime: '12:00',
-      duration: '2 hours',
-      purpose: 'Candidate Interviews',
-      description: 'Final round interviews for senior positions',
-      attendees: ['John Smith', 'Patricia Lee'],
-      status: 'Pending',
-      createdAt: '2024-12-12 11:45',
-      updatedAt: '2024-12-12 11:45',
-      selected: false
-    },
-    {
-      id: 'BK004',
-      userName: 'Ismael Takam',
-      userEmail: 'ismael.takam@company.com',
-      userDepartment: 'Marketing',
-      roomName: 'Creative Space',
-      date: '2024-12-16',
-      startTime: '13:00',
-      endTime: '14:00',
-      duration: '1 hour',
-      purpose: 'Campaign Brainstorming',
-      description: 'New product launch campaign ideation session',
-      attendees: ['Sophia Martinez', 'James Wilson', 'Olivia Chen'],
-      status: 'Confirmed',
-      createdAt: '2024-12-13 16:20',
-      updatedAt: '2024-12-13 16:20',
-      selected: false
-    },
-    {
-      id: 'BK005',
-      userName: 'Gift Anderson',
-      userEmail: 'gift.anderson@company.com',
-      userDepartment: 'Finance',
-      roomName: 'Executive Suite A',
-      date: '2024-12-17',
-      startTime: '11:00',
-      endTime: '12:30',
-      duration: '1.5 hours',
-      purpose: 'Budget Review',
-      description: 'Q4 budget performance review and planning',
-      attendees: ['Robert Taylor', 'Jennifer Kim'],
-      status: 'Confirmed',
-      createdAt: '2024-12-14 10:30',
-      updatedAt: '2024-12-14 10:30',
-      selected: false
-    },
-    {
-      id: 'BK006',
-      userName: 'Prince Raoul',
-      userEmail: 'prince.raoul@company.com',
-      userDepartment: 'Operations',
-      roomName: 'Training Room 1',
-      date: '2024-12-17',
-      startTime: '15:00',
-      endTime: '17:00',
-      duration: '2 hours',
-      purpose: 'Team Training',
-      description: 'New software system training session',
-      attendees: ['Daniel White', 'Amanda Scott', 'Kevin Lee', 'Michelle Garcia'],
-      status: 'Completed',
-      createdAt: '2024-12-10 15:45',
-      updatedAt: '2024-12-17 17:00',
-      selected: false
-    },
-    {
-      id: 'BK007',
-      userName: 'Sarah Johnson',
-      userEmail: 'sarah.johnson@company.com',
-      userDepartment: 'Sales',
-      roomName: 'Conference Room B',
-      date: '2024-12-18',
-      startTime: '09:30',
-      endTime: '10:30',
-      duration: '1 hour',
-      purpose: 'Client Presentation',
-      description: 'Quarterly business review with key client',
-      attendees: ['Client Team'],
-      status: 'Pending',
-      createdAt: '2024-12-15 08:20',
-      updatedAt: '2024-12-15 08:20',
-      selected: false
-    },
-    {
-      id: 'BK008',
-      userName: 'Michael Chen',
-      userEmail: 'michael.chen@company.com',
-      userDepartment: 'Engineering',
-      roomName: 'Huddle Room A',
-      date: '2024-12-18',
-      startTime: '14:00',
-      endTime: '14:30',
-      duration: '30 minutes',
-      purpose: 'Quick Sync',
-      description: 'Daily team standup and progress update',
-      attendees: ['Team Members'],
-      status: 'Confirmed',
-      createdAt: '2024-12-17 14:10',
-      updatedAt: '2024-12-17 14:10',
-      selected: false
-    },
-    {
-      id: 'BK009',
-      userName: 'Emma Davis',
-      userEmail: 'emma.davis@company.com',
-      userDepartment: 'Product',
-      roomName: 'Meeting Room B',
-      date: '2024-12-19',
-      startTime: '11:00',
-      endTime: '12:00',
-      duration: '1 hour',
-      purpose: 'Product Review',
-      description: 'New feature specification and requirements gathering',
-      attendees: ['Design Team', 'Engineering Leads'],
-      status: 'Cancelled',
-      createdAt: '2024-12-16 16:45',
-      updatedAt: '2024-12-18 09:30',
-      selected: false
-    },
-    {
-      id: 'BK010',
-      userName: 'Tom Wilson',
-      userEmail: 'tom.wilson@company.com',
-      userDepartment: 'Customer Support',
-      roomName: 'Training Room 2',
-      date: '2024-12-19',
-      startTime: '13:00',
-      endTime: '16:00',
-      duration: '3 hours',
-      purpose: 'Workshop',
-      description: 'Customer service excellence training workshop',
-      attendees: ['Support Team', 'Trainers'],
-      status: 'Confirmed',
-      createdAt: '2024-12-12 11:20',
-      updatedAt: '2024-12-12 11:20',
-      selected: false
-    }
-  ];
+  bookings: FrontendBooking[] = [];
+  allBookings: FrontendBooking[] = []; // Keep a copy for filtering
+  filteredBookings: FrontendBooking[] = [];
 
-  filteredBookings: Booking[] = [];
-
-  constructor(private fb: FormBuilder,) {}
+  constructor(
+    private fb: FormBuilder,
+    private bookingService: BookingService
+  ) {}
 
   ngOnInit() {
-    this.filteredBookings = [...this.bookings];
-    this.totalBookings = this.bookings.length;
-    this.updateSelectedCount();
+    this.loadBookings();
+  }
+
+  loadBookings(): void {
+    this.isLoading = true;
+    this.bookingService.getBookings().subscribe({
+      next: (backendBookings: Booking[]) => {
+        this.bookings = BookingMapper.toFrontendArray(backendBookings);
+        this.allBookings = [...this.bookings];
+        this.totalBookings = this.bookings.length;
+        this.updateStats();
+        this.applyFilters();
+        this.isLoading = false;
+      },
+      error: (error: any) => {
+        console.error('Error loading bookings:', error);
+        this.showNotification('Error loading bookings. Please try again.');
+        this.isLoading = false;
+      }
+    });
+  }
+
+  updateStats(): void {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    // Get current day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+    // Convert to Monday-based: Monday = 0, Sunday = 6
+    const dayOfWeek = today.getDay();
+    const mondayBasedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+    // Calculate start of current week (Monday)
+    const startOfThisWeek = new Date(today);
+    startOfThisWeek.setDate(today.getDate() - mondayBasedDay);
+    startOfThisWeek.setHours(0, 0, 0, 0);
+    const startOfThisWeekStr = startOfThisWeek.toISOString().split('T')[0];
+
+    // Calculate start of last week (Monday of previous week)
+    const startOfLastWeek = new Date(startOfThisWeek);
+    startOfLastWeek.setDate(startOfThisWeek.getDate() - 7);
+    const startOfLastWeekStr = startOfLastWeek.toISOString().split('T')[0];
+
+    // Calculate end of last week (Sunday of previous week - 6 days after Monday)
+    const endOfLastWeek = new Date(startOfLastWeek);
+    endOfLastWeek.setDate(startOfLastWeek.getDate() + 6); // +6 days = Sunday
+    const endOfLastWeekStr = endOfLastWeek.toISOString().split('T')[0];
+
+    // Total Bookings (all time)
+    const totalBookings = this.bookings.length;
+
+    // Bookings this week (from Monday to today)
+    const bookingsThisWeek = this.bookings.filter(b =>
+      b.date >= startOfThisWeekStr && b.date <= todayStr
+    ).length;
+
+    // Bookings last week (Monday to Sunday - 7 days)
+    const bookingsLastWeek = this.bookings.filter(b =>
+      b.date >= startOfLastWeekStr && b.date <= endOfLastWeekStr
+    ).length;
+
+    // Confirmed bookings today
+    const confirmedToday = this.bookings.filter(b =>
+      b.date === todayStr && b.status === 'Confirmed'
+    ).length;
+
+    // Confirmed bookings same day last week
+    const sameDayLastWeek = new Date(today);
+    sameDayLastWeek.setDate(today.getDate() - 7);
+    const sameDayLastWeekStr = sameDayLastWeek.toISOString().split('T')[0];
+    const confirmedSameDayLastWeek = this.bookings.filter(b =>
+      b.date === sameDayLastWeekStr && b.status === 'Confirmed'
+    ).length;
+
+    // Pending bookings (future bookings only)
+    const pendingNow = this.bookings.filter(b =>
+      b.status === 'Pending' && b.date >= todayStr
+    ).length;
+
+    // Pending bookings from last week (Monday to Saturday)
+    const pendingLastWeek = this.bookings.filter(b =>
+      b.status === 'Pending' && b.date >= startOfLastWeekStr && b.date <= endOfLastWeekStr
+    ).length;
+
+    // Cancellation rate this week (Monday to today)
+    const cancelledThisWeek = this.bookings.filter(b =>
+      b.status === 'Cancelled' && b.date >= startOfThisWeekStr && b.date <= todayStr
+    ).length;
+    const cancellationRateThisWeek = bookingsThisWeek > 0
+      ? (cancelledThisWeek / bookingsThisWeek) * 100
+      : 0;
+
+    // Cancellation rate last week (Monday to Sunday - 7 days)
+    const cancelledLastWeek = this.bookings.filter(b =>
+      b.status === 'Cancelled' && b.date >= startOfLastWeekStr && b.date <= endOfLastWeekStr
+    ).length;
+    const cancellationRateLastWeek = bookingsLastWeek > 0
+      ? (cancelledLastWeek / bookingsLastWeek) * 100
+      : 0;
+
+    // Update Total Bookings stat (show total, compare this week vs last week Mon-Sun)
+    this.bookingStats[0].value = totalBookings.toString();
+    this.bookingStats[0].lastWeek = bookingsLastWeek.toString();
+    this.bookingStats[0].change = this.calculateChangePercent(bookingsLastWeek, bookingsThisWeek);
+    this.bookingStats[0].isPositive = bookingsThisWeek >= bookingsLastWeek;
+    this.bookingStats[0].trend = this.generateTrend(bookingsLastWeek, bookingsThisWeek);
+
+    // Update Confirmed Today stat (comparing today vs same day last week)
+    this.bookingStats[1].value = confirmedToday.toString();
+    this.bookingStats[1].lastWeek = confirmedSameDayLastWeek.toString();
+    this.bookingStats[1].change = this.calculateChangePercent(confirmedSameDayLastWeek, confirmedToday);
+    this.bookingStats[1].isPositive = confirmedToday >= confirmedSameDayLastWeek;
+    this.bookingStats[1].trend = this.generateTrend(confirmedSameDayLastWeek, confirmedToday);
+
+    // Update Pending Approval stat (lower is better)
+    this.bookingStats[2].value = pendingNow.toString();
+    this.bookingStats[2].lastWeek = pendingLastWeek.toString();
+    this.bookingStats[2].change = this.calculateChangePercent(pendingLastWeek, pendingNow);
+    this.bookingStats[2].isPositive = pendingNow <= pendingLastWeek; // Reverse: less is better
+    this.bookingStats[2].trend = this.generateTrend(pendingLastWeek, pendingNow);
+
+    // Update Cancellation Rate stat (lower is better)
+    this.bookingStats[3].value = `${cancellationRateThisWeek.toFixed(1)}%`;
+    this.bookingStats[3].lastWeek = `${cancellationRateLastWeek.toFixed(1)}%`;
+    this.bookingStats[3].change = this.calculateChangePercent(cancellationRateLastWeek, cancellationRateThisWeek);
+    this.bookingStats[3].isPositive = cancellationRateThisWeek <= cancellationRateLastWeek; // Reverse: less is better
+    this.bookingStats[3].trend = this.generateTrend(cancellationRateLastWeek, cancellationRateThisWeek);
+  }
+
+  // Calculate percentage change and format it
+  calculateChangePercent(oldValue: number, newValue: number): string {
+    if (oldValue === 0) {
+      return newValue > 0 ? '+100%' : '0%';
+    }
+    const change = ((newValue - oldValue) / oldValue) * 100;
+    const sign = change >= 0 ? '+' : '';
+    return `${sign}${change.toFixed(1)}%`;
+  }
+
+  // Generate a simple trend line from old to new value
+  generateTrend(oldValue: number, newValue: number): number[] {
+    const trend: number[] = [];
+    const steps = 7;
+    const increment = (newValue - oldValue) / (steps - 1);
+
+    for (let i = 0; i < steps; i++) {
+      trend.push(Math.round(oldValue + (increment * i)));
+    }
+
+    return trend;
   }
 
   // Search functionality
@@ -317,12 +266,12 @@ export class BookingManagementComponent implements OnInit {
   }
 
   applyFilters(): void {
-    let filtered = this.bookings;
+    let filtered = [...this.allBookings];
 
     // Apply search filter
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(booking => 
+      filtered = filtered.filter(booking =>
         booking.userName.toLowerCase().includes(query) ||
         booking.roomName.toLowerCase().includes(query) ||
         booking.purpose.toLowerCase().includes(query) ||
@@ -350,24 +299,25 @@ export class BookingManagementComponent implements OnInit {
         break;
     }
 
+    // Update total before pagination
+    this.totalBookings = filtered.length;
+
     // Apply sorting
     filtered.sort((a, b) => {
-      let aValue = a[this.sortField as keyof Booking];
-      let bValue = b[this.sortField as keyof Booking];
-      
+      let aValue = a[this.sortField as keyof FrontendBooking];
+      let bValue = b[this.sortField as keyof FrontendBooking];
+
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         if (this.sortField === 'date') {
-          // Special handling for date sorting
-          return this.sortDirection === 'asc' 
+          return this.sortDirection === 'asc'
             ? new Date(aValue).getTime() - new Date(bValue).getTime()
             : new Date(bValue).getTime() - new Date(aValue).getTime();
         } else if (this.sortField === 'startTime') {
-          // Special handling for time sorting
-          return this.sortDirection === 'asc' 
+          return this.sortDirection === 'asc'
             ? aValue.localeCompare(bValue)
             : bValue.localeCompare(aValue);
         } else {
-          return this.sortDirection === 'asc' 
+          return this.sortDirection === 'asc'
             ? aValue.localeCompare(bValue)
             : bValue.localeCompare(aValue);
         }
@@ -379,7 +329,7 @@ export class BookingManagementComponent implements OnInit {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.filteredBookings = filtered.slice(startIndex, endIndex);
-    this.totalBookings = filtered.length;
+    this.updateSelectedCount();
   }
 
   // Sorting functionality
@@ -401,7 +351,7 @@ export class BookingManagementComponent implements OnInit {
     this.updateSelectedCount();
   }
 
-  toggleBookingSelection(booking: Booking): void {
+  toggleBookingSelection(booking: FrontendBooking): void {
     booking.selected = !booking.selected;
     this.allSelected = this.filteredBookings.every(b => b.selected);
     this.updateSelectedCount();
@@ -412,7 +362,7 @@ export class BookingManagementComponent implements OnInit {
   }
 
   // Booking actions
-  viewBookingDetails(booking: Booking): void {
+  viewBookingDetails(booking: FrontendBooking): void {
     this.selectedBooking = booking;
     this.showBookingDetailsModal = true;
   }
@@ -422,26 +372,38 @@ export class BookingManagementComponent implements OnInit {
     this.selectedBooking = null;
   }
 
-  editBooking(booking: Booking): void {
+  editBooking(booking: FrontendBooking): void {
     this.showNotification(`Editing booking: ${booking.id}`);
-    // Implement edit functionality
   }
 
-  toggleBookingStatus(booking: Booking): void {
+  toggleBookingStatus(booking: FrontendBooking): void {
     const statusFlow: { [key: string]: string } = {
       'Pending': 'Confirmed',
       'Confirmed': 'Completed',
       'Completed': 'Cancelled',
       'Cancelled': 'Pending'
     };
-    
+
     booking.status = statusFlow[booking.status] || 'Pending';
     booking.updatedAt = new Date().toLocaleString();
-    this.showNotification(`Booking ${booking.id} status updated to ${booking.status}`);
-    this.applyFilters();
+
+    // You'll need to get userId and roomId
+    const backendData = BookingMapper.toBackend(booking, '', ''); // Pass actual userId and roomId
+
+    this.bookingService.updateBooking(parseInt(booking.id, 10), backendData as any).subscribe({
+      next: () => {
+        this.showNotification(`Booking ${booking.id} status updated to ${booking.status}`);
+        this.updateStats();
+        this.applyFilters();
+      },
+      error: (error: any) => {
+        console.error('Error updating booking:', error);
+        this.showNotification('Error updating booking status.');
+      }
+    });
   }
 
-  getStatusToggleTitle(booking: Booking): string {
+  getStatusToggleTitle(booking: FrontendBooking): string {
     const titles: { [key: string]: string } = {
       'Pending': 'Confirm Booking',
       'Confirmed': 'Mark as Completed',
@@ -451,62 +413,80 @@ export class BookingManagementComponent implements OnInit {
     return titles[booking.status] || 'Change Status';
   }
 
-  cancelBooking(booking: Booking): void {
+  cancelBooking(booking: FrontendBooking): void {
     if (confirm(`Are you sure you want to cancel booking ${booking.id}?`)) {
       booking.status = 'Cancelled';
       booking.updatedAt = new Date().toLocaleString();
-      this.showNotification(`Booking ${booking.id} has been cancelled`);
-      this.closeBookingDetailsModal();
-      this.applyFilters();
+
+      // You'll need to get userId and roomId from somewhere (e.g., from the booking or current user context)
+      const backendData = BookingMapper.toBackend(booking, '', ''); // Pass actual userId and roomId
+
+      this.bookingService.updateBooking(parseInt(booking.id, 10), backendData as any).subscribe({
+        next: () => {
+          this.showNotification(`Booking ${booking.id} has been cancelled`);
+          this.closeBookingDetailsModal();
+          this.updateStats();
+          this.applyFilters();
+        },
+        error: (error: any) => {
+          console.error('Error cancelling booking:', error);
+          this.showNotification('Error cancelling booking.');
+        }
+      });
     }
   }
 
-  deleteBooking(booking: Booking): void {
+  deleteBooking(booking: FrontendBooking): void {
     if (confirm(`Are you sure you want to delete booking ${booking.id}? This action cannot be undone.`)) {
-      const index = this.bookings.findIndex(b => b.id === booking.id);
-      if (index > -1) {
-        this.bookings.splice(index, 1);
-        this.applyFilters();
-        this.showNotification(`Booking ${booking.id} has been deleted`);
-      }
+      const bookingId = parseInt(booking.id, 10);
+
+      this.bookingService.deleteBooking(bookingId).subscribe({
+        next: () => {
+          const index = this.bookings.findIndex(b => b.id === booking.id);
+          if (index > -1) {
+            this.bookings.splice(index, 1);
+            this.allBookings = [...this.bookings];
+            this.updateStats();
+            this.applyFilters();
+            this.showNotification(`Booking ${booking.id} has been deleted`);
+          }
+        },
+        error: (error: any) => {
+          console.error('Error deleting booking:', error);
+          this.showNotification('Error deleting booking.');
+        }
+      });
     }
   }
 
   // Quick Actions
   createNewBooking(): void {
     this.showNotification('Opening new booking form...');
-    // Implement new booking creation
   }
 
   viewCalendar(): void {
     this.showNotification('Opening calendar view...');
-    // Implement calendar view
   }
 
   exportBookings(): void {
     this.showNotification('Exporting booking data...');
-    // Implement export functionality
   }
 
   manageRecurring(): void {
     this.showNotification('Opening recurring bookings manager...');
-    // Implement recurring bookings management
   }
 
   openAdvancedFilter(): void {
     this.showNotification('Opening advanced filters...');
-    // Implement advanced filtering
   }
 
   openSortModal(): void {
     this.showNotification('Opening sort options...');
-    // Implement sort modal
   }
 
   openBulkActions(): void {
     if (this.selectedBookingsCount > 0) {
       this.showNotification(`Opening bulk actions for ${this.selectedBookingsCount} selected bookings`);
-      // Implement bulk actions
     } else {
       this.showNotification('Please select bookings to perform bulk actions');
     }
@@ -533,7 +513,6 @@ export class BookingManagementComponent implements OnInit {
     return classes[status] || 'default-badge';
   }
 
-  // User and Room utilities
   getUserInitials(userName: string): string {
     return userName.split(' ').map(name => name[0]).join('').toUpperCase();
   }
@@ -590,7 +569,7 @@ export class BookingManagementComponent implements OnInit {
   getPaginationPages(): number[] {
     const pages: number[] = [];
     const totalPages = this.totalPages;
-    
+
     if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -604,7 +583,7 @@ export class BookingManagementComponent implements OnInit {
         pages.push(this.currentPage - 2, this.currentPage - 1, this.currentPage, this.currentPage + 1, this.currentPage + 2);
       }
     }
-    
+
     return pages;
   }
 
@@ -652,18 +631,14 @@ export class BookingManagementComponent implements OnInit {
   }
 
   getProgressWidth(stat: BookingStat): number {
-    // Calculate progress based on current vs last week
-    const current = parseInt(stat.value.replace(/[^\d.]/g, ''));
-    const last = parseInt(stat.lastWeek.replace(/[^\d.]/g, ''));
+    const current = parseFloat(stat.value.replace(/[^\d.]/g, ''));
+    const last = parseFloat(stat.lastWeek.replace(/[^\d.]/g, ''));
     return Math.min((current / (last * 1.5)) * 100, 100);
   }
 
   // Notification system
   showNotification(message: string): void {
-    // In a real application, you would use a proper notification service
-    console.log('Notification:', message);
-    // You can implement a toast notification here
-    alert(message); // Temporary implementation
+    alert(message);
   }
 
   // Keyboard shortcuts
@@ -676,7 +651,6 @@ export class BookingManagementComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    // Ctrl/Cmd + F for search
     if ((event.ctrlKey || event.metaKey) && event.key === 'f') {
       event.preventDefault();
       const searchInput = document.querySelector('.search-input') as HTMLInputElement;
@@ -685,10 +659,4 @@ export class BookingManagementComponent implements OnInit {
       }
     }
   }
-
-  // logout(): void {
-  //   // Clear any auth tokens/data here
-  //   this.router.navigate(['/login']);
-  // }
-
 }

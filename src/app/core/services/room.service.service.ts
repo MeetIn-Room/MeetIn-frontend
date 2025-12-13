@@ -2,12 +2,13 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Room } from '../interfaces/room';
+import {environment} from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoomServiceService {
-  private apiUrl = 'http://localhost:8088/api/rooms';
+  private apiUrl = `${environment.apiUrl}/api/rooms`;
 
   private httpClient = inject(HttpClient);
   private _rooms = new BehaviorSubject<Room[]>([]);

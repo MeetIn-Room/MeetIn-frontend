@@ -102,8 +102,8 @@ export class WeeklyCalendarComponent implements OnInit {
   }
 
   loadBookings(): void {
-    
-    this.bookingService.getBoookings().subscribe({
+
+    this.bookingService.getBookings().subscribe({
       next: (response) => {
         this.bookings = response.filter((book) => book.userId === this.currentUserSubject.value.id)
       }
@@ -142,7 +142,7 @@ export class WeeklyCalendarComponent implements OnInit {
       //   description: '',
       //   userId: ''
       // }
-    
+
   }
 
   onBookingClick(booking: Booking): void {

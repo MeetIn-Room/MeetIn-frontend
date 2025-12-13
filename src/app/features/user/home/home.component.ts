@@ -73,20 +73,24 @@ export class HomeComponent implements OnInit {
   private bookingService = inject(BookingService);
 
   ngOnInit(): void {
-  
+
     // subscribe to service updates
-    this.bookingService.getBoookings().subscribe({
+    this.bookingService.getBookings().subscribe({
       next: (response) => this.bookings = response.filter((book) => book.userId === this.currentUserSubject.value.id),
       error: (err) => { alert("Error fetching bookings "+ err); console.error(err); }
     })
   }
 
   onCancelBooking(id: string) {
-    this.bookingService.remove(id);
+    this.bookingService.deleteBooking(parseInt(id, 10)).subscribe({
+
+    });
   }
 
   onUpdateBooking(updated: Booking) {
-    this.bookingService.update(updated);
+    this.bookingService.updateBooking(parseInt(updated.id, 10),updated).subscribe({
+
+    });
   }
 
   openNewBookingModal() { this.showNewBookingModal = true; }

@@ -16,7 +16,7 @@
                         <h1 class="dashboard-title">Booking Management</h1>
                         <p class="dashboard-subtitle">Manage and monitor all room bookings and reservations</p>
                     </div>
-                    
+
                     <div class="dashboard-filters">
                         <div class="date-range-filter">
                             <div class="filter-header">
@@ -28,12 +28,20 @@
                                 </svg>
                                 <span>Booking Analytics</span>
                             </div>
-                            <div class="period-quick-filters">
-                                <button class="period-filter-btn active" (click)="filterBookings('all')">All Bookings</button>
-                                <button class="period-filter-btn" (click)="filterBookings('today')">Today</button>
-                                <button class="period-filter-btn" (click)="filterBookings('upcoming')">Upcoming</button>
-                                <button class="period-filter-btn" (click)="filterBookings('pending')">Pending</button>
-                            </div>
+                          <div class="period-quick-filters">
+                            <button class="period-filter-btn"
+                                    [class.active]="currentFilter === 'all'"
+                                    (click)="filterBookings('all')">All Bookings</button>
+                            <button class="period-filter-btn"
+                                    [class.active]="currentFilter === 'today'"
+                                    (click)="filterBookings('today')">Today</button>
+                            <button class="period-filter-btn"
+                                    [class.active]="currentFilter === 'upcoming'"
+                                    (click)="filterBookings('upcoming')">Upcoming</button>
+                            <button class="period-filter-btn"
+                                    [class.active]="currentFilter === 'pending'"
+                                    (click)="filterBookings('pending')">Pending</button>
+                          </div>
                         </div>
                     </div>
                 </div>
@@ -44,23 +52,23 @@
                 <div *ngFor="let stat of bookingStats; let i = index" class="stat-card" [style.--card-color]="stat.color">
                     <div class="card-bg-shape shape-1"></div>
                     <div class="card-bg-shape shape-2"></div>
-                    
+
                     <div class="stat-content">
                         <div class="stat-header">
                             <div class="title-section">
                                 <span class="stat-title">{{ stat.title }}</span>
                                 <div class="trend-sparkline">
                                     <svg width="60" height="20" viewBox="0 0 60 20">
-                                        <path [attr.d]="generateSparkline(stat.trend)" 
-                                              fill="none" 
-                                              stroke="currentColor" 
+                                        <path [attr.d]="generateSparkline(stat.trend)"
+                                              fill="none"
+                                              stroke="currentColor"
                                               stroke-width="1.5"
                                               stroke-linecap="round"
                                               stroke-linejoin="round"></path>
                                     </svg>
                                 </div>
                             </div>
-                            
+
                             <div class="icon-container" [style.background]="getIconGradient(stat.gradient)">
                                 <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <ng-container [ngSwitch]="stat.icon">
@@ -284,8 +292,8 @@
                             Previous
                         </button>
                         <div class="pagination-pages">
-                            <button *ngFor="let page of getPaginationPages()" 
-                                    class="page-btn" 
+                            <button *ngFor="let page of getPaginationPages()"
+                                    class="page-btn"
                                     [class.active]="page === currentPage"
                                     (click)="goToPage(page)">
                                 {{ page }}
@@ -323,7 +331,7 @@
                 </svg>
             </button>
         </div>
-        
+
         <div class="modal-body">
             <div *ngIf="selectedBooking" class="booking-details">
                 <div class="details-grid">
@@ -348,7 +356,7 @@
                             <span class="detail-value">{{ selectedBooking.duration }}</span>
                         </div>
                     </div>
-                    
+
                     <div class="details-section">
                         <h4 class="section-title">Room & User</h4>
                         <div class="detail-item">
@@ -368,7 +376,7 @@
                             <span class="detail-value">{{ selectedBooking.userEmail }}</span>
                         </div>
                     </div>
-                    
+
                     <div class="details-section full-width">
                         <h4 class="section-title">Meeting Details</h4>
                         <div class="detail-item">
@@ -380,7 +388,7 @@
                             <span class="detail-value">{{ selectedBooking.description || 'No description provided' }}</span>
                         </div>
                     </div>
-                    
+
                     <div class="details-section full-width">
                         <h4 class="section-title">Additional Information</h4>
                         <div class="detail-item">
@@ -397,7 +405,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="details-actions">
                     <button class="btn-secondary" (click)="closeBookingDetailsModal()">
                         Close
