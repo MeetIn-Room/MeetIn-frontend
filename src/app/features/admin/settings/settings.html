@@ -4,12 +4,456 @@
 
     <!-- Main Content -->
     <main class="main-content">
-    
-      <!-- Sidebar -->
-    <app-sidebar></app-sidebar>
+        <!-- Sidebar -->
+        <app-sidebar></app-sidebar>
 
-  <div class="sidecontent">
-    
-  </div>
-  </main>
+        <div class="sidecontent">
+            <!-- Settings Header -->
+            <div class="dashboard-header-section">
+                <div class="dashboard-header-content">
+                    <div class="dashboard-title-section">
+                        <h1 class="dashboard-title">System Settings</h1>
+                        <p class="dashboard-subtitle">Configure application preferences and system behavior</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Grid -->
+            <div class="settings-grid">
+                <!-- General Settings -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h3 class="section-title">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            General Settings
+                        </h3>
+                        <p class="section-description">Configure basic application preferences</p>
+                    </div>
+
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Application Name</h4>
+                                <p class="setting-description">Display name shown in the application header</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" 
+                                       class="form-input setting-input" 
+                                       [(ngModel)]="settings.applicationName"
+                                       placeholder="Enter application name">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Default Time Zone</h4>
+                                <p class="setting-description">Time zone used for all date/time displays</p>
+                            </div>
+                            <div class="setting-control">
+                                <select class="form-select" [(ngModel)]="settings.timeZone">
+                                    <option value="UTC">UTC (Coordinated Universal Time)</option>
+                                    <option value="EST">EST (Eastern Standard Time)</option>
+                                    <option value="PST">PST (Pacific Standard Time)</option>
+                                    <option value="CET">CET (Central European Time)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Default Booking Duration</h4>
+                                <p class="setting-description">Default length for new room bookings (in minutes)</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" 
+                                       class="form-input setting-input" 
+                                       [(ngModel)]="settings.defaultBookingDuration"
+                                       min="15" 
+                                       max="480"
+                                       step="15">
+                                <span class="setting-unit">minutes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Settings -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h3 class="section-title">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            Booking Settings
+                        </h3>
+                        <p class="section-description">Configure room booking rules and restrictions</p>
+                    </div>
+
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Maximum Advance Booking</h4>
+                                <p class="setting-description">How far in advance users can book rooms</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" 
+                                       class="form-input setting-input" 
+                                       [(ngModel)]="settings.maxAdvanceBookingDays"
+                                       min="1" 
+                                       max="365">
+                                <span class="setting-unit">days</span>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Minimum Cancellation Notice</h4>
+                                <p class="setting-description">Minimum time before booking to allow cancellation</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" 
+                                       class="form-input setting-input" 
+                                       [(ngModel)]="settings.minCancellationNotice"
+                                       min="0" 
+                                       max="1440">
+                                <span class="setting-unit">minutes</span>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Allow Recurring Bookings</h4>
+                                <p class="setting-description">Enable users to create recurring room bookings</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" [(ngModel)]="settings.allowRecurringBookings">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Require Approval for Large Rooms</h4>
+                                <p class="setting-description">Require admin approval for rooms with capacity above:</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" 
+                                       class="form-input setting-input" 
+                                       [(ngModel)]="settings.approvalThreshold"
+                                       min="1" 
+                                       max="100">
+                                <span class="setting-unit">people</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h3 class="section-title">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            Notification Settings
+                        </h3>
+                        <p class="setup-description">Configure email and system notifications</p>
+                    </div>
+
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Send Booking Confirmation Emails</h4>
+                                <p class="setting-description">Send email confirmation for new bookings</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" [(ngModel)]="settings.sendBookingConfirmations">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Send Reminder Notifications</h4>
+                                <p class="setting-description">Send reminders before bookings start</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="reminder-settings">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" [(ngModel)]="settings.sendReminders">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <div class="reminder-time" *ngIf="settings.sendReminders">
+                                        <input type="number" 
+                                               class="form-input small-input" 
+                                               [(ngModel)]="settings.reminderTime"
+                                               min="5" 
+                                               max="1440">
+                                        <select class="form-select time-unit" [(ngModel)]="settings.reminderUnit">
+                                            <option value="minutes">minutes before</option>
+                                            <option value="hours">hours before</option>
+                                            <option value="days">days before</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Notify on Room Maintenance</h4>
+                                <p class="setting-description">Send notifications when rooms go into maintenance</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" [(ngModel)]="settings.notifyOnMaintenance">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Settings -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h3 class="section-title">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            User Management
+                        </h3>
+                        <p class="section-description">Configure user account and permission settings</p>
+                    </div>
+
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Allow Self-Registration</h4>
+                                <p class="setting-description">Allow users to register accounts themselves</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" [(ngModel)]="settings.allowSelfRegistration">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Require Email Verification</h4>
+                                <p class="setting-description">Require users to verify their email address</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" [(ngModel)]="settings.requireEmailVerification">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Default User Role</h4>
+                                <p class="setting-description">Default role assigned to new users</p>
+                            </div>
+                            <div class="setting-control">
+                                <select class="form-select" [(ngModel)]="settings.defaultUserRole">
+                                    <option value="USER">Standard User</option>
+                                    <option value="ADMIN">Administrator</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Session Timeout</h4>
+                                <p class="setting-description">Auto-logout after inactivity</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" 
+                                       class="form-input setting-input" 
+                                       [(ngModel)]="settings.sessionTimeout"
+                                       min="5" 
+                                       max="480">
+                                <span class="setting-unit">minutes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room Management Settings -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h3 class="section-title">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <path d="M3 9h18M9 21V9"></path>
+                            </svg>
+                            Room Management
+                        </h3>
+                        <p class="section-description">Configure room-related settings and defaults</p>
+                    </div>
+
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Default Room Status</h4>
+                                <p class="setting-description">Default status for newly created rooms</p>
+                            </div>
+                            <div class="setting-control">
+                                <select class="form-select" [(ngModel)]="settings.defaultRoomStatus">
+                                    <option value="Available">Available</option>
+                                    <option value="Maintenance">Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Default Operating Hours</h4>
+                                <p class="setting-description">Default availability hours for new rooms</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="time-range-picker">
+                                    <div class="time-input-group">
+                                        <label class="time-label">From</label>
+                                        <input type="time" 
+                                               class="form-input time-input" 
+                                               [(ngModel)]="settings.defaultOpenTime"
+                                               value="08:00">
+                                    </div>
+                                    <div class="time-input-group">
+                                        <label class="time-label">To</label>
+                                        <input type="time" 
+                                               class="form-input time-input" 
+                                               [(ngModel)]="settings.defaultCloseTime"
+                                               value="18:00">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Default Room Type</h4>
+                                <p class="setting-description">Default type for newly created rooms</p>
+                            </div>
+                            <div class="setting-control">
+                                <select class="form-select" [(ngModel)]="settings.defaultRoomType">
+                                    <option value="meeting">Meeting Room</option>
+                                    <option value="conference">Conference Room</option>
+                                    <option value="training">Training Room</option>
+                                    <option value="huddle">Huddle Room</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Auto-Cleanup Old Bookings</h4>
+                                <p class="setting-description">Automatically archive bookings older than:</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" 
+                                       class="form-input setting-input" 
+                                       [(ngModel)]="settings.bookingCleanupDays"
+                                       min="30" 
+                                       max="365">
+                                <span class="setting-unit">days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Integration -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h3 class="section-title">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                            System Integration
+                        </h3>
+                        <p class="section-description">Configure external integrations and API settings</p>
+                    </div>
+
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Calendar Sync</h4>
+                                <p class="setting-description">Sync bookings with external calendars</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" [(ngModel)]="settings.enableCalendarSync">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">API Rate Limiting</h4>
+                                <p class="setting-description">Maximum API requests per minute</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" 
+                                       class="form-input setting-input" 
+                                       [(ngModel)]="settings.apiRateLimit"
+                                       min="10" 
+                                       max="1000">
+                                <span class="setting-unit">requests/min</span>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 class="setting-title">Enable Audit Logging</h4>
+                                <p class="setting-description">Log all user actions for audit purposes</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" [(ngModel)]="settings.enableAuditLogging">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Actions -->
+            <div class="settings-actions">
+                <button class="btn-secondary" (click)="resetToDefaults()" [disabled]="isSaving">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2.5 2v6h6M21.5 22v-6h-6"></path>
+                        <path d="M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.2"></path>
+                    </svg>
+                    Reset to Defaults
+                </button>
+                <button class="btn-primary" (click)="saveSettings()" [disabled]="isSaving">
+                    <span *ngIf="isSaving" class="loading-spinner"></span>
+                    <span *ngIf="!isSaving">Save Settings</span>
+                </button>
+            </div>
+        </div>
+    </main>
 </div>

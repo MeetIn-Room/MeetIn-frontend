@@ -4,12 +4,302 @@
 
     <!-- Main Content -->
     <main class="main-content">
-    
-      <!-- Sidebar -->
-    <app-sidebar></app-sidebar>
+        <!-- Sidebar -->
+        <app-sidebar></app-sidebar>
 
-  <div class="sidecontent">
-    
-  </div>
-  </main>
+        <div class="sidecontent">
+            <!-- Dashboard Header Section -->
+            <div class="dashboard-header-section">
+                <div class="dashboard-header-content">
+                    <div class="dashboard-title-section">
+                        <h1 class="dashboard-title">Room Reservation Calendar</h1>
+                        <p class="dashboard-subtitle">View and manage all room bookings in calendar format</p>
+                    </div>
+
+                    <div class="dashboard-filters">
+                        <div class="date-range-filter">
+                            <div class="filter-header">
+                                <svg class="calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>Calendar View</span>
+                            </div>
+                            
+                            <div class="date-controls">
+                                <div class="month-navigation">
+                                    <button class="nav-btn" (click)="previousMonth()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                        </svg>
+                                    </button>
+                                    <h2 class="current-month">{{ currentMonthName }} {{ currentYear }}</h2>
+                                    <button class="nav-btn" (click)="nextMonth()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div class="view-controls">
+                                    <select class="view-select" [(ngModel)]="currentView" (change)="changeView()">
+                                        <option value="month">Month View</option>
+                                        <option value="week">Week View</option>
+                                        <option value="day">Day View</option>
+                                    </select>
+                                    
+                                    <button class="today-btn" (click)="goToToday()">
+                                        Today
+                                    </button>
+                                    
+                                    <select class="room-filter" [(ngModel)]="selectedRoom" (change)="filterByRoom()">
+                                        <option value="all">All Rooms</option>
+                                        <option *ngFor="let room of rooms" [value]="room.id">{{ room.name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar View -->
+            <div class="calendar-container">
+                <!-- Month View -->
+                <div *ngIf="currentView === 'month'" class="month-view">
+                    <!-- Weekday Headers -->
+                    <div class="calendar-header">
+                        <div *ngFor="let day of weekdays" class="weekday-header">
+                            {{ day }}
+                        </div>
+                    </div>
+                    
+                    <!-- Calendar Grid -->
+                    <div class="month-grid">
+                        <div *ngFor="let day of monthDays" 
+                             class="calendar-day"
+                             [class.today]="isToday(day.date)"
+                             [class.outside-month]="!day.inCurrentMonth"
+                             (click)="selectDay(day)">
+                            <div class="day-header">
+                                <span class="day-number">{{ day.date.getDate() }}</span>
+                                <span *ngIf="isToday(day.date)" class="today-badge">Today</span>
+                            </div>
+                            
+                            <div class="day-events">
+                                <div *ngFor="let booking of day.bookings" 
+                                     class="event-item"
+                                     [style.background]="getBookingColor(booking)"
+                                     (click)="openBookingDetails(booking, $event)">
+                                    <div class="event-time">
+                                        {{ formatTime(booking.startTime) }} - {{ formatTime(booking.endTime) }}
+                                    </div>
+                                    <div class="event-title">{{ booking.purpose }}</div>
+                                    <div class="event-room">{{ booking.roomName }}</div>
+                                </div>
+                                
+                                <div *ngIf="day.bookings.length > 3" class="more-events">
+                                    +{{ day.bookings.length - 3 }} more
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Week View -->
+                <div *ngIf="currentView === 'week'" class="week-view">
+                    <div class="week-header">
+                        <div class="time-column"></div>
+                        <div *ngFor="let day of weekDays" class="day-header-week">
+                            <div class="week-day-name">{{ day.dayName }}</div>
+                            <div class="week-day-date" [class.today]="isToday(day.date)">{{ day.date.getDate() }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="week-body">
+                        <div class="time-slots">
+                            <div *ngFor="let hour of hours" class="time-slot">
+                                {{ hour }}:00
+                            </div>
+                        </div>
+                        
+                        <div *ngFor="let day of weekDays; let i = index" class="day-column">
+                            <div *ngFor="let hour of hours" class="hour-slot" (click)="createBooking(day.date, hour)">
+                                <div *ngFor="let booking of getBookingsForHour(day.date, hour)" 
+                                     class="week-event"
+                                     [style.height.%]="getEventHeight(booking)"
+                                     [style.top.px]="getEventTop(booking)"
+                                     [style.background]="getBookingColor(booking)"
+                                     (click)="openBookingDetails(booking, $event)">
+                                    <div class="week-event-content">
+                                        <div class="week-event-time">{{ formatTime(booking.startTime) }}</div>
+                                        <div class="week-event-title">{{ booking.purpose }}</div>
+                                        <div class="week-event-room">{{ booking.roomName }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day View -->
+                <div *ngIf="currentView === 'day'" class="day-view">
+                    <div class="day-header-view">
+                        <div class="selected-day-info">
+                            <h3>{{ selectedDayName }}, {{ selectedDayDate }}</h3>
+                            <span *ngIf="isToday(selectedDate)" class="today-badge-day">Today</span>
+                        </div>
+                        <div class="day-stats">
+                            <span>{{ getBookingsForDay(selectedDate).length }} bookings</span>
+                        </div>
+                    </div>
+                    
+                    <div class="day-timeline">
+                        <div class="time-column-day">
+                            <div *ngFor="let hour of hours" class="time-slot-day">
+                                <span class="hour-label">{{ hour }}:00</span>
+                                <div class="hour-line"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="events-column">
+                            <div *ngFor="let hour of hours" class="hour-slot-day" (click)="createBooking(selectedDate, hour)">
+                                <div *ngFor="let booking of getBookingsForHour(selectedDate, hour)" 
+                                     class="day-event"
+                                     [style.height.%]="getEventHeight(booking)"
+                                     [style.top.px]="getEventTop(booking)"
+                                     [style.background]="getBookingColor(booking)"
+                                     (click)="openBookingDetails(booking, $event)">
+                                    <div class="day-event-content">
+                                        <div class="day-event-header">
+                                            <span class="event-time-range">
+                                                {{ formatTime(booking.startTime) }} - {{ formatTime(booking.endTime) }}
+                                            </span>
+                                            <span class="event-status" [class]="getStatusClass(booking.status)">
+                                                {{ booking.status }}
+                                            </span>
+                                        </div>
+                                        <div class="day-event-body">
+                                            <strong>{{ booking.purpose }}</strong>
+                                            <span>{{ booking.roomName }} • {{ booking.userName }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="calendar-legend">
+                <div class="legend-title">Room Colors:</div>
+                <div *ngFor="let room of rooms" class="legend-item">
+                    <span class="legend-color" [style.background]="getRoomColor(room.id)"></span>
+                    <span class="legend-label">{{ room.name }}</span>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal-overlay" *ngIf="showBookingModal" (click)="closeBookingModal()">
+    <div class="modal-container large-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title">Booking Details</h3>
+            <button class="modal-close" (click)="closeBookingModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-body" *ngIf="selectedBooking">
+            <div class="booking-details">
+                <div class="details-grid">
+                    <div class="details-section">
+                        <h4 class="section-title">Booking Information</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Booking ID:</span>
+                            <span class="detail-value">{{ selectedBooking.id }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value status-badge" [ngClass]="getStatusClass(selectedBooking.status)">
+                                {{ selectedBooking.status }}
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Date:</span>
+                            <span class="detail-value">{{ formatDate(selectedBooking.date) }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Time:</span>
+                            <span class="detail-value">{{ formatTime(selectedBooking.startTime) }} - {{ formatTime(selectedBooking.endTime) }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Duration:</span>
+                            <span class="detail-value">{{ selectedBooking.duration }}</span>
+                        </div>
+                    </div>
+
+                    <div class="details-section">
+                        <h4 class="section-title">Room & User</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Room:</span>
+                            <span class="detail-value">{{ selectedBooking.roomName }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Booked By:</span>
+                            <span class="detail-value">{{ selectedBooking.userName }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Department:</span>
+                            <span class="detail-value">{{ selectedBooking.userDepartment }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Contact:</span>
+                            <span class="detail-value">{{ selectedBooking.userEmail }}</span>
+                        </div>
+                    </div>
+
+                    <div class="details-section full-width">
+                        <h4 class="section-title">Meeting Details</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Purpose:</span>
+                            <span class="detail-value">{{ selectedBooking.purpose }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Description:</span>
+                            <span class="detail-value">{{ selectedBooking.description || 'No description provided' }}</span>
+                        </div>
+                        <div *ngIf="selectedBooking.attendees.length > 0" class="detail-item">
+                            <span class="detail-label">Attendees:</span>
+                            <span class="detail-value">
+                                <div class="attendees-list">
+                                    <span *ngFor="let attendee of selectedBooking.attendees" class="attendee-tag">
+                                        {{ attendee }}
+                                    </span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-actions">
+                    <button class="btn-secondary" (click)="closeBookingModal()">
+                        Close
+                    </button>
+                    <button class="btn-warning" (click)="cancelBooking(selectedBooking)" 
+                            *ngIf="selectedBooking.status === 'Confirmed' || selectedBooking.status === 'Pending'">
+                        Cancel Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
