@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
 import { HeaderComponent } from '../../../shared/components/navbarAdmin/navbar';
-
+import { UserServiceService } from '../../../core/services/user-service.service';
+import { User } from '../../../core/interfaces/auth';
 
 interface Stat {
   title: string;
@@ -12,9 +13,9 @@ interface Stat {
   isPositive: boolean;
   lastMonth: string;
   icon: string;
-  trend: number[]; 
-  color: string;  
-  gradient: string[];  
+  trend: number[];
+  color: string;
+  gradient: string[];
 }
 
 interface Booking {
@@ -37,13 +38,23 @@ interface WeeklyData {
   standalone: true,
   imports: [CommonModule, RouterModule, SidebarComponent, HeaderComponent],
   templateUrl: './booking-dashboard.html',
-  styleUrls: ['./booking-dashboard.css']
+  styleUrls: ['./booking-dashboard.css'],
 })
 export class BookingDashboardComponent implements OnInit {
-  // constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private userService: UserServiceService
+  ) {}
+
+  ngOnInit() {
+    this.initUsersData();
+    this.initializeDates();
+    this.checkScreenSize();
+    window.addEventListener('resize', () => this.checkScreenSize());
+  }
 
   // activeNav: string = 'dashboard';
-  
+
   // Header filter properties
   startDate: Date = new Date();
   endDate: Date = new Date();
@@ -55,7 +66,7 @@ export class BookingDashboardComponent implements OnInit {
     { label: '1M', days: 30, active: true },
     { label: '3M', days: 90, active: false },
     { label: '6M', days: 180, active: false },
-    { label: '1Y', days: 365, active: false }
+    { label: '1Y', days: 365, active: false },
   ];
 
   // Responsive state
@@ -70,8 +81,8 @@ export class BookingDashboardComponent implements OnInit {
       change: '+12.5%',
       lastMonth: '1,108',
       trend: [12, 18, 15, 22, 25, 28, 24],
-      color: '#FF6B35',  // Vibrant Orange
-      gradient: ['#FF6B35', '#FF8C42']
+      color: '#FF6B35', // Vibrant Orange
+      gradient: ['#FF6B35', '#FF8C42'],
     },
     {
       title: 'Available Rooms',
@@ -81,19 +92,8 @@ export class BookingDashboardComponent implements OnInit {
       change: '-2.3%',
       lastMonth: '26',
       trend: [30, 28, 26, 25, 24, 23, 24],
-      color: '#FF8C42',  // Sunset Orange
-      gradient: ['#FF8C42', '#FFA62E']
-    },
-    {
-      title: 'Active Users',
-      value: '893',
-      icon: 'users',
-      isPositive: true,
-      change: '+8.1%',
-      lastMonth: '826',
-      trend: [65, 70, 75, 80, 82, 85, 89],
-      color: '#E2725B',  // Terracotta Orange
-      gradient: ['#E2725B', '#FF8C42']
+      color: '#FF8C42', // Sunset Orange
+      gradient: ['#FF8C42', '#FFA62E'],
     },
     {
       title: 'Occupancy Rate',
@@ -103,9 +103,9 @@ export class BookingDashboardComponent implements OnInit {
       change: '+5.2%',
       lastMonth: '72%',
       trend: [65, 68, 72, 75, 76, 77, 78],
-      color: '#B7410E',  // Rust Orange
-      gradient: ['#B7410E', '#D86F39']
-    }
+      color: '#B7410E', // Rust Orange
+      gradient: ['#B7410E', '#D86F39'],
+    },
   ];
 
   recentBookings: Booking[] = [
@@ -116,7 +116,7 @@ export class BookingDashboardComponent implements OnInit {
       room: 'Conference Room A',
       status: 'Confirmed',
       duration: '2 hours',
-      total: '2:00 PM - 4:00 PM'
+      total: '2:00 PM - 4:00 PM',
     },
     {
       id: '#BK8902',
@@ -125,7 +125,7 @@ export class BookingDashboardComponent implements OnInit {
       room: 'Meeting Room B',
       status: 'Completed',
       duration: '1 hour',
-      total: '10:00 AM - 11:00 AM'
+      total: '10:00 AM - 11:00 AM',
     },
     {
       id: '#BK8903',
@@ -134,7 +134,7 @@ export class BookingDashboardComponent implements OnInit {
       room: 'Board Room',
       status: 'Confirmed',
       duration: '3 hours',
-      total: '1:00 PM - 4:00 PM'
+      total: '1:00 PM - 4:00 PM',
     },
     {
       id: '#BK8904',
@@ -143,8 +143,8 @@ export class BookingDashboardComponent implements OnInit {
       room: 'Small Meeting Room',
       status: 'Cancelled',
       duration: '1.5 hours',
-      total: '3:00 PM - 4:30 PM'
-    }
+      total: '3:00 PM - 4:30 PM',
+    },
   ];
 
   weeklyData: WeeklyData[] = [
@@ -154,15 +154,42 @@ export class BookingDashboardComponent implements OnInit {
     { day: 'Thu', bookings: 14 },
     { day: 'Fri', bookings: 22 },
     { day: 'Sat', bookings: 8 },
-    { day: 'Sun', bookings: 5 }
+    { day: 'Sun', bookings: 5 },
   ];
 
-  monthlyUtil: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+  monthlyUtil: string[] = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+  ];
 
-  ngOnInit() {
-    this.initializeDates();
-    this.checkScreenSize();
-    window.addEventListener('resize', () => this.checkScreenSize());
+  private initUsersData(): void {
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.stats.push({
+          title: 'Active Users',
+          value: users.length.toString(),
+          icon: 'users',
+          isPositive: true,
+          change: '+8.1%',
+          lastMonth: '826',
+          trend: [65, 70, 75, 80, 82, 85, 89],
+          color: '#E2725B', // Terracotta Orange
+          gradient: ['#E2725B', '#FF8C42'],
+        });
+      },
+
+      error: (err) => {
+        console.log("Error loading users", err);
+      }
+    });
+
+    this.stats = [...this.stats];
   }
 
   private initializeDates(): void {
@@ -173,15 +200,15 @@ export class BookingDashboardComponent implements OnInit {
 
   // Chart calculation methods
   get maxBookings(): number {
-    return Math.max(...this.weeklyData.map(d => d.bookings));
+    return Math.max(...this.weeklyData.map((d) => d.bookings));
   }
 
   getStatusClass(status: string): string {
     const classes: { [key: string]: string } = {
-      'Confirmed': 'bg-blue-100 text-blue-800',
-      'Completed': 'bg-green-100 text-green-800',
-      'Cancelled': 'bg-red-100 text-red-800',
-      'Pending': 'bg-yellow-100 text-yellow-800'
+      Confirmed: 'bg-blue-100 text-blue-800',
+      Completed: 'bg-green-100 text-green-800',
+      Cancelled: 'bg-red-100 text-red-800',
+      Pending: 'bg-yellow-100 text-yellow-800',
     };
     return classes[status] || '';
   }
@@ -229,44 +256,49 @@ export class BookingDashboardComponent implements OnInit {
     this.showDatePicker = false;
   }
 
-   // ADD THIS MISSING METHOD
+  // ADD THIS MISSING METHOD
   selectToday(): void {
     const today = new Date();
     this.onDateSelect(today);
   }
 
   // Alternative: Modify the existing method
-onDateSelect(date?: Date): void {
-  const selectedDate = date || new Date(); // Use provided date or today
-  if (this.datePickerType === 'start') {
-    this.startDate = selectedDate;
-  } else {
-    this.endDate = selectedDate;
+  onDateSelect(date?: Date): void {
+    const selectedDate = date || new Date(); // Use provided date or today
+    if (this.datePickerType === 'start') {
+      this.startDate = selectedDate;
+    } else {
+      this.endDate = selectedDate;
+    }
+    this.closeDatePicker();
+    this.updateDataByDateRange();
   }
-  this.closeDatePicker();
-  this.updateDataByDateRange();
-}
 
   selectQuickPeriod(period: any): void {
     // Deactivate all periods
-    this.quickPeriods.forEach(p => p.active = false);
-    
+    this.quickPeriods.forEach((p) => (p.active = false));
+
     // Activate selected period
     period.active = true;
-    
+
     // Calculate dates based on period
     const today = new Date();
     this.endDate = new Date(today);
     this.startDate = new Date(today);
     this.startDate.setDate(today.getDate() - period.days);
-    
+
     this.updateDataByDateRange();
   }
 
   updateDataByDateRange(): void {
     // This method would typically call your API to get data for the selected date range
-    console.log('Fetching data for period:', this.startDate, 'to', this.endDate);
-    
+    console.log(
+      'Fetching data for period:',
+      this.startDate,
+      'to',
+      this.endDate
+    );
+
     // In a real application, you would make an API call here
     // For now, we'll just log the action
   }
@@ -283,5 +315,4 @@ onDateSelect(date?: Date): void {
       this.closeDatePicker();
     }
   }
-
 }

@@ -1,6 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, QueryList, ViewChild, ViewChildren, viewChildren } from '@angular/core';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { BookingItemComponent } from '../../../shared/components/booking-item/booking-item.component';
+import { BookingItemComponent, formatToStandardTime } from '../../../shared/components/booking-item/booking-item.component';
 import { Booking } from '../../../core/interfaces/booking';
 import { CommonModule } from '@angular/common';
 import { WeeklyCalendarComponent } from '../../../shared/components/weekly-calendar/weekly-calendar.component';
@@ -8,11 +8,18 @@ import { BookingService } from '../../../core/services/booking.service';
 import { NewBookingComponent } from '../../../shared/components/new-booking/new-booking.component';
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../../../core/interfaces/auth';
-import { Router } from '@angular/router';
+import { RoomBookingCalendarComponent } from '../../../shared/components/room-booking-calendar/room-booking-calendar.component';
+import { RoomService } from '../../../core/services/room.service';
 
 @Component({
   selector: 'app-home',
-  imports: [NavbarComponent, BookingItemComponent, CommonModule, WeeklyCalendarComponent, NewBookingComponent],
+  imports: [
+    NavbarComponent,
+    BookingItemComponent,
+    CommonModule,
+    WeeklyCalendarComponent,
+    NewBookingComponent,
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -20,65 +27,67 @@ export class HomeComponent implements OnInit {
 
   showCalendar = false;
   showNewBookingModal = false;
+  showDetails = false;
+  bookingDetails!: Booking;
+  selected!: Element
+  showMoreOptions!: boolean;
+
 
   currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser') || '{}'));
+  latest = true;
+  _latest = this.latest; //Previous state of the ordering of bookings to detect ordering changes from the select input
 
-  router = inject(Router)
+  @ViewChild('sortSelect') sortSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('details') details!: ElementRef<HTMLDivElement>;
+  @ViewChild('options') options!: ElementRef<HTMLDivElement>
+  startTimeString: any;
+  endTimeString: any;
+  bookings: Booking[] = [];
 
-  constructor(){
+  private bookingService = inject(BookingService);
+  private roomService = inject(RoomService)
+
+  ngOnInit(): void {
+
+    // subscribe to service updates
+    this.bookingService.getBookings().subscribe({
+      next: (response) => {
+        this.bookings = response.filter((book) => book.userId === this.currentUserSubject.getValue().id.toString() && book.isActive)
+        this.sortElements(this.latest ? -1 : 1);
+
+      },
+      error: (err) => { alert("Error fetching bookings "+ err); console.error('error', err); }
+    })
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleOutClick(ev: MouseEvent){
+    const target = ev.target as HTMLElement;
+    if(!this.options.nativeElement.contains(target)) this.showMoreOptions = false
+
   }
 
   toggleCalendar() {
     this.showCalendar = !this.showCalendar;
   }
 
-  // bookings: Booking[] = [
-  //   {
-  //     id: 'bkg-001',
-  //     room: {
-  //       name: 'Conference Room A', amenities: [], capacity: 0,
-  //       id: '',
-  //       openTime: 8,
-  //       closeTime: 17,
-  //       isActive: true
-  //     },
-  //     userId: this.currentUserSubject.value.id,
-  //     startTime: 9,
-  //     endTime: 10.5,
-  //     date: new Date(),
-  //     title: 'Scrum Meeting',
-  //     description: 'Daily team sync-up',
-  //   },
-  //   {
-  //     id: 'bkg-002',
-  //     room: {
-  //       name: 'Focus Room 2', amenities: [], capacity: 0,
-  //       id: '',
-  //       openTime: 8,
-  //       closeTime: 17,
-  //       isActive: true
-  //     },
-  //     userId: this.currentUserSubject.value.id,
-  //     startTime: 11,
-  //     endTime: 14,
-  //     date: new Date(),
-  //     title: 'Project Work',
-  //     description: 'Working on project tasks',
-  //   }
-  // ];
+  onShowBookingDetails(b: Booking){
+    this.bookingDetails = b
+    this.showDetails = true
+    this.startTimeString = formatToStandardTime(b.startTime)
+    this.endTimeString = formatToStandardTime(b.endTime)
+  }
 
-  bookings: Booking[] = [];
+  sortBookings(){
+    this.latest = this.sortSelect.nativeElement.value === 'latest';
+    if(this._latest !== this.latest){ //Sort only if there is a change in the ordering
+      this._latest = this.latest;
+      this.sortElements(this.latest ? -1 : 1);
+    }
+  }
 
-
-  private bookingService = inject(BookingService);
-
-  ngOnInit(): void {
-
-    // subscribe to service updates
-    this.bookingService.getBookings().subscribe({
-      next: (response) => this.bookings = response.filter((book) => book.userId === this.currentUserSubject.value.id),
-      error: (err) => { alert("Error fetching bookings "+ err); console.error(err); }
-    })
+  sortElements(val: number){
+    this.bookings = this.bookings.sort((a, b) => a.date >= b.date && a.startTime > b.startTime  ? val : -val);
   }
 
   onCancelBooking(id: string) {
@@ -94,13 +103,33 @@ export class HomeComponent implements OnInit {
   }
 
   openNewBookingModal() { this.showNewBookingModal = true; }
-  closeNewBookingModal() { this.showNewBookingModal = false; }
+  closeNewBookingModal() {
+    this.showNewBookingModal = false;
+  }
 
   onNewCreated(b: Booking) {
+    console.log('New booking created:', b);
+    this.bookingService.create(b);
     this.showNewBookingModal = false;
-    // booking already added by service; if you need extra handling, do it here
+    // location.reload()
   }
 
   onNewCancelled() { this.showNewBookingModal = false; }
+
+  doClose(){
+    this.showDetails = false;
+    this.selected.firstElementChild!.classList.remove('active')
+    this.showMoreOptions = false
+  }
+
+  handleClick(bookItemId: number){
+    if(this.selected) this.selected.firstElementChild!.classList.remove('active')
+    this.selected = document.querySelector("#book-" + bookItemId)!
+    this.selected!.firstElementChild!.classList.add('active')
+  }
+
+  onShowTooltips(){
+    this.showMoreOptions = true
+  }
 
 }

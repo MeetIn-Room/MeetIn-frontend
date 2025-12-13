@@ -1,21 +1,33 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BookingDetailsComponent } from '../booking-details/booking-details.component';
 import { Booking } from '../../../core/interfaces/booking';
 
+export function formatToStandardTime(time: string): string{
+  // console.log(t.toLocaleString());
+  // let time = t.toString().split("T")[1]
+  return time.toString().split(':')[0] +':' + time.toString().split(':')[1]
+  // return t.toLocaleString();
+}
+
+
 @Component({
   selector: 'app-booking-item',
   standalone: true,
-  imports: [CommonModule, BookingDetailsComponent],
+  imports: [CommonModule],
   templateUrl: './booking-item.component.html',
   styleUrls: ['./booking-item.component.scss']
 })
-export class BookingItemComponent {
+export class BookingItemComponent implements OnInit {
   @Input() booking!: Booking;
   @Output() cancelBooking = new EventEmitter<string>();
   @Output() updateBooking = new EventEmitter<Booking>();
+  @Output() showDetails = new EventEmitter<Booking>()
 
-  showDetails = false;
+
+  startTime: string = '';
+  endTime: string = '';
+
 
   emitCancel() {
     if (this.booking && this.booking.id) {
@@ -24,16 +36,22 @@ export class BookingItemComponent {
   }
 
   toggleDetails() {
-    this.showDetails = !this.showDetails;
+    this.showDetails.emit(this.booking);
   }
 
   onUpdate(updated: Booking) {
     // propagate updated booking to parent
     this.updateBooking.emit(updated);
-    this.showDetails = false;
   }
 
   numberToTimeString(time: Date): string {
     return `${time.toString().split('.')[0]}`.padStart(2, '0') + ':' + `${parseFloat('0.' + time.toString().split('.')[1]) * 60}`.padStart(2, '0');
   }
+
+  ngOnInit(): void {
+    this.startTime = formatToStandardTime(this.booking.startTime)
+    this.endTime = formatToStandardTime(this.booking.endTime)
+  }
+
+
 }

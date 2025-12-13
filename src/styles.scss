@@ -2,6 +2,11 @@
 
 @use "tailwindcss";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 :root{
 
     /* COLOR PALLETTE*/
@@ -56,7 +61,20 @@ body{
 
 button{
     font-family: 'Gill Sans MT', sans-serif;
-}
+    border: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border: none;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+    &:focus {
+        outline: none;
+    }
+  }
+
+
 
 i{
 	box-sizing: border-box;
@@ -141,6 +159,66 @@ i{
     }
   }
 }
+
+.btn { 
+  padding: 0.4rem 0.7rem;
+  border-radius: 12px;
+  cursor:pointer;
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.edit{
+  border: 2px solid var(--slate-300);
+  background-color: var(--slate-500);
+  color: white;
+}
+
+.close{
+  border: 2px solid var(--slate-500);
+  color: var(--slate-500);
+  background: none;
+}
+
+.save{
+  background: linear-gradient(var(--primary-400),var(--primary-600));
+  color: var(--white);
+}
+
+.no-navbar::-webkit-scrollbar{
+  display: none;
+}
+ 
+@keyframes fade-out {
+    0% {
+        opacity: 0;
+        transform: scaleY(0);
+        display: none;
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+        display: block;
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 1;
+        transform: scaleY(1);
+        display: block;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scaleY(0);
+        display: none;
+    }
+}
+
 
 * {
   margin: 0;

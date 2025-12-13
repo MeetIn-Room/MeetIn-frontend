@@ -49,6 +49,11 @@
   gap: 0.15rem;
   align-items: center;
   position: relative;
+  cursor: pointer;
+}
+
+.hov:hover{
+  background-color: #f5f5f5;
 }
 
 .profile-dropdown{
@@ -72,7 +77,15 @@
 
 .profile-dropdown .pd-user{ font-weight:700; margin-bottom:0.4rem }
 .profile-dropdown .pd-link{ display:block; padding:0.35rem 0; color:var(--primary-600); text-decoration:none; background:transparent; border:none; text-align:left; width:100%; cursor:pointer }
-.profile-dropdown .pd-link.logout{ color:#b00020 }
+.profile-dropdown .pd-link.logout{ color:#fb0000 }
+
+.profile-dropdown{
+  animation: fade-out 0.2s ease-out;
+}
+
+.profile-dropdown[open] {
+  animation: fade-in 0.2s ease-out;
+}
 
 .search-nav{
     margin-left: 2rem;

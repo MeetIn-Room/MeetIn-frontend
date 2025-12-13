@@ -1,14 +1,20 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Booking } from '../../../core/interfaces/booking';
-import { BookingService } from '../../../core/services/booking.service';
-import { User } from '../../../core/interfaces/auth';
-import { BehaviorSubject } from 'rxjs';
+import { BookingDetailsComponent } from '../booking-details/booking-details.component';
+
+export function timeToHours(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours+ minutes/60;
+  }
 
 @Component({
   selector: 'app-weekly-calendar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    BookingDetailsComponent,
+  ],
   templateUrl: './weekly-calendar.component.html',
   styleUrls: ['./weekly-calendar.component.scss']
 })
@@ -21,13 +27,30 @@ export class WeeklyCalendarComponent implements OnInit {
     '13:00', '14:00', '15:00', '16:00', '17:00','18:00','19:00','20:00'
   ];
 
-  bookings: Booking[] = []; // Will be populated from your API
-  bookingService = inject(BookingService)
-  currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser') || '{}'));
+  @Input({required: true}) bookings: Booking[] = [];
+  @Output() bookingUpdate = new EventEmitter<Booking>()
+
+  @ViewChild('dialog') dialog!: ElementRef<HTMLDialogElement>;
+
+  showBookingDetails = false
+  selectedBooking!: Booking;
+  colorValue = 400;
+
+  onBookingUpdate(b: Booking){
+    this.bookingUpdate.emit(b);
+  }
+
 
   ngOnInit(): void {
     this.updateWeekDays();
-    this.loadBookings();
+    console.log(this.bookings)
+  }
+
+  toggleDetails(b: Booking){
+    console.log('toggling details: ', b)
+    this.selectedBooking = b;
+    this.showBookingDetails = !this.showBookingDetails
+    // this.dialog.nativeElement.showPopover()
   }
 
   updateWeekDays(): void {
@@ -46,6 +69,15 @@ export class WeeklyCalendarComponent implements OnInit {
       week.push(weekDay);
     }
     return week;
+  }
+
+  randomColor(): string{
+    if(this.colorValue === 1000){
+      this.colorValue = 400;
+    }
+    let color =  `var(--primary-${this.colorValue})`
+    this.colorValue += 100;
+    return color;
   }
 
   navigateWeek(direction: 'next' | 'prev'): void {
@@ -67,27 +99,27 @@ export class WeeklyCalendarComponent implements OnInit {
   }
 
   isSameDay(date1: Date, date2: Date): boolean {
-    return date1.toDateString() === date2.toDateString();
+    const [year, month, date] = date1.toString().split('-')
+    console.log(Number(year) === date2.getFullYear()  && Number(month) === date2.getMonth()+1 && Number(date) === date2.getDate())
+    return Number(year) === date2.getFullYear()  && Number(month) === date2.getMonth()+1 && Number(date) === date2.getDate();
+    // return date1.toLocaleDateString() === date2.toLocaleDateString()
   }
 
   isToday(date: Date): boolean {
-    return this.isSameDay(date, new Date());
+    console.log(date, new Date(), this.isSameDay(date, new Date()))
+    return date.toDateString() === new Date().toDateString();
+    // return this.isSameDay(date, new Date());
   }
 
-  calculatePosition(startTime: number, endTime: number): { top: string; height: string } {
+  calculatePosition(startTime: string, endTime: string): { top: string; height: string } {
     const startOfDay = 6; // 6 AM
     const endOfDay = 20; // 8 PM
-    const totalMinutes = (20 - 6);
+    const totalMinutes = (endOfDay - startOfDay);
 
-    const top = ((startTime - startOfDay) *60) *(80/60);
-    const height = ((endTime - startTime)*60 ) * (80/60);
+    const top = ((timeToHours(startTime.toString()) - startOfDay) *60) *(80/60);
+    const height = ((timeToHours(endTime.toString()) - timeToHours(startTime.toString()))*60 ) * (80/60);
     console.log(top, height);
     return { top: `${top}px`, height: `${height}px` };
-  }
-
-  private timeToMinutes(time: string): number {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
   }
 
   formatDate(date: Date): string {
@@ -99,55 +131,6 @@ export class WeeklyCalendarComponent implements OnInit {
       month: 'long',
       year: 'numeric'
     }) || '';
-  }
-
-  loadBookings(): void {
-
-    this.bookingService.getBookings().subscribe({
-      next: (response) => {
-        this.bookings = response.filter((book) => book.userId === this.currentUserSubject.value.id)
-      }
-    })
-      // {
-      //   id: '1',
-      //   room: {
-      //     name: 'Conference Room A', amenities: ['Projector', 'Whiteboard'], capacity: 10,
-      //     id: '',
-      //     openTime: 8,
-      //     closeTime: 17,
-      //     isActive: true,
-      //   },
-      //   date: new Date(2025, 11, 2),
-      //   startTime: '09:00',
-      //   endTime: '10:30',
-      //   title: 'Team Standup',
-      //   color: 'booking-blue',
-      //   description: '',
-      //   userId: ''
-      // },
-      // {
-      //   id: '2',
-      //   room: {
-      //     name: 'Meeting Room', amenities: ['Projector'], capacity: 15,
-      //     id: '',
-      //     openTime: 8,
-      //     closeTime: 17,
-      //     isActive: true,
-      //   },
-      //   date: new Date(2025, 11, 2),
-      //   startTime: '14:00',
-      //   endTime: '15:00',
-      //   title: 'Client Call',
-      //   color: 'booking-purple',
-      //   description: '',
-      //   userId: ''
-      // }
-
-  }
-
-  onBookingClick(booking: Booking): void {
-    // Handle booking click (e.g., show details modal)
-    console.log('Booking clicked:', booking);
   }
 
   onTimeSlotClick(day: Date, timeSlot: string): void {
@@ -164,4 +147,6 @@ export class WeeklyCalendarComponent implements OnInit {
     const splitted = t.split(':') //e.g 10:30 -> 10 + 30/60 = 10.5
     return parseFloat(splitted[0]) + (parseFloat(splitted[1])/60)
   }
+
+
 }
