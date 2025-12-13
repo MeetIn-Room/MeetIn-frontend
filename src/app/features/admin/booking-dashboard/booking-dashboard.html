@@ -4,7 +4,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-    
+
       <!-- Sidebar -->
     <app-sidebar></app-sidebar>
 
@@ -16,7 +16,7 @@
       <h1 class="dashboard-title">Booking Overview</h1>
       <p class="dashboard-subtitle">Monitor your booking performance and analytics</p>
     </div>
-    
+
     <div class="dashboard-filters">
       <div class="date-range-filter">
         <div class="filter-header">
@@ -38,14 +38,14 @@
               </svg>
             </div>
           </div>
-          
+
           <div class="date-range-separator">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="4" y1="12" x2="20" y2="12"></line>
               <polyline points="14 6 20 12 14 18"></polyline>
             </svg>
           </div>
-          
+
           <div class="date-field-group">
             <label class="date-field-label">To</label>
             <div class="date-field-input" (click)="openDatePicker('end')">
@@ -56,10 +56,10 @@
             </div>
           </div>
         </div>
-        
+
         <div class="period-quick-filters">
-          <button 
-            *ngFor="let period of quickPeriods" 
+          <button
+            *ngFor="let period of quickPeriods"
             class="period-filter-btn"
             [class.active]="period.active"
             (click)="selectQuickPeriod(period)">
@@ -78,37 +78,37 @@
     <div class="date-picker-buttons">
       <button class="date-picker-cancel" (click)="closeDatePicker()">Cancel</button>
       <button class="date-picker-today" (click)="selectToday()">Today</button>
-    </div> 
+    </div>
     <div class="date-picker-simple">
     </div>
   </div>
     </div>
 
-    <!-- Stats Grid -->  
+    <!-- Stats Grid -->
     <div class="stats-grid">
   <div *ngFor="let stat of stats; let i = index" class="stat-card" [style.--card-color]="stat.color">
-    
+
     <div class="card-bg-shape shape-1"></div>
     <div class="card-bg-shape shape-2"></div>
-    
+
     <!-- Main content -->
     <div class="stat-content">
       <div class="stat-header">
         <div class="title-section">
           <span class="stat-title">{{ stat.title }}</span>
           <!-- Mini sparkline trend -->
-          <div class="trend-sparkline">
+          <!-- <div class="trend-sparkline">
             <svg width="60" height="20" viewBox="0 0 60 20">
-              <path [attr.d]="generateSparkline(stat.trend)" 
-                    fill="none" 
-                    stroke="currentColor" 
+              <path [attr.d]="generateSparkline(stat.trend)"
+                    fill="none"
+                    stroke="currentColor"
                     stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"></path>
             </svg>
-          </div>
+          </div> -->
         </div>
-        
+
         <!-- Icon with gradient background -->
         <div class="icon-container" [style.background]="getIconGradient(stat.gradient)">
           <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -141,21 +141,21 @@
       <!-- Main value with growth indicator -->
       <div class="value-section">
         <div class="stat-value">{{ stat.value }}</div>
-        <div class="growth-indicator" [class.positive]="stat.isPositive" [class.negative]="!stat.isPositive">
+        <!-- <div class="growth-indicator" [class.positive]="stat.isPositive" [class.negative]="!stat.isPositive">
           <svg class="indicator-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none">
             <path *ngIf="stat.isPositive" d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2"/>
             <path *ngIf="!stat.isPositive" d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2"/>
           </svg>
           <span class="growth-text">{{ stat.change }}</span>
-        </div>
+        </div> -->
       </div>
 
       <!-- Footer with comparison -->
       <div class="stat-footer">
-        <div class="comparison">
+        <!-- <div class="comparison">
           <span class="comparison-label">vs last month</span>
           <span class="comparison-value">{{ stat.lastMonth }}</span>
-        </div>
+        </div> -->
         <div class="progress-indicator">
           <div class="progress-track">
             <div class="progress-fill" [style.width.%]="getProgressWidth(stat)"></div>
@@ -332,11 +332,11 @@
               <span>Room</span>
             </div>
           </th>
-          <th class="status-column">
+          <!-- <th class="status-column">
             <div class="column-header">
               <span>Status</span>
             </div>
-          </th>
+          </th> -->
           <th class="duration-column">
             <div class="column-header">
               <span>Duration</span>
@@ -379,14 +379,14 @@
               <span class="room-name">{{ booking.room }}</span>
             </div>
           </td>
-          <td class="status-cell">
+          <!-- <td class="status-cell">
             <div class="status-wrapper">
               <span class="status-badge-enhanced" [ngClass]="getStatusClass(booking.status)">
                 <span class="status-dot"></span>
                 {{ booking.status }}
               </span>
             </div>
-          </td>
+          </td> -->
           <td class="duration-cell">
             <div class="duration-wrapper">
               <span class="duration-text">{{ booking.duration }}</span>
