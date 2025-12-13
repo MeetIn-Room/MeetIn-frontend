@@ -61,7 +61,7 @@ export class RoomBookingCalendarComponent implements OnInit {
         displayTime: this.formatTime(time),
         isBooked: this.isSlotBooked(time),
         isSelected: false,
-        booking: this.getBookingForSlot(time)
+        // booking: this.getBookingForSlot(time)
       };
       this.timeSlots.push(slot);
     }
@@ -78,18 +78,18 @@ export class RoomBookingCalendarComponent implements OnInit {
   isSlotBooked(time: number): boolean {
     return this.bookings.some(booking =>
       this.isSameDate(booking.date, this.selectedDate) &&
-      time >= booking.startTime.getHours() + booking.startTime.getMinutes()/60 &&
-      time < booking.endTime.getHours() + booking.endTime.getMinutes()/60
+      time >= this.timeStringtoNumber(booking.startTime) &&
+      time < this.timeStringtoNumber(booking.endTime)
     );
   }
 
-  getBookingForSlot(time: number): Booking | undefined {
-    return this.bookings.find(booking =>
-      this.isSameDate(booking.date, this.selectedDate) &&
-      time >= booking.startTime.getHours() + booking.startTime.getMinutes()/60 &&
-      time < booking.endTime.getHours() + booking.endTime.getMinutes()/60
-    );
-  }
+  // getBookingForSlot(time: number): Booking | undefined {
+  //   return this.bookings.find(booking =>
+  //     this.isSameDate(booking.date, this.selectedDate) &&
+  //     time >= booking.startTime.getHours() + booking.startTime.getMinutes()/60 &&
+  //     time < booking.endTime.getHours() + booking.endTime.getMinutes()/60
+  //   );
+  // }
 
   isSameDate(date1: Date, date2: Date): boolean {
     return date1.toDateString() === date2.toDateString();
@@ -147,8 +147,9 @@ export class RoomBookingCalendarComponent implements OnInit {
       id: Date.now().toString(),
       room: this.room,
       date: new Date(this.selectedDate),
-      startTime: new Date(this.selectedDate.setHours(Math.floor(startTime), (startTime % 1) * 60)),
-      endTime: new Date(this.selectedDate.setHours(Math.floor(endTime), (endTime % 1) * 60)),
+      // startTime: new Date(this.selectedDate.setHours(Math.floor(startTime), (startTime % 1) * 60)),
+      startTime: this.selectedDate.setHours(Math.floor(startTime)) + ':' + (startTime % 1) * 60,
+      endTime: this.selectedDate.setHours(Math.floor(endTime)) + ':'+ (endTime % 1) * 60,
       title: this.bookingTitle,
       description: this.bookingDescription,
       userId: JSON.parse(localStorage.getItem('currentUser')!).id,
@@ -176,7 +177,7 @@ export class RoomBookingCalendarComponent implements OnInit {
 
   isFirstSlotOfBooking(slot: TimeSlot): boolean {
     if (!slot.booking) return false;
-    return slot.time === slot.booking.startTime.getHours() + slot.booking.startTime.getMinutes()/60;
+    return slot.time === this.timeStringtoNumber(slot.booking.startTime);
   }
 
   changeDate(days: number): void {

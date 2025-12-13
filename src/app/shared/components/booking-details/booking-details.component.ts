@@ -20,8 +20,8 @@ export class BookingDetailsComponent implements OnChanges {
 
   editing = false;
   editDate!: Date;
-  editStart!: Date;
-  editEnd!: Date;
+  editStart!: string;
+  editEnd!: string;
   editDescription = '';
   startTimeString = '';
   endTimeString = '';
@@ -82,8 +82,8 @@ export class BookingDetailsComponent implements OnChanges {
   saveEdit() {
     const updated: Booking = {
       ...this.booking,
-      startTime: new Date(this.editStart),
-      endTime: new Date(this.editEnd),
+      startTime: this.editStart,
+      endTime: this.editEnd,
       description: this.editDescription
     };
     this.update.emit(updated);

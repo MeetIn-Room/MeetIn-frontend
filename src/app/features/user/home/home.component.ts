@@ -86,7 +86,7 @@ export class HomeComponent implements OnInit {
   }
 
   sortElements(val: number){
-    this.bookings = this.bookings.sort((a, b) => a.date.toString() > b.date.toString() && a.startTime.toString() > b.startTime.toString() ? val : -val);
+    this.bookings = this.bookings.sort((a, b) => a.date >= b.date && a.startTime > b.startTime  ? val : -val);
   }
 
   onCancelBooking(id: string) {
@@ -106,7 +106,7 @@ export class HomeComponent implements OnInit {
     console.log('New booking created:', b);
     this.bookingService.create(b);
     this.showNewBookingModal = false;
-    location.reload()
+    // location.reload()
   }
 
   onNewCancelled() { this.showNewBookingModal = false; }

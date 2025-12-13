@@ -106,6 +106,7 @@ export class NewBookingComponent implements OnInit{
     this.bookingService.getBookingsByRoom(id).subscribe({
       next: (response) => {
         this.roomBookings = response
+        console.log(this.roomBookings)
         this.generateTimeSlots();
       },
       error: (err) => alert(err)
@@ -142,6 +143,8 @@ export class NewBookingComponent implements OnInit{
         if (time < (new Date().getHours() + (new Date().getMinutes()/60) -0.5) && new Date() >= this.selectedDate) slot.isBooked = true; //disable past time slots
         this.timeSlots.push(slot);
       }
+
+      // console.log(this.timeSlots)
     }
   
     formatTime(time: number, nextTime: number): string {
@@ -161,7 +164,7 @@ export class NewBookingComponent implements OnInit{
       for(let b of this.roomBookings){
         if(this.isSameDate(b.date, this.selectedDate) &&
         time >= Number(formatToStandardTime(b.startTime).split(':')[0]) + Number(formatToStandardTime(b.startTime).split(':')[1])/60 &&
-        time <= Number(formatToStandardTime(b.endTime).split(':')[0]) + Number(formatToStandardTime(b.endTime).split(':')[1])/60 
+        time < Number(formatToStandardTime(b.endTime).split(':')[0]) + Number(formatToStandardTime(b.endTime).split(':')[1])/60 
        ) return true;
      }
       return false;
@@ -222,13 +225,15 @@ export class NewBookingComponent implements OnInit{
   
       const startTime = Math.min(...this.selectedSlots.map(s => s.time));
       const endTime = Math.max(...this.selectedSlots.map(s => s.time)) + 0.5;
+
+      // console.log({startTime, endTime})
   
       const newBooking: Booking = {
-        id: Date.now().toString(),
+        id: '',
         room: this.selectedRoom,
         date: new Date(this.selectedDate),
-        startTime: new Date(this.selectedDate.setHours(Math.floor(startTime), (startTime % 1) * 60, 0)),
-        endTime: new Date(this.selectedDate.setHours(Math.floor(endTime), (endTime % 1) * 60, 0)),
+        startTime: this.numberToTimeString(this.timeStringToHourNumber(Math.floor(startTime) + ':' + (startTime % 1) * 60)),
+        endTime: this.numberToTimeString(this.timeStringToHourNumber(Math.floor(endTime) + ':'+ (endTime % 1) * 60)),
         title: this.bookingTitle(),
         description: this.bookingDescription(),
         userId: JSON.parse(localStorage.getItem('currentUser')!).id,
@@ -239,6 +244,7 @@ export class NewBookingComponent implements OnInit{
       this.roomBookings.push(newBooking);
       this.cancelBookingForm();
       this.generateTimeSlots();
+      console.log({startTime, endTime})
     }
   
     cancelBookingForm(): void {
@@ -247,11 +253,6 @@ export class NewBookingComponent implements OnInit{
       this.bookingDescription.set('');
       this.selectedSlots.forEach(slot => slot.isSelected = false);
       this.selectedSlots = [];
-    }
-  
-    getRandomColor(): string {
-      const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
-      return colors[Math.floor(Math.random() * colors.length)];
     }
   
     isFirstSlotOfBooking(slot: TimeSlot): boolean {
