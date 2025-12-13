@@ -49,7 +49,7 @@ export class BookingDetailsComponent implements OnChanges {
 
   /** Convert string | Date to ISO string */
   private normalizeToISOString(value: string | Date): string {
-    return typeof value === 'string' ? new Date(value).toISOString() : value.toISOString();
+    return typeof value === 'string' ? value.split(':')[0] + value.split(':')[1] : value.toISOString();
   }
 
   toLocalInput(iso?: string) {

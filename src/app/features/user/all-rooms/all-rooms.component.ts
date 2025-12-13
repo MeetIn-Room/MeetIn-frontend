@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Room } from '../../../core/interfaces/room';
 import { RoomCardComponent } from '../../../shared/components/room-card/room-card.component';
@@ -7,6 +7,8 @@ import { BookingService } from '../../../core/services/booking.service';
 import { NavbarComponent } from "../../../shared/components/navbar/navbar.component";
 import { RoomBookingCalendarComponent } from '../../../shared/components/room-booking-calendar/room-booking-calendar.component';
 import { Booking } from '../../../core/interfaces/booking';
+import { RoomServiceService } from '../../../core/services/room.service';
+import { User } from '../../../core/interfaces/auth';
 
 @Component({
   selector: 'app-all-rooms',
@@ -16,23 +18,30 @@ import { Booking } from '../../../core/interfaces/booking';
   styleUrls: ['./all-rooms.component.scss']
 })
 export class AllRoomsComponent {
-  rooms: Room[] = [
-    // {
-    //   id: 'r-1', name: 'Conference Room A', capacity: 8, openTime: 8, closeTime: 18, amenities: ['Projector', 'Whiteboard'], description: 'Big room',
-    //   isActive: false
-    // },
-    // {
-    //   id: 'r-2', name: 'Focus Room 2', capacity: 4, openTime: 9, closeTime: 17, amenities: ['Monitor'], description: 'Small focus room',
-    //   isActive: false
-    // }
-  ];
+
+  private readonly roomService = inject(RoomServiceService)
+
+  rooms: Room[] = [];
 
   selectedRoom: Room | null = null;
   showBookModal = false;
   showDetails = false;
   currentDate: Date = new Date();
+  currentUser!: User
 
   constructor(private bookingService: BookingService) {}
+
+  ngOnInit(){
+    this.roomService.getRooms().subscribe({
+      next: (response) => {
+        console.log(response)
+        this.rooms = response.filter((room) => room.active)
+        console.log(this.rooms)
+        this.currentUser = JSON.parse(localStorage.getItem("currentUser")!)
+      },
+      error: (err) => alert(err)
+    })
+  }
 
   openBook(room: Room) { this.selectedRoom = room; this.showBookModal = true;
     console.log('Opening booking modal for room:', room);

@@ -19,7 +19,7 @@ function endAfterStartValidator(group: AbstractControl): ValidationErrors | null
   return e > s ? null : { endBeforeStart: true };
 }
 
-function formatOpenCloseTime(time: Date): string {
+function formatOpenCloseTime(time: string): string {
   const [hours, minutes] = time.toString().split(':').map(Number);
   // const period = hours < 12 ? 'AM' : 'PM';
   // const formattedHours = hours % 12 || 12;

@@ -33,9 +33,6 @@ export class BookingService {
     );
   }
 
-
-
-
   create(booking: Booking) {
     console.log('Creating booking:', booking);
     return this.httpClient
@@ -87,4 +84,11 @@ export class BookingService {
   getActiveBookings(): Observable<Booking[]> {
     return this.httpClient.get<Booking[]>(`${this.apiUrl}/active`);
   }
+
+  cancel(id: string){
+    return this.httpClient.put(`${this.apiUrl}`+`/cancel/${id}`,{})
+  }
+
+
+
 }

@@ -190,6 +190,13 @@ i{
 .no-navbar::-webkit-scrollbar{
   display: none;
 }
+
+.amenity{
+  padding: 0.1rem 0.5rem;
+  border-radius: 64px;
+  border: var(--primary-400) 1px solid;
+  color: var(--primary-400);
+}
  
 @keyframes fade-out {
     0% {

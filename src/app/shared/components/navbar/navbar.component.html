@@ -31,10 +31,12 @@
         </svg>
         <p>My Profile</p>
 
-        <div class="profile-dropdown" role="menu">
-          <div class="pd-user hov">{{ userName || 'User' }}</div>
-          <a class="pd-link hov" [routerLink]="['/', settingsRoute]">Settings</a>
-          <button class="pd-link logout hov" (click)="logout()">Logout</button>
+        <div class="profile-dropdown flex justify-center" role="menu">
+          <div class="pd-user text-gray-600">{{ userName }}</div>
+          <a class="pd-link hov flex items-center" [routerLink]="['/', settingsRoute]">
+            Settings <i class="fi fi-rr-settings" style="padding-top: 1rem; padding-right: 0.25rem;"></i></a>
+          <button class="pd-link logout hov flex items-center" (click)="logout()">
+            <i class="fi fi-rr-user-logout"></i>Logout</button>
         </div>
     </div>
   </div>  

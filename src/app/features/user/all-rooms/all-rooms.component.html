@@ -2,7 +2,7 @@
     <app-navbar></app-navbar>
 
     <div class="body">
-        <h1 style="font-size: 2rem;" class="">Welcome back, Moutcheu !</h1>
+        <h1 style="font-size: 2rem;" class="">Welcome back, {{currentUser.name.substring(0,1).toUpperCase() + currentUser.name.substring(1).toLowerCase()}} !</h1>
         <section class="bookings">
             <div class="flex justify-between mb-5"> 
                 <div>
@@ -15,23 +15,33 @@
                             <i class="fi fi-rr-search"></i>
                         </button>
                     </div>
+                    <div class="flex items-center">
+                        <label for="" class="text-gray-600" style="padding: 0 0.5rem;" >Open: </label>
+                    <input type="time" class="latest" placeholder="Open">
+                    </div>
+                    <div class="flex items-center">
+                        <label for="" class="text-gray-600" style="padding: 0 0.5rem;" >Close: </label>
+                    <input type="time" class="latest" placeholder="Close">
+                    </div>
                     <input type="number" class="latest" placeholder="Capacity">
-                    <select class="latest">
+                    <!-- <select class="latest">
                         <option value="latest" selected>Latest</option>
                         <option value="oldest">Oldest</option>
-                    </select>
+                    </select> -->
 
                 </div>
             </div>
 
-            <div style="width: 100%; height: 100%;" class="flex gap-4">
+            <div style="width: 100%; height: 100%; margin-left: 0.5rem;" class="flex gap-5 flex-wrap">
                 <app-room-card *ngFor="let r of rooms" [room]="r" (book)="openBook($event)" (viewDetails)="openDetails($event)"></app-room-card>
             </div>
             <!-- <app-room-book-modal *ngIf="showBookModal" [room]="selectedRoom" (close)="closeBook()"></app-room-book-modal> -->
-            <app-room-booking-calendar [isOpen]="showBookModal" [room]="selectedRoom!" [selectedDate]="currentDate" (close)="closeBook()" (bookingCreated)="onBookingCreated($event)"></app-room-booking-calendar>
-                    <app-room-details *ngIf="showDetails" [room]="selectedRoom" (close)="closeDetails()"></app-room-details>
+            <app-room-details *ngIf="showDetails" [room]="selectedRoom" (close)="closeDetails()"></app-room-details>
+            <app-room-booking-calendar  [isOpen]="showBookModal" [room]="selectedRoom!" [selectedDate]="currentDate" (close)="closeBook()" (bookingCreated)="onBookingCreated($event)"></app-room-booking-calendar>
+
 
         </section>
     </div>
+
 </div>
 

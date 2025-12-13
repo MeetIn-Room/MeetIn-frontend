@@ -52,7 +52,7 @@ export class RoomMapper {
       equipment: backendRoom.amenities || [],
       availabilityHours: `${openTime} - ${closeTime}`,
       utilization: Math.floor(Math.random() * 40) + 40,
-      status: backendRoom.isActive ? 'Available' : 'Maintenance',
+      status: backendRoom.active ? 'Available' : 'Maintenance',
       requiresApproval: false
     };
   }

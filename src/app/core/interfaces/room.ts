@@ -4,9 +4,9 @@ export interface Room {
   location?: string;
   capacity: number;
   type?: string;
-  openTime: Date;      // Timestamp
-  closeTime: Date;     // Timestamp
+  openTime: string;      
+  closeTime: string;     
   amenities?: string[];
   description?: string;
-  isActive: boolean;
+  active: boolean;
 }

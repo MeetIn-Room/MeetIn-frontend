@@ -5,8 +5,10 @@ import { Booking } from '../../../core/interfaces/booking';
 
 export function formatToStandardTime(date: Date | string): string {
   if (!date) return '';
-  const d = typeof date === 'string' ? new Date(date) : date;
-  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  if (typeof date === 'string'){
+    return date.toString().split(':')[0] +':' + date.toString().split(':')[1]
+  }
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 

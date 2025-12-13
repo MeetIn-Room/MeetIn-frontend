@@ -22,7 +22,7 @@ export class NavbarComponent {
       const raw = localStorage.getItem('currentUser');
       if (raw) {
         const obj = JSON.parse(raw);
-        this.userName = obj.name || obj.username ;
+        this.userName = obj.name ;
       }
     } catch {
       this.userName = null;

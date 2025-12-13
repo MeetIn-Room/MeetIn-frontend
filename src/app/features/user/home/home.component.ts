@@ -61,6 +61,17 @@ export class HomeComponent implements OnInit {
     })
   }
 
+  onCancel(id: string){
+    if(confirm('Do you really want to cancel this booking ?')){
+        this.bookingService.cancel(id).subscribe({
+        next: (res) => alert(res),
+        error: (err) => alert(err)
+      })
+    }
+    
+    location.reload()
+  }
+
   @HostListener('document:click', ['$event'])
   handleOutClick(ev: MouseEvent){
     const target = ev.target as HTMLElement;
@@ -112,7 +123,7 @@ export class HomeComponent implements OnInit {
     console.log('New booking created:', b);
     this.bookingService.create(b);
     this.showNewBookingModal = false;
-    // location.reload()
+    location.reload()
   }
 
   onNewCancelled() { this.showNewBookingModal = false; }

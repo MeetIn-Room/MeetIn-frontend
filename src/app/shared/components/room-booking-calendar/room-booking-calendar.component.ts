@@ -48,8 +48,8 @@ export class RoomBookingCalendarComponent implements OnInit, OnChanges {
 
   generateTimeSlots(): void {
     this.timeSlots = [];
-    const openTime = this.room.openTime.getHours() + this.room.openTime.getMinutes() / 60;
-    const closeTime = this.room.closeTime.getHours() + this.room.closeTime.getMinutes() / 60;
+    const openTime = this.timeStringToNumber(this.room.openTime);
+    const closeTime = this.timeStringToNumber(this.room.closeTime);
 
     for (let time = openTime; time < closeTime; time += 0.5) {
       const slot: TimeSlot = {

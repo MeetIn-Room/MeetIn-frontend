@@ -118,7 +118,7 @@ export class BookingDashboardComponent implements OnInit {
           },
           {
             title: 'Available Rooms',
-            value: rooms.filter(r => r.isActive).length.toString(),
+            value: rooms.filter(r => r.active).length.toString(),
             icon: 'door-open',
             color: '#FF8C42',
             gradient: ['#FF8C42', '#FFA62E'],
