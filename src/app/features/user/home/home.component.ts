@@ -1,3 +1,4 @@
+import { RoomServiceService } from './../../../core/services/room.service';
 import { AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, QueryList, ViewChild, ViewChildren, viewChildren } from '@angular/core';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { BookingItemComponent, formatToStandardTime } from '../../../shared/components/booking-item/booking-item.component';
@@ -9,7 +10,7 @@ import { NewBookingComponent } from '../../../shared/components/new-booking/new-
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../../../core/interfaces/auth';
 import { RoomBookingCalendarComponent } from '../../../shared/components/room-booking-calendar/room-booking-calendar.component';
-import { RoomService } from '../../../core/services/room.service';
+import { RoomServiceService } from '../../../core/services/room.service';
 
 @Component({
   selector: 'app-home',
@@ -45,7 +46,7 @@ export class HomeComponent implements OnInit {
   bookings: Booking[] = [];
 
   private bookingService = inject(BookingService);
-  private roomService = inject(RoomService)
+  private roomService = inject(RoomServiceService)
 
   ngOnInit(): void {
     // subscribe to service updates
@@ -98,7 +99,7 @@ export class HomeComponent implements OnInit {
   }
 
   openNewBookingModal() { this.showNewBookingModal = true; }
-  closeNewBookingModal() { 
+  closeNewBookingModal() {
     this.showNewBookingModal = false;
   }
 

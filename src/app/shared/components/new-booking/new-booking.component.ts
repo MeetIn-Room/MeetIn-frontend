@@ -25,7 +25,7 @@ import {
   RoomBookingCalendarComponent,
   TimeSlot,
 } from '../room-booking-calendar/room-booking-calendar.component';
-import { RoomService } from '../../../core/services/room.service';
+import { RoomServiceService } from '../../../core/services/room.service';
 import { formatToStandardTime } from '../booking-item/booking-item.component';
 
 function endAfterStartValidator(
@@ -62,7 +62,7 @@ export class NewBookingComponent implements OnInit {
   @ViewChild('calendar') calendar!: RoomBookingCalendarComponent;
   private fb = inject(FormBuilder);
   private bookingService = inject(BookingService);
-  private roomService = inject(RoomService);
+  private roomService = inject(RoomServiceService);
 
   timeSlots: TimeSlot[] = [];
   selectedSlots: TimeSlot[] = [];
