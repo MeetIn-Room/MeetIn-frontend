@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { RouterModule, Router } from '@angular/router';
 import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
 import { HeaderComponent } from '../../../shared/components/navbarAdmin/navbar';
-import { RoomServiceService } from '../../../core/services/room.service.service';
+import { RoomServiceService } from '../../../core/services/room.service';
 import { FrontendRoom, RoomMapper } from '../../../core/services/room-mapper';
 import { Room } from '../../../core/interfaces/room';
 

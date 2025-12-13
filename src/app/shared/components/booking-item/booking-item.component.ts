@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { BookingDetailsComponent } from '../booking-details/booking-details.component';
 import { Booking } from '../../../core/interfaces/booking';
 
-export function formatToStandardTime(time: string): string{
-  // console.log(t.toLocaleString());
-  // let time = t.toString().split("T")[1]
-  return time.toString().split(':')[0] +':' + time.toString().split(':')[1]
-  // return t.toLocaleString();
+export function formatToStandardTime(date: Date | string): string {
+  if (!date) return '';
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 

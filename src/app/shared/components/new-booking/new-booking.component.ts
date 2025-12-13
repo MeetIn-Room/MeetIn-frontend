@@ -5,7 +5,7 @@ import { BookingService } from '../../../core/services/booking.service';
 import { Room } from '../../../core/interfaces/room';
 import { Booking } from '../../../core/interfaces/booking';
 import { RoomBookingCalendarComponent, TimeSlot } from '../room-booking-calendar/room-booking-calendar.component';
-import { RoomService } from '../../../core/services/room.service';
+import { RoomServiceService } from '../../../core/services/room.service';
 import { formatToStandardTime } from '../booking-item/booking-item.component';
 
 function endAfterStartValidator(group: AbstractControl): ValidationErrors | null {
@@ -40,7 +40,7 @@ export class NewBookingComponent implements OnInit{
   @ViewChild('calendar') calendar!: RoomBookingCalendarComponent
   private fb = inject(FormBuilder);
   private bookingService = inject(BookingService);
-  private roomService = inject(RoomService);
+  private roomService = inject(RoomServiceService);
 
   timeSlots: TimeSlot[] = [];
   selectedSlots: TimeSlot[] = [];
@@ -65,7 +65,7 @@ export class NewBookingComponent implements OnInit{
     roomId: ['', Validators.required],
     description: ['']
   }, { validators: endAfterStartValidator });
- 
+
 
   constructor() {
     // default values
@@ -77,7 +77,7 @@ export class NewBookingComponent implements OnInit{
     const input = ev.target as HTMLInputElement;
     this.bookingTitle.set(input.value);
   }
- 
+
   onDescriptionTypeChange(ev : Event){
     const input = ev.target as HTMLInputElement;
     this.bookingDescription.set(input.value);
@@ -98,7 +98,7 @@ export class NewBookingComponent implements OnInit{
       error: (err) => alert(err)
     })
       this.onSelectChange()
-        
+
   }
 
   onSelectChange(){
@@ -125,13 +125,13 @@ export class NewBookingComponent implements OnInit{
   onClose() {
     this.close.emit();
   }
-  
-  
+
+
     generateTimeSlots(): void {
       this.timeSlots = [];
       const openTime = this.timeStringToHourNumber(formatOpenCloseTime(this.selectedRoom.openTime));
       const closeTime = this.timeStringToHourNumber(formatOpenCloseTime(this.selectedRoom.closeTime));
-  
+
       for (let time = openTime; time < closeTime; time += 0.5) {
         if (time >= 20) break //stop generating slots after 8 PM
         const slot: TimeSlot = {
@@ -146,7 +146,7 @@ export class NewBookingComponent implements OnInit{
 
       // console.log(this.timeSlots)
     }
-  
+
     formatTime(time: number, nextTime: number): string {
       const hours = Math.floor(time);
       const minutes = (time % 1) * 60;
@@ -155,49 +155,49 @@ export class NewBookingComponent implements OnInit{
 
       const nextHours = Math.floor(nextTime);
       const nextMinutes = (nextTime % 1) * 60;
-      
+
       const displayHours = hours > 12 ? hours : (hours === 0 ? 12 : hours);
       return `${displayHours}:${minutes.toString().padStart(2, '0')} - ${nextHours}:${nextMinutes.toString().padStart(2, '0')}`;
     }
-  
+
     isSlotBooked(time: number): boolean {
       for(let b of this.roomBookings){
         if(this.isSameDate(b.date, this.selectedDate) &&
         time >= Number(formatToStandardTime(b.startTime).split(':')[0]) + Number(formatToStandardTime(b.startTime).split(':')[1])/60 &&
-        time < Number(formatToStandardTime(b.endTime).split(':')[0]) + Number(formatToStandardTime(b.endTime).split(':')[1])/60 
+        time < Number(formatToStandardTime(b.endTime).split(':')[0]) + Number(formatToStandardTime(b.endTime).split(':')[1])/60
        ) return true;
      }
       return false;
-      
+
     }
-  
+
     isSameDate(date1: Date, date2: Date): boolean {
       const [year, month, date] = date1.toString().split('-')
       return Number(year) === date2.getFullYear()  && Number(month) === date2.getMonth()+1 && Number(date) === date2.getDate();
       // return date1.toDateString() === date2.toDateString();
     }
 
-  
+
     onSlotMouseDown(slot: TimeSlot): void {
       if (slot.isBooked) return;
-  
+
       this.isSelecting = true;
       this.selectedSlots = [slot];
       slot.isSelected = true;
     }
-  
+
     onSlotMouseEnter(slot: TimeSlot): void {
       if (!this.isSelecting || slot.isBooked) return;
-  
+
       const startSlot = this.selectedSlots[0];
       const startIndex = this.timeSlots.indexOf(startSlot);
       const currentIndex = this.timeSlots.indexOf(slot);
-  
+
       this.timeSlots.forEach(s => s.isSelected = false);
-  
+
       const minIndex = Math.min(startIndex, currentIndex);
       const maxIndex = Math.max(startIndex, currentIndex);
-  
+
       this.selectedSlots = [];
       for (let i = minIndex; i <= maxIndex; i++) {
         if (!this.timeSlots[i].isBooked) {
@@ -208,26 +208,26 @@ export class NewBookingComponent implements OnInit{
         }
       }
     }
-  
+
     onSlotMouseUp(): void {
       this.isSelecting = false;
-  
+
       if (this.selectedSlots.length > 0) {
         this.showBookingForm = true;
       }
     }
-  
+
     confirmBooking(): void {
       if (this.selectedSlots.length === 0 || !this.bookingTitle().trim()) {
         alert('Please provide a title for the booking');
         return;
       }
-  
+
       const startTime = Math.min(...this.selectedSlots.map(s => s.time));
       const endTime = Math.max(...this.selectedSlots.map(s => s.time)) + 0.5;
 
       // console.log({startTime, endTime})
-  
+
       const newBooking: Booking = {
         id: '',
         room: this.selectedRoom,
@@ -239,14 +239,14 @@ export class NewBookingComponent implements OnInit{
         userId: JSON.parse(localStorage.getItem('currentUser')!).id,
         isActive: true
       };
-  
+
       this.created.emit(newBooking);
       this.roomBookings.push(newBooking);
       this.cancelBookingForm();
       this.generateTimeSlots();
       console.log({startTime, endTime})
     }
-  
+
     cancelBookingForm(): void {
       this.showBookingForm = false;
       this.bookingTitle.set('');
@@ -254,12 +254,12 @@ export class NewBookingComponent implements OnInit{
       this.selectedSlots.forEach(slot => slot.isSelected = false);
       this.selectedSlots = [];
     }
-  
+
     isFirstSlotOfBooking(slot: TimeSlot): boolean {
       // if (!slot.booking) return false;
       return slot.time === Number(formatToStandardTime(slot.booking!.startTime).split(':')[0]) + Number(formatToStandardTime(slot.booking!.startTime).split(':')[1])/60;
     }
-  
+
     changeDate(days: number): void {
       const newDate = new Date(this.selectedDate);
       newDate.setDate(newDate.getDate() + days);
@@ -268,12 +268,12 @@ export class NewBookingComponent implements OnInit{
       this.selectedDate = newDate;
       this.generateTimeSlots();
     }
-  
+
     goToToday(): void {
       this.selectedDate = new Date();
       this.generateTimeSlots();
     }
-  
+
     formatDate(date: Date): string {
       return date.toLocaleDateString('en-US', {
         weekday: 'long',
@@ -282,25 +282,25 @@ export class NewBookingComponent implements OnInit{
         day: 'numeric'
       });
     }
-  
+
     closeModal(): void {
       this.close.emit();
     }
-  
+
     onModalClick(event: MouseEvent): void {
       event.stopPropagation();
     }
-  
+
     timeStringtoNumber(t: string): number{
       if (!t) return 0;
       const splitted = t.split(':') //e.g 10:30 -> 10 + 30/60 = 10.5
       return parseFloat(splitted[0]) + (parseFloat(splitted[1])/60)
     }
-  
+
     numberToTimeString(t: number): string {
       return t.toString().split('.')[0].padStart(2, '0') + ':' + `${parseFloat('0.' + t.toString().split('.')[1]) * 60}`.padStart(2, '0');
     }
-  
+
 }
 
 

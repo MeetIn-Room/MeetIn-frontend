@@ -12,7 +12,7 @@ import { formatToStandardTime } from '../booking-item/booking-item.component';
   styleUrls: ['./booking-details.component.scss']
 })
 export class BookingDetailsComponent implements OnChanges {
-  
+
   @Input() booking!: Booking;
   @Output() close = new EventEmitter<void>();
   @Output() update = new EventEmitter<Booking>();
@@ -29,26 +29,28 @@ export class BookingDetailsComponent implements OnChanges {
   ngOnChanges() {
     if (this.booking) {
       this.editDate = this.booking.date;
-      this.editStart = this.booking.startTime;
-      this.editEnd = this.booking.endTime;
+
+      // Safely convert startTime / endTime to ISO strings
+      this.editStart = this.normalizeToISOString(this.booking.startTime);
+      this.editEnd = this.normalizeToISOString(this.booking.endTime);
+
       this.editDescription = this.booking.description || '';
     }
-   
-    // parseFloat('0.' + 10.5.toString().split('.')[1]);
   }
 
-  isValid(){
-    return this.booking.date > new Date()
+  isValid() {
+    return this.booking.date > new Date();
   }
 
-
-
-  ngOnInit(){
+  ngOnInit() {
     this.startTimeString = formatToStandardTime(this.booking.startTime);
     this.endTimeString = formatToStandardTime(this.booking.endTime);
   }
 
-
+  /** Convert string | Date to ISO string */
+  private normalizeToISOString(value: string | Date): string {
+    return typeof value === 'string' ? new Date(value).toISOString() : value.toISOString();
+  }
 
   toLocalInput(iso?: string) {
     if (!iso) return '';
@@ -70,13 +72,14 @@ export class BookingDetailsComponent implements OnChanges {
 
   startEdit() {
     this.editing = true;
-    this.editStart = this.booking.startTime;
-    this.editEnd = this.booking.endTime;
+    this.editStart = this.normalizeToISOString(this.booking.startTime);
+    this.editEnd = this.normalizeToISOString(this.booking.endTime);
     this.editDescription = this.booking.description || '';
     this.editDate = this.booking.date;
   }
 
   cancelEdit() {
+    this.editing = false;
   }
 
   saveEdit() {
@@ -95,13 +98,15 @@ export class BookingDetailsComponent implements OnChanges {
     this.close.emit();
   }
 
-  timeStringtoNumber(t: string): number{
-    if (!t) return 0;
-    const splitted = t.split(':') //e.g 10:30 -> 10 + 30/60 = 10.5
-    return parseFloat(splitted[0]) + (parseFloat(splitted[1])/60)
+  timeStringtoNumber(t: string | Date): number {
+    let str = typeof t === 'string' ? t : t.toTimeString().slice(0, 5); // "HH:MM"
+    const splitted = str.split(':');
+    return parseFloat(splitted[0]) + (parseFloat(splitted[1]) / 60);
   }
 
-   numberToTimeString(t: number): string {
-    return t.toString().split('.')[0].padStart(2, '0') + ':' + `${parseFloat('0.' + t.toString().split('.')[1]) * 60}`.padStart(2, '0');
+  numberToTimeString(t: number): string {
+    const hours = Math.floor(t).toString().padStart(2, '0');
+    const minutes = Math.round((t - Math.floor(t)) * 60).toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
   }
 }

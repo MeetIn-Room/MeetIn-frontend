@@ -8,8 +8,8 @@ export interface Booking {
   room: Room
   userId: string;
   date: Date ;
-  startTime: Date;
-  endTime: Date;
+  startTime: Date | string ;
+  endTime: Date | string;
   title: string;
   description: string;
   isActive?: boolean;

@@ -10,7 +10,6 @@ export interface FrontendRoom {
   type: string;
   equipment: string[];
   availabilityHours: string;
-  description: string;
   utilization: number;
   status: string;
   nextBooking?: {
@@ -47,7 +46,6 @@ export class RoomMapper {
       id: backendRoom.id || '',
       name: backendRoom.name,
       location: backendRoom.location || 'Unknown Location',
-      description: backendRoom.description || '',
       capacity: backendRoom.capacity,
       description: backendRoom.description || '',
       type: backendRoom.type || 'meeting',

@@ -9,7 +9,7 @@ import { NewBookingComponent } from '../../../shared/components/new-booking/new-
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../../../core/interfaces/auth';
 import { RoomBookingCalendarComponent } from '../../../shared/components/room-booking-calendar/room-booking-calendar.component';
-import { RoomService } from '../../../core/services/room.service';
+import { RoomServiceService } from '../../../core/services/room.service';
 
 @Component({
   selector: 'app-home',
@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit {
   bookings: Booking[] = [];
 
   private bookingService = inject(BookingService);
-  private roomService = inject(RoomService)
+  private roomService = inject(RoomServiceService)
 
   ngOnInit(): void {
 
