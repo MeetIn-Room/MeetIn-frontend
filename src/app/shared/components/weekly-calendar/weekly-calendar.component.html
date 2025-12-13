@@ -60,8 +60,8 @@
           <div class="booking-title">{{ booking.title }}</div>
           <div class="booking-time">
             <span class="icon">🕐</span>
-            {{ booking.startTime.toString().split('T')[1].split(':')[0] +':' + booking.startTime.toString().split('T')[1].split(':')[1]}}
-             - {{ booking.endTime.toString().split('T')[1].split(':')[0] + ':' + booking.endTime.toString().split('T')[1].split(':')[1]}}
+            {{ booking.startTime.toString().split(':')[0] +':' + booking.startTime.toString().split(':')[1]}}
+             - {{ booking.endTime.toString().split(':')[0] + ':' + booking.endTime.toString().split(':')[1]}}
           </div>
           <div class="booking-room">
             <span class="icon">📍</span>

@@ -111,13 +111,13 @@ export class WeeklyCalendarComponent implements OnInit {
     // return this.isSameDay(date, new Date());
   }
 
-  calculatePosition(startTime: Date, endTime: Date): { top: string; height: string } {
+  calculatePosition(startTime: string, endTime: string): { top: string; height: string } {
     const startOfDay = 6; // 6 AM
     const endOfDay = 20; // 8 PM
     const totalMinutes = (endOfDay - startOfDay);
 
-    const top = ((timeToHours(startTime.toString().split('T')[1]) - startOfDay) *60) *(80/60);
-    const height = ((timeToHours(endTime.toString().split('T')[1]) - timeToHours(startTime.toString().split('T')[1]))*60 ) * (80/60);
+    const top = ((timeToHours(startTime.toString()) - startOfDay) *60) *(80/60);
+    const height = ((timeToHours(endTime.toString()) - timeToHours(startTime.toString()))*60 ) * (80/60);
     console.log(top, height);
     return { top: `${top}px`, height: `${height}px` };
   }

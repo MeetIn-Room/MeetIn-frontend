@@ -1,40 +1,166 @@
 <div class="modal-backdrop" #dialog >
-  <div class="modal-panel">
-    <h3>Create new booking</h3>
+  <div class="modal-panel calendar-modal-content">
+    <button 
+      (click)="onClose()"
+      class="close-button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <h3 class="header">Create new booking</h3>
 
-    <form [formGroup]="form" (ngSubmit)="submit()">
-      <label>Title</label>
-      <input type="text" formControlName="title" />
-      <div class="error" *ngIf="f.title.touched && f.title.invalid">
-        <small *ngIf="f.title.errors?.['required']">Title is required.</small>
-        <small *ngIf="f.title.errors?.['minlength']">Title is too short.</small>
+    <form [formGroup]="form" >
+      <div class="flex justify-betweenitems-center">
+        <select formControlName="roomId" class="rooms" #select (change)="onSelectChange()" required>
+          <option value="">Select a room to book </option>
+          <option *ngFor="let r of availableRooms"  [value]="r.id">{{ r.name }}   (Capaxity: {{ r.capacity }})</option>
+        </select>
       </div>
+      <div class="error" *ngIf="f.roomId.touched && f.roomId.invalid"><small>A room is required.</small></div>
+      
+    @if (selectedRoom) {
+      <div class="modal-header">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex-1">
+            <h2 class="text-xl font-bold text-gray-900">{{ selectedRoom.name }}</h2>
+            <p class="text-gray-600 py-2" style="width: 80%">{{ selectedRoom.description }}</p>
+          </div>
+          <div class="text-right mr-5">
+            <div class="text-sm text-gray-600">Capacity</div>
+            <div class="text-2xl font-bold duration">{{ selectedRoom.capacity }} people</div>
+          </div>
+        </div>
+      
+        <div class="flex flex-wrap gap-2">
+          <span *ngFor="let amenity of selectedRoom.amenities" 
+            class="px-3 py-1 amenity">
+            {{ amenity }}
+          </span>
+        </div>
 
-      <label>Date</label>
-      <input type="date" formControlName="date" />
-      <div class="error" *ngIf="f.date.touched && f.date.invalid"><small>Date is required.</small></div>
-
-      <label>Start time</label>
-      <input type="time" formControlName="startTime" />
-
-      <label>End time</label>
-      <input type="time" formControlName="endTime" />
-      <div class="error" *ngIf="form.errors?.['endBeforeStart']"><small>End time must be after start time.</small></div>
-
-      <label>Room</label>
-      <select formControlName="roomId">
-        <option value="">Select room</option>
-        <option *ngFor="let r of availableRooms" [value]="r.id">{{ r.name }} (cap: {{ r.capacity }})</option>
-      </select>
-      <div class="error" *ngIf="f.roomId.touched && f.roomId.invalid"><small>Room is required.</small></div>
-
-      <label>Description</label>
-      <textarea formControlName="description" rows="4"></textarea>
-
-      <div class="modal-actions">
-        <button type="submit" class="btn save">Create</button>
-        <button type="button" class="btn close" (click)="onCancel()">Cancel</button>
+        <!-- Date Navigation -->
+        <div class="flex items-center justify-between" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--slate-300);">
+          <button
+            (click)="changeDate(-1)"
+            class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          
+          <div class="flex gap-4 items-center">
+            <h3 class="text-lg font-semibold text-gray-700">
+              {{ formatDate(selectedDate) }}
+            </h3>
+            <button
+              (click)="goToToday()"
+              class="text-sm bg-blue-400 text-white rounded-lg hover:bg-blue-400 hover:cursor-pointer " style="padding: 0.25rem;">
+              Today
+            </button>
+          </div>
+          
+          <button
+            (click)="changeDate(1)"
+            class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
       </div>
+    }
+     
+
+    <!-- Instructions -->
+    <div class="instruction-banner">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline mr-2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <strong>How to book:</strong> Click or drag to select consecutive 30-minute time slots
+    </div>
+
+    <!-- Calendar Content -->
+    <div class="calendar-content">
+      <div class="" 
+        (mouseup)="onSlotMouseUp()"
+        (mouseleave)="isSelecting = false"
+        style="user-select: none;">
+        
+        <div *ngFor="let slot of timeSlots" 
+          class="time-slot"
+          [class.booked]="slot.isBooked"
+          [class.selected]="slot.isSelected"
+          [class.available]="!slot.isBooked"
+          (mousedown)="onSlotMouseDown(slot)"
+          (mouseenter)="onSlotMouseEnter(slot)">
+          
+          <div class="time-label">{{ slot.displayTime }}</div>
+        </div>
+      </div>
+    </div>
+
     </form>
+  </div>
+</div>
+
+<!-- Booking Form Modal (nested) -->
+<div *ngIf="showBookingForm" class="booking-form-overlay" (click)="cancelBookingForm()">
+  <div class="booking-form-content" (click)="$event.stopPropagation()">
+    <h3 class="text-2xl font-bold text-gray-900 mb-4">Confirm Booking</h3>
+    
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Selected Time
+      </label>
+      <div class="text-lg font-semibold duration">
+        {{ formatTime(selectedSlots[0].time, 0) }} - 
+        {{ formatTime(selectedSlots[selectedSlots.length - 1].time + 0.5, 0) }}
+      </div>
+      <div class="text-sm text-gray-600 mt-1">
+        Duration: {{ (selectedSlots.length) * 30 }} minutes
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Title *
+      </label>
+      <input
+        type="text"
+        placeholder="Enter booking title"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        [value]="bookingTitle()"
+        (input)="onTitleTypeChange($event)"
+        >
+        
+    </div>
+
+    <div class="mb-6">
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Description
+      </label>
+      <textarea
+        rows="3"
+        placeholder="Enter booking description (optional)"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        [value]="bookingDescription()"
+        (input)="onDescriptionTypeChange($event)"
+        ></textarea>
+    </div>
+    <div class="flex gap-3">
+      <button
+        (click)="confirmBooking()"
+        class="flex-1 btn save">
+        Confirm Booking
+      </button>
+      <button
+        (click)="cancelBookingForm()"
+        class="flex-1 btn close">
+        Cancel
+      </button>
+    </div>
   </div>
 </div>

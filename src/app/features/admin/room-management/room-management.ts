@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { RouterModule, Router } from '@angular/router';
 import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
 import { HeaderComponent } from '../../../shared/components/navbarAdmin/navbar';
-import {RoomServiceService} from '../../../core/services/room.service.service';
+import {RoomService} from '../../../core/services/room.service';
 import {RoomMapper, FrontendRoom} from '../../../core/services/room-mapper';
 
 
@@ -148,7 +148,7 @@ export class RoomManagementComponent implements OnInit {
   filteredRooms: Room[] = [];
   filteredRoomsTable: Room[] = [];
 
-  constructor(private fb: FormBuilder, private roomService: RoomServiceService) {
+  constructor(private fb: FormBuilder, private roomService: RoomService) {
     this.roomForm = this.createRoomForm();
   }
 

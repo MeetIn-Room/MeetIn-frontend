@@ -27,6 +27,10 @@ export class RoomServiceService {
     return this.httpClient.get<Room[]>(`${this.apiUrl}/search`, { params: { keyword } });
   }
 
+  getRoom(id: string): Observable<Room>{
+    return this.httpClient.get<Room>(this.apiUrl+`/${id}`)
+  }
+
   createRoom(room: Partial<Room>): Observable<Room> {
     return this.httpClient.post<Room>(this.apiUrl, room);
   }

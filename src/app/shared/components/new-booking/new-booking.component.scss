@@ -8,12 +8,18 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
+select:focus {
+  border: 2px solid var(--slate-300);
+  outline: none;
+
+}
+
 .modal-panel {
     background: #fff;
     padding: 1rem 1.2rem;
     border-radius: 8px;
-    width: 92%;
-    max-width: 640px;
+    width: 70vw;
+    height: 90vh;
     box-shadow: 0 10px 30px rgba(0,0,0,0.25);
     z-index: 999;
     .header{
@@ -21,7 +27,6 @@
       color: var(--slate-500);
       text-align: center;
       padding-bottom: 0.75rem;
-      border-bottom: var(--slate-300) 1px solid;
     }
 
     .row { margin: 1rem 0 }
@@ -37,6 +42,9 @@
       }
     }
 
+    form{
+      overflow-y: scroll ;
+    }
   }
   
 .edit{
@@ -55,9 +63,6 @@
   background: linear-gradient(var(--primary-400),var(--primary-600));
   color: var(--white);
 }
-.modal-backdrop::backdrop{
-    transition: all 0.7s ease-in;
-}
 
 .modal-panel {
     animation: fade-out 0.7s ease-out;
@@ -67,30 +72,192 @@
     animation: fade-in 0.7s ease-out;
 }
 
-@keyframes fade-out {
-    0% {
-        opacity: 0;
-        transform: scaleY(0);
-        display: none;
-    }
-
-    100% {
-        opacity: 1;
-        transform: scaleY(1);
-        display: block;
-    }
+.rooms{
+  border: 1px solid var(--slate-300);
+  color: var(--slate-500);
+  border-radius: 10px;
+  width: 100%;
+  padding: 0.25rem;
 }
 
-@keyframes fade-in {
-    0% {
-        opacity: 1;
-        transform: scaleY(1);
-        display: block;
-    }
+.error{
+  color: #ff0000;
+}
 
-    100% {
-        opacity: 0;
-        transform: scaleY(0);
-        display: none;
-    }
+.close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.close-button:hover {
+  background: #f3f4f6;
+  transform: scale(1.1);
+}
+
+.modal-header {
+  padding: 24px 24px 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.instruction-banner {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 12px 16px;
+  margin: 16px 24px;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 14px;
+}
+
+.calendar-content {
+  padding: 24px;
+  flex: 1;
+}
+
+.time-slot {
+  position: relative;
+  height: 60px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.time-slot.available:hover {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.time-slot.selected {
+  background-color: #dbeafe;
+  border-color: #3b82f6;
+  border-width: 2px;
+}
+
+.time-slot.booked {
+  background-color: var(--secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.time-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b5563;
+  z-index: 1;
+}
+
+.booking-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 12px;
+  color: white;
+  border-radius: 8px;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  overflow: hidden;
+}
+
+.booking-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.booking-time {
+  font-size: 12px;
+  opacity: 0.9;
+  margin-bottom: 4px;
+}
+
+.booking-description {
+  font-size: 11px;
+  opacity: 0.8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.booking-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.booking-form-content {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  // max-width: 500px;
+  width: 40vw;
+  max-height: 60vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  label{
+    margin-top: 0.5rem;
+    font-weight: bold;
+  }
+  input{ padding: 0.25rem ;}
+  textarea{ padding: 0.25rem ;}
+}
+
+input, textarea {
+  outline: none;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+}
+
+.amenity{
+  padding: 0.1rem 0.5rem;
+  border-radius: 64px;
+  border: var(--primary-400) 1px solid;
+  color: var(--primary-400);
+}
+
+.calendar-modal-content {
+  background: white;
+  border-radius: 16px;
+  // max-width: 900px;
+  width: 70vw;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: auto;
+}
+
+.duration{
+  color: var(--primary-500);
 }

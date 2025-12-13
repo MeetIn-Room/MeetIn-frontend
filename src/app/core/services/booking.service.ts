@@ -5,29 +5,44 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BookingService {
   private apiUrl = environment.apiUrl + '/api/bookings';
 
   private httpClient = inject(HttpClient);
-  private _bookings = new BehaviorSubject<Booking[]>([]);
 
-constructor() {
+  constructor() {
     // initialize with empty or sample data if needed
-
   }
 
-  getBoookings(): Observable<Booking[]>{
-    return this.httpClient.get<Booking[]>(`${this.apiUrl}`)
+  getBoookings(): Observable<Booking[]> {
+    return this.httpClient.get<Booking[]>(`${this.apiUrl}`);
   }
-  // $2a$12$VNRXuazv6HqgUG.OiZy89usWBtVlVIpGCNZwkY9vYJ9zWFffiAoBi
+
+  getBookingsByRoom(roomId: string): Observable<Booking[]> {
+    return this.httpClient.get<Booking[]>(
+      `${this.apiUrl}/room?roomId=${roomId}`
+    );
+  }
 
   create(booking: Booking) {
-    // this._bookings.next(next);
-    // this.saveToStorage(next);
+    console.log('Creating booking:', booking);
+    return this.httpClient
+      .post<Booking>(`${this.apiUrl}`, booking)
+      .pipe(
+        tap({
+          next: (createdBooking) => {
+            console.log('Booking created:', createdBooking);
+          },
+          error: (error) => {
+            console.error('Error creating booking:', error);
+          },
+        })
+      )
+      .subscribe();
   }
-// postgresql://alex:VUbKHdvaSEQaRcUCWCt95qpIP4TBqaTe@dpg-d4gvvs7diees73b7pcvg-a.frankfurt-postgres.render.com/ninjadb
+
   update(updated: Booking) {
     // const list = this.getSnapshot().map(b => (b.id === updated.id ? updated : b));
     // this._bookings.next(list);
@@ -39,7 +54,4 @@ constructor() {
     // this._bookings.next(list);
     // this.saveToStorage(list);
   }
-
-
-
 }
