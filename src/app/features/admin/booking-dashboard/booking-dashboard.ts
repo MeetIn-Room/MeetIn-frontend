@@ -5,7 +5,7 @@ import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
 import { HeaderComponent } from '../../../shared/components/navbarAdmin/navbar';
 import { UserServiceService } from '../../../core/services/user-service.service';
 import { BookingService } from '../../../core/services/booking.service';
-import { RoomServiceService } from '../../../core/services/room.service.service';
+import { RoomServiceService } from '../../../core/services/room.service';
 import { Booking } from '../../../core/interfaces/booking';
 import { forkJoin } from 'rxjs';
 

@@ -5,7 +5,7 @@ import { BookingService } from '../../../core/services/booking.service';
 import { Room } from '../../../core/interfaces/room';
 import { Booking } from '../../../core/interfaces/booking';
 import { RoomBookingCalendarComponent, TimeSlot } from '../room-booking-calendar/room-booking-calendar.component';
-import { RoomService } from '../../../core/services/room.service';
+import { RoomServiceService } from '../../../core/services/room.service';
 import { formatToStandardTime } from '../booking-item/booking-item.component';
 
 function endAfterStartValidator(group: AbstractControl): ValidationErrors | null {
