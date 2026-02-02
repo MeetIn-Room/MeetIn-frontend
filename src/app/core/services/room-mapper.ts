@@ -12,6 +12,8 @@ export interface FrontendRoom {
   availabilityHours: string;
   utilization: number;
   status: string;
+  allowedRoles?: string[];
+  allowedRoleIds?: (string | number)[];
   nextBooking?: {
     time: string;
     user: string;
@@ -53,6 +55,8 @@ export class RoomMapper {
       availabilityHours: `${openTime} - ${closeTime}`,
       utilization: Math.floor(Math.random() * 40) + 40,
       status: (backendRoom.isActive ?? backendRoom.active ?? true) ? 'Available' : 'Maintenance',
+      allowedRoles: backendRoom.allowedRoles || [],
+      allowedRoleIds: backendRoom.allowedRoleIds || [],
       requiresApproval: false
     };
   }
@@ -81,7 +85,8 @@ export class RoomMapper {
       openTime: formatTime(openTimeStr),
       closeTime: formatTime(closeTimeStr),
       isActive: frontendRoom.status === 'Available',
-      active: frontendRoom.status === 'Available'
+      active: frontendRoom.status === 'Available',
+      allowedRoleIds: frontendRoom.allowedRoleIds
     };
   }
 

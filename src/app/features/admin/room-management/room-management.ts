@@ -229,7 +229,7 @@ export class RoomManagementComponent implements OnInit {
 
   // NEW: Check if role is selected
   isRoleSelected(roleId: string | number): boolean {
-    return this.selectedRoleIds.includes(roleId);
+    return this.selectedRoleIds.some(selected => `${selected}` === `${roleId}`);
   }
 
   // NEW: Toggle "Allow All Roles" checkbox
@@ -270,12 +270,12 @@ export class RoomManagementComponent implements OnInit {
     this.showAddRoomModal = true;
     this.editingRoom = room;
     this.selectedEquipment = [...(room.equipment || [])];
-    
-    // NEW: Load allowed roles if any
-    const backendRoom = this.rooms.find(r => r.id === room.id);
-    // Note: allowedRoleIds would need to be added to the Room interface and mapper
-    // For now, we'll assume no restrictions when editing (empty array)
-    this.selectedRoleIds = [];
+
+    const allowedRoleIds = room.allowedRoleIds || [];
+    this.selectedRoleIds = allowedRoleIds
+      .map(roleId => typeof roleId === 'string' ? Number(roleId) : roleId)
+      .filter(roleId => !Number.isNaN(roleId));
+    const allowAllRoles = this.selectedRoleIds.length === 0;
 
     const [availableFrom, availableTo] = this.parseAvailabilityHours(room.availabilityHours || '08:00 - 18:00');
 
@@ -289,7 +289,7 @@ export class RoomManagementComponent implements OnInit {
       availableTo: availableTo,
       status: room.status,
       requiresApproval: room.requiresApproval || false,
-      allowAllRoles: true // NEW: Default to allowing all roles for now
+      allowAllRoles: allowAllRoles
     });
   }
 
@@ -322,7 +322,7 @@ export class RoomManagementComponent implements OnInit {
 
     // Convert to backend format
     const backendRoomData = RoomMapper.toBackend(frontendRoomData);
-    
+
     // NEW: Add allowed roles to backend data
     (backendRoomData as any).allowedRoleIds = allowedRoleIds;
 
@@ -435,7 +435,7 @@ export class RoomManagementComponent implements OnInit {
 
   applyTableFilters(): void {
     let filtered = [...this.filteredRooms];
-    
+
     // Apply sorting
     filtered.sort((a, b) => {
       let aValue = a[this.sortField as keyof FrontendRoom];
