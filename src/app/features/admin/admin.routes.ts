@@ -12,6 +12,11 @@ export const ADMIN_ROUTES: Routes = [
       .then(m => m.UserManagementComponent)
   },
   {
+    path: 'roles',
+    loadComponent: () => import('./role-management/role-management.component')
+      .then(m => m.RoleManagementComponent)
+  },
+  {
     path: 'rooms',
     loadComponent: () => import('./room-management/room-management')
       .then(m => m.RoomManagementComponent)

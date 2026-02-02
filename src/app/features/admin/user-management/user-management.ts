@@ -1,11 +1,15 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { SidebarComponent } from '../../../shared/components/sidebar/sidebar';
 import { HeaderComponent } from '../../../shared/components/navbarAdmin/navbar';
 import { UserServiceService } from '../../../core/services/user-service.service';
-import { User, UserCreateDTO, UserUpdateDTO, UserDisplay } from '../../../core/interfaces/user';
+import { RoleService } from '../../../core/services/role.service';
+import { User, UserDisplay, getUserRoleName } from '../../../core/interfaces/user';
+import { Role } from '../../../core/interfaces/role';
+import { RoleBadgeComponent } from '../../../shared/components/role-badge/role-badge.component';
+import { RoleSelectorComponent } from '../../../shared/components/role-selector/role-selector.component';
 
 interface UserStat {
   title: string;
@@ -19,22 +23,27 @@ interface UserStat {
   gradient: string[];
 }
 
-
-
-interface RoleOption {
-  value: string;
-  name: string;
-  description: string;
-}
-
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, SidebarComponent, HeaderComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ReactiveFormsModule, 
+    RouterModule, 
+    SidebarComponent, 
+    HeaderComponent,
+    RoleBadgeComponent,
+    RoleSelectorComponent
+  ],
   templateUrl: './user-management.html',
   styleUrls: ['./user-management.css']
 })
 export class UserManagementComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private userService = inject(UserServiceService);
+  private roleService = inject(RoleService);
 
   searchQuery: string = '';
   currentFilter: string = 'all';
@@ -55,6 +64,7 @@ export class UserManagementComponent implements OnInit {
 
   // Loading and error states
   isLoading: boolean = false;
+  rolesLoading: boolean = false;
   errorMessage: string | null = null;
 
   // Form states
@@ -64,10 +74,10 @@ export class UserManagementComponent implements OnInit {
 
   userForm: FormGroup;
 
-  roleOptions: RoleOption[] = [
-    { value: 'USER', name: 'Standard User', description: 'Can book rooms and manage own bookings' },
-    { value: 'ADMIN', name: 'Administrator', description: 'Full system access and user management' }
-  ];
+  // Dynamic roles from backend
+  roles: Role[] = [];
+  systemRoles: Role[] = [];
+  customRoles: Role[] = [];
 
   userStats: UserStat[] = [
     {
@@ -108,16 +118,33 @@ export class UserManagementComponent implements OnInit {
   users: UserDisplay[] = [];
   filteredUsers: UserDisplay[] = [];
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private userService: UserServiceService
-  ) {
+  constructor() {
     this.userForm = this.createUserForm();
   }
 
   ngOnInit() {
+    this.loadRoles();
     this.loadUsers();
+  }
+
+  /**
+   * Load all roles from the backend
+   */
+  loadRoles(): void {
+    this.rolesLoading = true;
+    
+    this.roleService.getAllRoles().subscribe({
+      next: (roles) => {
+        this.roles = roles;
+        this.systemRoles = roles.filter(r => r.isSystem);
+        this.customRoles = roles.filter(r => !r.isSystem);
+        this.rolesLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading roles:', error);
+        this.rolesLoading = false;
+      }
+    });
   }
 
   /**
@@ -131,12 +158,15 @@ export class UserManagementComponent implements OnInit {
       next: (users) => {
         console.log("Users ", users);
         // Convert backend User to UserDisplay with additional frontend properties
-        this.users = users.map(user => ({
-          ...user,
-          selected: false,
-          lastLogin: 'Not tracked', // Backend doesn't provide this
-          permissions: this.getDefaultPermissions(user.role)
-        }));
+        this.users = users.map(user => {
+          const roleName = getUserRoleName(user);
+          return {
+            ...user,
+            selected: false,
+            lastLogin: 'Not tracked', // Backend doesn't provide this
+            permissions: this.getDefaultPermissions(roleName)
+          };
+        });
         this.applyFilters();
         this.isLoading = false;
         this.updateUserStats();
@@ -155,7 +185,7 @@ export class UserManagementComponent implements OnInit {
   private updateUserStats(): void {
     const totalUsers = this.users.length;
     const activeUsers = this.users.filter(u => u.active).length;
-    const adminUsers = this.users.filter(u => u.role === 'ADMIN').length;
+    const adminUsers = this.users.filter(u => getUserRoleName(u) === 'ADMIN').length;
 
     // Update stats with real data
     this.userStats[0].value = totalUsers.toString();
@@ -168,7 +198,7 @@ export class UserManagementComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       department: ['', Validators.required],
-      role: ['', Validators.required],
+      roleId: [null, Validators.required],  // Changed from role string to roleId
       active: [true],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: [''],
@@ -192,126 +222,128 @@ export class UserManagementComponent implements OnInit {
     this.userForm.reset({
       active: true,
       sendWelcomeEmail: true,
-      role: ''
+      roleId: null
     });
 
     // Restore password validators for create mode
     this.userForm.get('password')?.setValidators([Validators.required, Validators.minLength(8)]);
     this.userForm.get('confirmPassword')?.setValidators([]);
-    this.userForm.updateValueAndValidity();
+    this.userForm.get('password')?.enable();
+    this.userForm.get('confirmPassword')?.enable();
   }
 
   closeAddUserModal(): void {
     this.showAddUserModal = false;
     this.userForm.reset();
+    this.editingUser = null;
   }
 
   openEditUserModal(user: UserDisplay): void {
     this.isEditing = true;
-    this.showEditUserModal = true;
     this.editingUser = user;
-    this.activeTab = 'profile';
+    this.showEditUserModal = true;
 
+    // Set form values
     this.userForm.patchValue({
       name: user.name,
       email: user.email,
       department: user.department,
-      role: user.role,
+      roleId: user.roleId || (typeof user.role === 'object' ? user.role?.id : null),
       active: user.active,
       password: '',
       confirmPassword: ''
     });
 
-    // Clear password validators for edit mode
+    // Remove password validators for edit mode (password is optional)
     this.userForm.get('password')?.clearValidators();
     this.userForm.get('confirmPassword')?.clearValidators();
-    this.userForm.updateValueAndValidity();
+    this.userForm.get('password')?.updateValueAndValidity();
+    this.userForm.get('confirmPassword')?.updateValueAndValidity();
   }
 
   closeEditUserModal(): void {
     this.showEditUserModal = false;
     this.editingUser = null;
     this.userForm.reset();
-
-    // Restore password validators
-    this.userForm.get('password')?.setValidators([Validators.minLength(8)]);
-    this.userForm.get('confirmPassword')?.setValidators([]);
+    // Restore validators
+    this.userForm.get('password')?.setValidators([Validators.required, Validators.minLength(8)]);
   }
 
-  // Form Actions
-  saveUser(): void {
-    if (this.userForm.invalid) {
-      this.markFormGroupTouched();
-      return;
-    }
+  onSubmit(): void {
+    if (this.userForm.valid) {
+      this.isSubmitting = true;
+      
+      const formValue = this.userForm.value;
+      
+      if (this.isEditing && this.editingUser) {
+        // Update existing user
+        const updateData = {
+          name: formValue.name,
+          email: formValue.email,
+          department: formValue.department,
+          roleId: formValue.roleId,
+          active: formValue.active,
+          password: formValue.password || undefined
+        };
 
-    this.isSubmitting = true;
-    const formValue = this.userForm.value;
-
-    if (this.isEditing && this.editingUser) {
-      // Update existing user
-      const dto: UserUpdateDTO = {
-        name: formValue.name,
-        email: formValue.email,
-        password: formValue.password || 'unchanged', // Backend requires password field
-        role: formValue.role,
-        active: formValue.active
-      };
-
-      this.userService.updateUser(this.editingUser.id, dto).subscribe({
-        next: (updatedUser) => {
-          // Update local user list
-          const index = this.users.findIndex(u => u.id === this.editingUser!.id);
-          if (index > -1) {
-            this.users[index] = {
-              ...updatedUser,
-              selected: false,
-              lastLogin: this.users[index].lastLogin,
-              permissions: this.getDefaultPermissions(updatedUser.role)
-            };
+        this.userService.updateUser(this.editingUser.id, updateData).subscribe({
+          next: (updatedUser) => {
+            // Update the user in the list
+            const index = this.users.findIndex(u => u.id === updatedUser.id);
+            if (index !== -1) {
+              const roleName = getUserRoleName(updatedUser);
+              this.users[index] = {
+                ...updatedUser,
+                selected: false,
+                permissions: this.getDefaultPermissions(roleName)
+              };
+            }
+            this.applyFilters();
+            this.isSubmitting = false;
+            this.closeEditUserModal();
+            this.showNotification('User updated successfully!');
+            this.updateUserStats();
+          },
+          error: (error) => {
+            this.isSubmitting = false;
+            this.showNotification(`Error updating user: ${error.message}`);
           }
-          this.applyFilters();
-          this.isSubmitting = false;
-          this.closeEditUserModal();
-          this.showNotification('User updated successfully!');
-        },
-        error: (error) => {
-          this.isSubmitting = false;
-          this.showNotification(`Error updating user: ${error.message}`);
-        }
-      });
-    } else {
-      // Create new user
-      const dto: UserCreateDTO = {
-        name: formValue.name,
-        email: formValue.email,
-        password: formValue.password,
-        department: formValue.department,
-        role: formValue.role,
-        active: formValue.active ?? true
-      };
+        });
+      } else {
+        // Create new user
+        const createData = {
+          name: formValue.name,
+          email: formValue.email,
+          department: formValue.department,
+          roleId: formValue.roleId,
+          active: formValue.active,
+          password: formValue.password
+        };
 
-      this.userService.createUser(dto).subscribe({
-        next: (newUser) => {
-          // Add to local list
-          const userDisplay: UserDisplay = {
-            ...newUser,
-            selected: false,
-            lastLogin: 'Never',
-            permissions: this.getDefaultPermissions(newUser.role)
-          };
-          this.users.unshift(userDisplay);
-          this.applyFilters();
-          this.isSubmitting = false;
-          this.closeAddUserModal();
-          this.showNotification('User created successfully!');
-          this.updateUserStats();
-        },
-        error: (error) => {
-          this.isSubmitting = false;
-          this.showNotification(`Error creating user: ${error.message}`);
-        }
-      });
+        this.userService.createUser(createData).subscribe({
+          next: (newUser) => {
+            const roleName = getUserRoleName(newUser);
+            const userDisplay: UserDisplay = {
+              ...newUser,
+              selected: false,
+              lastLogin: 'Not tracked',
+              permissions: this.getDefaultPermissions(roleName)
+            };
+            this.users.unshift(userDisplay);
+            this.applyFilters();
+            this.isSubmitting = false;
+            this.closeAddUserModal();
+            this.showNotification('User created successfully!');
+            this.updateUserStats();
+          },
+          error: (error) => {
+            this.isSubmitting = false;
+            this.showNotification(`Error creating user: ${error.message}`);
+          }
+        });
+      }
+    } else {
+      this.markFormGroupTouched();
     }
   }
 
@@ -385,17 +417,16 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
-  getDefaultPermissions(role: string): string[] {
+  getDefaultPermissions(roleName: string): string[] {
     const basePermissions = ['book_rooms', 'edit_own_bookings', 'cancel_own_bookings'];
 
-    switch (role) {
-      case 'ADMIN':
-        return [...basePermissions, 'view_all_bookings', 'view_users', 'manage_users', 'reset_passwords', 'manage_rooms', 'system_settings', 'view_audit_logs', 'export_data'];
-      case 'USER':
-        return basePermissions;
-      default:
-        return basePermissions;
+    // Check if this is an admin role
+    if (roleName === 'ADMIN') {
+      return [...basePermissions, 'view_all_bookings', 'view_users', 'manage_users', 'reset_passwords', 'manage_rooms', 'system_settings', 'view_audit_logs', 'export_data'];
     }
+    
+    // All other roles get base permissions only
+    return basePermissions;
   }
 
   // Search functionality
@@ -421,7 +452,7 @@ export class UserManagementComponent implements OnInit {
         user.name.toLowerCase().includes(query) ||
         user.email.toLowerCase().includes(query) ||
         user.department.toLowerCase().includes(query) ||
-        user.role.toLowerCase().includes(query)
+        getUserRoleName(user).toLowerCase().includes(query)
       );
     }
 
@@ -434,7 +465,7 @@ export class UserManagementComponent implements OnInit {
         filtered = filtered.filter(user => !user.active);
         break;
       case 'admin':
-        filtered = filtered.filter(user => user.role === 'ADMIN');
+        filtered = filtered.filter(user => getUserRoleName(user) === 'ADMIN');
         break;
     }
 
@@ -577,12 +608,28 @@ export class UserManagementComponent implements OnInit {
   }
 
   // Utility functions
-  getRoleClass(role: string): string {
+  saveUser(): void {
+    this.onSubmit();
+  }
+
+  get roleOptions(): Role[] {
+    return this.roles;
+  }
+
+  getRoleClass(roleName: string | Role): string {
+    // Handle both string and Role object
+    const roleStr = typeof roleName === 'string' ? roleName : roleName?.name;
+    
+    // Dynamic role class mapping based on role name
     const classes: { [key: string]: string } = {
       'ADMIN': 'role-admin',
       'USER': 'role-user'
     };
-    return classes[role] || 'role-user';
+    return classes[roleStr] || 'role-user';
+  }
+
+  getUserRoleName(user: User | UserDisplay): string {
+    return getUserRoleName(user);
   }
 
   getStatusClass(active: boolean): string {
@@ -647,10 +694,4 @@ export class UserManagementComponent implements OnInit {
       this.closeEditUserModal();
     }
   }
-
-  // logout(): void {
-  //   // Clear any auth tokens/data here
-  //   this.router.navigate(['/login']);
-  // }
-
 }

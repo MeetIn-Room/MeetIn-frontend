@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { getAuthUserRoleName } from '../../../core/interfaces/auth';
 
 @Component({
   selector: 'app-login',
@@ -102,7 +103,8 @@ export class LoginComponent implements OnInit {
 
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
-          this.returnUrl =  response.user.role?.toLowerCase() === 'admin' ? '/admin' : '/home';
+          const roleName = getAuthUserRoleName(response.user).toLowerCase();
+          this.returnUrl = roleName === 'admin' ? '/admin' : '/home';
           this.router.navigate([this.returnUrl]);
         },
         error: (err) => {

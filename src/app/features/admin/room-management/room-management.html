@@ -485,6 +485,53 @@
                             </label> -->
                         </div>
                     </div>
+
+                    <!-- Role Access Control -->
+                    <div class="form-section">
+                        <h4 class="section-title">Access Control</h4>
+                        
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox"
+                                       formControlName="allowAllRoles"
+                                       (change)="toggleAllowAllRoles($event)">
+                                <span class="checkmark"></span>
+                                Allow all roles to book this room
+                            </label>
+                            <div class="form-hint" *ngIf="roomForm.get('allowAllRoles')?.value">
+                                All users with any role can book this room
+                            </div>
+                        </div>
+
+                        <div class="form-group" *ngIf="!roomForm.get('allowAllRoles')?.value">
+                            <label class="form-label">Allowed Roles *</label>
+                            <div class="role-options" *ngIf="!rolesLoading; else loadingRoles">
+                                <label class="role-option" *ngFor="let role of roles">
+                                    <input type="checkbox"
+                                           [value]="role.id"
+                                           [checked]="isRoleSelected(role.id)"
+                                           (change)="toggleRole(role.id, $event)">
+                                    <span class="role-label">
+                                        <span class="role-badge" [ngClass]="role.isSystem ? 'system-role' : 'custom-role'">
+                                            {{ role.name }}
+                                        </span>
+                                        <span class="role-description" *ngIf="role.description">
+                                            {{ role.description }}
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            <ng-template #loadingRoles>
+                                <div class="loading-roles">
+                                    <span class="spinner-small"></span>
+                                    <span>Loading roles...</span>
+                                </div>
+                            </ng-template>
+                            <div class="form-hint" *ngIf="!roomForm.get('allowAllRoles')?.value && selectedRoleIds.length === 0">
+                                Please select at least one role that can book this room
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-actions">

@@ -33,6 +33,11 @@ export class SidebarComponent {
       route: '/admin/users'
     },
     {
+      label: 'Role Management',
+      icon: 'shield',
+      route: '/admin/roles'
+    },
+    {
       label: 'Rooms Management',
       icon: 'rooms',
       route: '/admin/rooms'

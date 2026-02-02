@@ -238,8 +238,8 @@
                                 </td>
                                 <td class="role-cell">
                                     <div class="role-wrapper">
-                                        <span class="role-badge" [ngClass]="getRoleClass(user.role)">
-                                            {{ user.role }}
+                                        <span class="role-badge" [ngClass]="getRoleClass(getUserRoleName(user))">
+                                            {{ getUserRoleName(user) }}
                                         </span>
                                     </div>
                                 </td>
@@ -383,11 +383,11 @@
                         <div class="form-group">
                             <label class="form-label">User Role *</label>
                             <div class="role-options">
-                                <label class="role-option" *ngFor="let role of roleOptions">
+                                <label class="role-option" *ngFor="let role of roles">
                                     <input type="radio"
-                                           name="role"
-                                           [value]="role.value"
-                                           formControlName="role">
+                                           name="roleId"
+                                           [value]="role.id"
+                                           formControlName="roleId">
                                     <span class="role-label">
                                         <span class="role-name">{{ role.name }}</span>
                                         <span class="role-description">{{ role.description }}</span>
@@ -587,11 +587,11 @@
                             <div class="form-group">
                                 <label class="form-label">User Role *</label>
                                 <div class="role-options">
-                                    <label class="role-option" *ngFor="let role of roleOptions">
+                                    <label class="role-option" *ngFor="let role of roles">
                                         <input type="radio"
                                                name="role-edit"
-                                               [value]="role.value"
-                                               formControlName="role">
+                                               [value]="role.id"
+                                               formControlName="roleId">
                                         <span class="role-label">
                                             <span class="role-name">{{ role.name }}</span>
                                             <span class="role-description">{{ role.description }}</span>
