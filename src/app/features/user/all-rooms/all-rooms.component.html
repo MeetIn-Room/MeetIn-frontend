@@ -33,7 +33,7 @@
             </div>
 
             <div style="width: 100%; height: 100%; margin-left: 0.5rem;" class="flex gap-5 flex-wrap">
-                <div *ngIf="_rooms().length === 0" style="text-align: center; margin: 4rem; width: 100%;" class="text-gray-400">No room found</div>
+                <div *ngIf="_rooms().length === 0" style="text-align: center; margin: 4rem; width: 100%;" class="text-gray-400">No rooms available for your role.</div>
                 <app-room-card *ngFor="let r of _rooms()" [room]="r" (book)="openBook($event)" (viewDetails)="openDetails($event)"></app-room-card>
             </div>
             <!-- <app-room-book-modal *ngIf="showBookModal" [room]="selectedRoom" (close)="closeBook()"></app-room-book-modal> -->

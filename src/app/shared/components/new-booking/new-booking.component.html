@@ -17,6 +17,7 @@
           <option *ngFor="let r of availableRooms"  [value]="r.id">{{ r.name }}   (Capacity: {{ r.capacity }})</option>
         </select>
       </div>
+      <div *ngIf="availableRooms.length === 0" class="error"><small>No rooms available for your role.</small></div>
       <div class="error" *ngIf="f.roomId.touched && f.roomId.invalid"><small>A room is required.</small></div>
 
     @if (selectedRoom) {

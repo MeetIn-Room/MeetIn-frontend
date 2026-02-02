@@ -12,7 +12,7 @@ export interface Room {
   description?: string;
   isActive: boolean;
   active?: boolean;
-  allowedRoleNames: string[]
+  allowedRoleNames?: string[];
 
   // NEW FIELDS for role-based access control:
   allowedRoles?: string[];  // Role names allowed to book this room (empty = all roles)
@@ -58,7 +58,8 @@ export interface RoomUpdateDTO {
  */
 export function hasRoleRestrictions(room: Room | null | undefined): boolean {
   if (!room) return false;
-  return room.allowedRoles !== undefined && room.allowedRoles.length > 0;
+  const allowedRoles = room.allowedRoles ?? room.allowedRoleNames ?? [];
+  return allowedRoles.length > 0;
 }
 
 /**
@@ -68,21 +69,22 @@ export function hasRoleRestrictions(room: Room | null | undefined): boolean {
  * @param isAdmin Whether the user is an admin (admins can override restrictions)
  */
 export function canRoleBookRoom(
-  room: Room | null | undefined, 
+  room: Room | null | undefined,
   userRoleName: string | null | undefined,
   isAdmin: boolean = false
 ): boolean {
   if (!room) return false;
-  
+
   // Admins can book any room
   if (isAdmin) return true;
-  
+
   // No restrictions = any role can book
   if (!hasRoleRestrictions(room)) return true;
-  
+
   // Check if user's role is in allowed roles
   if (!userRoleName) return false;
-  return room.allowedRoles?.includes(userRoleName) || false;
+  const allowedRoles = room.allowedRoles ?? room.allowedRoleNames ?? [];
+  return allowedRoles.includes(userRoleName);
 }
 
 /**
@@ -92,8 +94,8 @@ export function getRoomRestrictionText(room: Room | null | undefined): string {
   if (!hasRoleRestrictions(room)) {
     return 'Open to all roles';
   }
-  
-  const roles = room?.allowedRoles || [];
+
+  const roles = room?.allowedRoles ?? room?.allowedRoleNames ?? [];
   if (roles.length === 1) {
     return `Restricted to: ${roles[0]}`;
   }

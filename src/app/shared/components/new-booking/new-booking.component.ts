@@ -2,12 +2,12 @@ import { Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, sig
 import { CommonModule } from '@angular/common';
 import { FormsModule, Validators, AbstractControl, ValidationErrors, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { BookingService } from '../../../core/services/booking.service';
-import { Room } from '../../../core/interfaces/room';
+import { Room, canRoleBookRoom } from '../../../core/interfaces/room';
 import { Booking } from '../../../core/interfaces/booking';
 import { RoomBookingCalendarComponent, TimeSlot } from '../room-booking-calendar/room-booking-calendar.component';
 import { RoomServiceService } from '../../../core/services/room.service';
 import { formatToStandardTime } from '../booking-item/booking-item.component';
-import { User } from '../../../core/interfaces/user';
+import { User, getUserRoleName, isUserAdmin } from '../../../core/interfaces/user';
 
 export function endAfterStartValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('startTime')?.value;
@@ -42,7 +42,7 @@ export class NewBookingComponent implements OnInit {
   private fb = inject(FormBuilder);
   private bookingService = inject(BookingService);
   private roomService = inject(RoomServiceService);
-  currentUser!: User
+  currentUser!: User;
 
   timeSlots: TimeSlot[] = [];
   selectedSlots: TimeSlot[] = [];
@@ -97,26 +97,25 @@ export class NewBookingComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.currentUser = JSON.parse(localStorage.getItem('currentUser')!);
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     this.roomService.getRooms().subscribe({
       next: (response: Room[]) => {
-        console.log(response)
-        console.log(this.currentUser.roleName)
-        for(const r of response){
-          for(const role of r.allowedRoleNames){
-            if(role === this.currentUser.roleName && r.active) this.availableRooms.push(r)
-          }
-        }
-        // this.availableRooms = response.filter((r) => r.isActive && r.allowedRoleNames.filter((r) => r === this.currentUser.role.name).length > 0);
-       
+        const userRoleName = getUserRoleName(this.currentUser);
+        const isAdmin = isUserAdmin(this.currentUser);
+        this.availableRooms = response.filter((room) => {
+          const isActive = room.isActive ?? room.active ?? true;
+          return isActive && canRoleBookRoom(room, userRoleName, isAdmin);
+        });
       },
       error: (err: any) => alert(err),
     });
-    this.onSelectChange();
   }
 
   onSelectChange() {
-    let id = this.roomDropDown.nativeElement.value;
+    const id = this.roomDropDown?.nativeElement?.value;
+    if (!id) {
+      return;
+    }
     this.bookingService.getBookingsByRoom(id).subscribe({
       next: (response) => {
         this.roomBookings = response;
