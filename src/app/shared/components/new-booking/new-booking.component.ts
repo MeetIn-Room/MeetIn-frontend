@@ -7,6 +7,7 @@ import { Booking } from '../../../core/interfaces/booking';
 import { RoomBookingCalendarComponent, TimeSlot } from '../room-booking-calendar/room-booking-calendar.component';
 import { RoomServiceService } from '../../../core/services/room.service';
 import { formatToStandardTime } from '../booking-item/booking-item.component';
+import { User } from '../../../core/interfaces/user';
 
 export function endAfterStartValidator(group: AbstractControl): ValidationErrors | null {
   const start = group.get('startTime')?.value;
@@ -41,6 +42,7 @@ export class NewBookingComponent implements OnInit {
   private fb = inject(FormBuilder);
   private bookingService = inject(BookingService);
   private roomService = inject(RoomServiceService);
+  currentUser!: User
 
   timeSlots: TimeSlot[] = [];
   selectedSlots: TimeSlot[] = [];
@@ -95,9 +97,18 @@ export class NewBookingComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser')!);
     this.roomService.getRooms().subscribe({
       next: (response: Room[]) => {
-        this.availableRooms = response;
+        console.log(response)
+        console.log(this.currentUser.roleName)
+        for(const r of response){
+          for(const role of r.allowedRoleNames){
+            if(role === this.currentUser.roleName && r.active) this.availableRooms.push(r)
+          }
+        }
+        // this.availableRooms = response.filter((r) => r.isActive && r.allowedRoleNames.filter((r) => r === this.currentUser.role.name).length > 0);
+       
       },
       error: (err: any) => alert(err),
     });

@@ -1,6 +1,7 @@
 // src/app/core/interfaces/booking.ts
 // This matches your actual backend BookingDTO structure
 
+import { Role } from './role';
 import {Room} from './room';
 
 export interface Booking {

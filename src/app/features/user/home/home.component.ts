@@ -1,5 +1,5 @@
 
-import { AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, QueryList, ViewChild, ViewChildren, viewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, QueryList, signal, viewChild, ViewChild, ViewChildren, viewChildren } from '@angular/core';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { BookingItemComponent, formatToStandardTime } from '../../../shared/components/booking-item/booking-item.component';
 import { Booking } from '../../../core/interfaces/booking';
@@ -41,10 +41,14 @@ export class HomeComponent implements OnInit {
   @ViewChild('sortSelect') sortSelect!: ElementRef<HTMLSelectElement>;
   @ViewChild('details') details!: ElementRef<HTMLDivElement>;
   @ViewChild('options') options!: ElementRef<HTMLDivElement>
+  searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
+
   startTimeString: any;
   endTimeString: any;
   bookings: Booking[] = [];
+  _bookings = signal<Booking[]>([]);
 
+  
   private bookingService = inject(BookingService);
   private roomService = inject(RoomServiceService)
 
@@ -54,23 +58,48 @@ export class HomeComponent implements OnInit {
     this.bookingService.getBookings().subscribe({
       next: (response) => {
         this.bookings = response.filter((book) => book.userId === this.currentUserSubject.getValue().id.toString() && (book.isActive ?? book.active ?? true))
-        this.sortElements(this.latest ? -1 : 1);
+        this.sortBookings()
+        this._bookings.set(this.bookings);
 
+        // this.sortElements(this.latest ? -1 : 1);
       },
       error: (err) => { alert("Error fetching bookings "+ err); console.error('error', err); }
     })
   }
 
+  ngOnChanges(){
+    this.sortBookings() 
+  }
+
   onCancel(id: string){
     if(confirm('Do you really want to cancel this booking ?')){
         this.bookingService.cancel(id).subscribe({
-        next: (res) => alert(res),
-        error: (err) => alert(err)
+        next: (res) => {
+          alert("Booking cancelled successfully")
+          location.reload()
+        },
+        error: (err) => alert("Error occured")
       })
     }
 
-    location.reload()
   }
+
+  searchBooking(ev: Event){
+    const target = ev.target as HTMLInputElement;
+    if(target.value === "") {
+      this._bookings.set(this.bookings);
+      return;
+    }
+    const query = target.value.toLowerCase();
+
+    this._bookings.set(this.bookings.filter(b => 
+      b.title.toLowerCase().includes(query) || 
+      b.description.toLowerCase().includes(query) || 
+      b.room.name.toLowerCase().includes(query)
+    ));
+
+  }
+
 
   @HostListener('document:click', ['$event'])
   handleOutClick(ev: MouseEvent){
@@ -99,14 +128,10 @@ export class HomeComponent implements OnInit {
   }
 
   sortElements(val: number){
-    this.bookings = this.bookings.sort((a, b) => a.date >= b.date && a.startTime > b.startTime  ? val : -val);
+    this._bookings.set(this.bookings.sort((a, b) => a.date >= b.date && a.startTime > b.startTime  ? val : -val));
   }
 
-  onCancelBooking(id: string) {
-    this.bookingService.deleteBooking(parseInt(id, 10)).subscribe({
-
-    });
-  }
+ 
 
   onUpdateBooking(updated: Booking) {
     this.bookingService.updateBooking(parseInt(updated.id, 10),updated).subscribe({

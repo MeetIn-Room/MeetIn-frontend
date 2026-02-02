@@ -44,6 +44,8 @@ export class AuthService {
     return !!this.getAccessToken();
   }
 
+  
+
   getAccessToken(): string | null {
     const token = localStorage.getItem('accessToken')
      if (token && this.isTokenExpired(token)) {

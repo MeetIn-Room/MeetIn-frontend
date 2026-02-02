@@ -10,20 +10,20 @@
                 </div>
                 <div class="flex gap-6 justify-between">
                     <div class="flex search-nav magic-input">
-                        <input class="search" type="text" placeholder="Search a room..." />
+                        <input class="search" type="text" placeholder="Search a room..." (input)="searchRoomName($event)" />
                         <button class="search-book">
                             <i class="fi fi-rr-search"></i>
                         </button>
                     </div>
                     <div class="flex items-center">
                         <label for="" class="text-gray-600" style="padding: 0 0.5rem;" >Open: </label>
-                    <input type="time" class="latest" placeholder="Open">
+                    <input type="time" class="latest" placeholder="Open" (change)="searchRoomOpen($event)">
                     </div>
                     <div class="flex items-center">
-                        <label for="" class="text-gray-600" style="padding: 0 0.5rem;" >Close: </label>
-                    <input type="time" class="latest" placeholder="Close">
+                        <label for="" class="text-gray-600" style="padding: 0 0.5rem;">Close: </label>
+                    <input type="time" class="latest" placeholder="Close" (change)="searchRoomClose($event)">
                     </div>
-                    <input type="number" class="latest" placeholder="Capacity">
+                    <input type="number" class="latest" placeholder="Minimum capacity" (input)="searchCapacity($event)">
                     <!-- <select class="latest">
                         <option value="latest" selected>Latest</option>
                         <option value="oldest">Oldest</option>
@@ -33,7 +33,8 @@
             </div>
 
             <div style="width: 100%; height: 100%; margin-left: 0.5rem;" class="flex gap-5 flex-wrap">
-                <app-room-card *ngFor="let r of rooms" [room]="r" (book)="openBook($event)" (viewDetails)="openDetails($event)"></app-room-card>
+                <div *ngIf="_rooms().length === 0" style="text-align: center; margin: 4rem; width: 100%;" class="text-gray-400">No room found</div>
+                <app-room-card *ngFor="let r of _rooms()" [room]="r" (book)="openBook($event)" (viewDetails)="openDetails($event)"></app-room-card>
             </div>
             <!-- <app-room-book-modal *ngIf="showBookModal" [room]="selectedRoom" (close)="closeBook()"></app-room-book-modal> -->
             <app-room-details *ngIf="showDetails" [room]="selected" (close)="closeDetails()"></app-room-details>

@@ -14,13 +14,13 @@
                     }
                 </div>
                 <div class="flex gap-6 justify-between">
-                    <div class="flex search-nav"> 
-                        <input class="search" type="text" placeholder="Search a room..." />
+                    <div class="flex search-nav" *ngIf="!showCalendar"> 
+                        <input  class="search" type="text" placeholder="Search a room..." (input)="searchBooking($event)" #search/>
                         <button class="search-book">
                             <i class="fi fi-rr-search"></i>
                         </button>
                     </div>
-                    <select class="latest" (change)="sortBookings()" #sortSelect>
+                    <select *ngIf="!showCalendar" class="latest" (change)="sortBookings()" #sortSelect>
                         <option value="latest" selected>Latest</option>
                         <option value="oldest">Oldest</option>
                     </select>
@@ -36,10 +36,10 @@
                     <div style="" class="book-wrapper flex gap-2">
                         <ul class="booking-list">
                             <div>
-                                <p style="margin: 2rem 0;" *ngIf="bookings.length === 0" class="text-center m-5 text-gray-400">No bookings yet.</p>
+                                <p style="margin: 2rem 0;" *ngIf="_bookings().length === 0" class="text-center m-5 text-gray-400">No bookings yet.</p>
                             </div>
-                            @for (b of bookings; track $index) {
-                                <app-booking-item (click)="handleClick($index)" [id]="'book-'+$index" (showDetails)="onShowBookingDetails($event)" [booking]="b" (cancelBooking)="onCancelBooking($event)" (updateBooking)="onUpdateBooking($event)"></app-booking-item>
+                            @for (b of _bookings(); track $index) {
+                                <app-booking-item (click)="handleClick($index)" [id]="'book-'+$index" (showDetails)="onShowBookingDetails($event)" [booking]="b" (cancelBooking)="onCancel($event)" (updateBooking)="onUpdateBooking($event)"></app-booking-item>
                             }
                         </ul>
                         <div class="booking-details no-navbar" #details>

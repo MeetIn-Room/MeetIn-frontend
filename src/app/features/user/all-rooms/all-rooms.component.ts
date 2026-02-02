@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Room } from '../../../core/interfaces/room';
 import { RoomCardComponent } from '../../../shared/components/room-card/room-card.component';
@@ -27,12 +27,13 @@ export class AllRoomsComponent {
   private readonly roomService = inject(RoomServiceService);
 
   rooms: Room[] = [];
+  _rooms = signal<Room[]>([]);
 
   selected!: Room;
   showBookModal = false;
   showDetails = false;
   currentDate: Date = new Date();
-  currentUser!: User;
+  currentUser: User = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
   constructor(private bookingService: BookingService) {}
 
@@ -40,14 +41,59 @@ export class AllRoomsComponent {
     this.roomService.getRooms().subscribe({
       next: (response) => {
         console.log(response);
-        this.rooms = response.filter(
-          (room) => room.isActive ?? room.active ?? true
-        );
+         for(const r of response){
+          for(const role of r.allowedRoleNames){
+            if(role === this.currentUser.roleName && r.active) this.rooms.push(r)
+          }
+        }
+        this._rooms.set(this.rooms);
         console.log(this.rooms);
-        this.currentUser = JSON.parse(localStorage.getItem('currentUser')!);
       },
       error: (err) => alert(err),
     });
+  }
+
+  searchRoomName(ev: Event){
+    const target = ev.target as HTMLInputElement
+    if(target.value === "") {
+      this._rooms.set(this.rooms);
+      return;
+    }
+    const query = target.value.toLowerCase();
+    this._rooms.set(this.rooms.filter((r) => r.name.toLowerCase().includes(query)));
+  }
+
+  searchRoomOpen(ev: Event){
+    const target = ev.target as HTMLInputElement
+    if(target.value === "") {
+      this._rooms.set(this.rooms);
+      return;
+    }
+    const query = target.value.toString();
+    console.log(query)
+    this._rooms.set(this.rooms.filter((r) => r.openTime.split(':')[0] +":"+ r.openTime.split(':')[1] === query));
+  }
+
+  searchRoomClose(ev: Event){
+    const target = ev.target as HTMLInputElement
+    if(target.value === "") {
+      this._rooms.set(this.rooms);
+      return;
+    }
+    const query = target.value.toString();
+    console.log(query)
+    this._rooms.set(this.rooms.filter((r) => r.closeTime.split(':')[0] +":"+ r.closeTime.split(':')[1] === query));
+  }
+
+  searchCapacity(ev: Event){
+    const target = ev.target as HTMLInputElement
+    if(target.value === "") {
+      this._rooms.set(this.rooms);
+      return;
+    }
+    const query = parseInt(target.value);
+    console.log(query)
+    this._rooms.set(this.rooms.filter((r) => r.capacity >= query));
   }
 
   openBook(room: Room) {

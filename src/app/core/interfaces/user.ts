@@ -11,6 +11,7 @@ export interface User {
     department: string;
     active: boolean;
     createdAt: string;
+    roleName: string;
 }
 
 // DTO for creating a new user

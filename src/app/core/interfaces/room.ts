@@ -1,3 +1,5 @@
+import { Role } from "./role";
+
 export interface Room {
   id: string;
   name: string;
@@ -10,6 +12,8 @@ export interface Room {
   description?: string;
   isActive: boolean;
   active?: boolean;
+  allowedRoleNames: string[]
+
   // NEW FIELDS for role-based access control:
   allowedRoles?: string[];  // Role names allowed to book this room (empty = all roles)
   allowedRoleIds?: (string | number)[];  // For API communication

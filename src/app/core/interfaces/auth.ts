@@ -15,6 +15,7 @@ export interface User {
     // Backend uses isActive, but we normalize to active in the user interface
     isActive: boolean;
     createdAt: string;
+    roleName: string;
 }
 
 /**
