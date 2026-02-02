@@ -89,6 +89,11 @@ export class BookingService {
     return this.httpClient.put(`${this.apiUrl}`+`/cancel/${id}`,{})
   }
 
+  // Cancel booking using backend's cancel endpoint
+  cancelBooking(id: number): Observable<any> {
+    return this.httpClient.put<any>(`${this.apiUrl}/cancel/${id}`, {});
+  }
+
 
 
 }

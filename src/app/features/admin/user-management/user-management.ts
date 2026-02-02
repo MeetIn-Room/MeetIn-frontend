@@ -72,33 +72,33 @@ export class UserManagementComponent implements OnInit {
   userStats: UserStat[] = [
     {
       title: 'Total Users',
-      value: '1,247',
+      value: '0',
       icon: 'users',
       isPositive: true,
-      change: '+12.5%',
-      lastMonth: '1,108',
+      change: '+0%',
+      lastMonth: '0',
       trend: [65, 70, 75, 80, 82, 85, 89],
       color: '#FF6B35',
       gradient: ['#FF6B35', '#FF8C42']
     },
     {
       title: 'Active Users',
-      value: '893',
+      value: '0',
       icon: 'activity',
       isPositive: true,
-      change: '+8.1%',
-      lastMonth: '826',
+      change: '+0%',
+      lastMonth: '0',
       trend: [65, 68, 72, 75, 76, 77, 78],
       color: '#FF8C42',
       gradient: ['#FF8C42', '#FFA62E']
     },
     {
       title: 'Admin Users',
-      value: '24',
+      value: '0',
       icon: 'shield',
       isPositive: false,
-      change: '-2.3%',
-      lastMonth: '26',
+      change: '0%',
+      lastMonth: '0',
       trend: [30, 28, 26, 25, 24, 23, 24],
       color: '#E2725B',
       gradient: ['#E2725B', '#FF8C42']

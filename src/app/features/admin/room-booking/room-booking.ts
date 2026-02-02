@@ -44,6 +44,9 @@ export class BookingManagementComponent implements OnInit {
   showBookingDetailsModal: boolean = false;
   selectedBooking: FrontendBooking | null = null;
 
+  // Stats based on what backend actually supports:
+  // Backend has isActive (true/false) - no Pending/Confirmed/Completed statuses
+  // We calculate: Total Bookings, Active Today, Bookings This Week
   bookingStats: BookingStat[] = [
     {
       title: 'Total Bookings',
@@ -57,7 +60,7 @@ export class BookingManagementComponent implements OnInit {
       gradient: ['#FF6B35', '#FF8C42']
     },
     {
-      title: 'Confirmed Today',
+      title: 'Active Today',
       value: '0',
       icon: 'check-circle',
       isPositive: true,
@@ -68,7 +71,7 @@ export class BookingManagementComponent implements OnInit {
       gradient: ['#FF8C42', '#FFA62E']
     },
     {
-      title: 'Pending Approval',
+      title: 'This Week',
       value: '0',
       icon: 'clock',
       isPositive: false,
@@ -77,18 +80,19 @@ export class BookingManagementComponent implements OnInit {
       trend: [16, 15, 14, 13, 13, 12, 12],
       color: '#E2725B',
       gradient: ['#E2725B', '#FF8C42']
-    },
-    {
-      title: 'Cancellation Rate',
-      value: '0%',
-      icon: 'alert-circle',
-      isPositive: true,
-      change: '0%',
-      lastWeek: '0%',
-      trend: [8, 7, 6, 5, 5, 4.5, 4.2],
-      color: '#B7410E',
-      gradient: ['#B7410E', '#D86F39']
     }
+    // Avg. Duration stat commented out - requires accurate time data from backend
+    // {
+    //   title: 'Avg. Duration',
+    //   value: '0h',
+    //   icon: 'trending-up',
+    //   isPositive: true,
+    //   change: '0%',
+    //   lastWeek: '0h',
+    //   trend: [8, 7, 6, 5, 5, 4.5, 4.2],
+    //   color: '#B7410E',
+    //   gradient: ['#B7410E', '#D86F39']
+    // }
   ];
 
   bookings: FrontendBooking[] = [];
@@ -145,88 +149,95 @@ export class BookingManagementComponent implements OnInit {
 
     // Calculate end of last week (Sunday of previous week - 6 days after Monday)
     const endOfLastWeek = new Date(startOfLastWeek);
-    endOfLastWeek.setDate(startOfLastWeek.getDate() + 6); // +6 days = Sunday
+    endOfLastWeek.setDate(startOfLastWeek.getDate() + 6);
     const endOfLastWeekStr = endOfLastWeek.toISOString().split('T')[0];
 
-    // Total Bookings (all time)
-    const totalBookings = this.bookings.length;
+    // Filter only active bookings (backend uses isActive for soft delete)
+    const activeBookings = this.bookings.filter(b => b.status === 'Confirmed');
+
+    // Total Active Bookings (all time)
+    const totalBookings = activeBookings.length;
 
     // Bookings this week (from Monday to today)
-    const bookingsThisWeek = this.bookings.filter(b =>
+    const bookingsThisWeek = activeBookings.filter(b =>
       b.date >= startOfThisWeekStr && b.date <= todayStr
     ).length;
 
     // Bookings last week (Monday to Sunday - 7 days)
-    const bookingsLastWeek = this.bookings.filter(b =>
+    const bookingsLastWeek = activeBookings.filter(b =>
       b.date >= startOfLastWeekStr && b.date <= endOfLastWeekStr
     ).length;
 
-    // Confirmed bookings today
-    const confirmedToday = this.bookings.filter(b =>
-      b.date === todayStr && b.status === 'Confirmed'
-    ).length;
+    // Active bookings today
+    const bookingsToday = activeBookings.filter(b => b.date === todayStr).length;
 
-    // Confirmed bookings same day last week
+    // Same day last week for comparison
     const sameDayLastWeek = new Date(today);
     sameDayLastWeek.setDate(today.getDate() - 7);
     const sameDayLastWeekStr = sameDayLastWeek.toISOString().split('T')[0];
-    const confirmedSameDayLastWeek = this.bookings.filter(b =>
-      b.date === sameDayLastWeekStr && b.status === 'Confirmed'
-    ).length;
+    const bookingsSameDayLastWeek = activeBookings.filter(b => b.date === sameDayLastWeekStr).length;
 
-    // Pending bookings (future bookings only)
-    const pendingNow = this.bookings.filter(b =>
-      b.status === 'Pending' && b.date >= todayStr
-    ).length;
+    // Average duration calculation commented out - not properly integrated with backend data
+    // let totalDurationHours = 0;
+    // let lastWeekTotalDuration = 0;
+    // let thisWeekCount = 0;
+    // let lastWeekCount = 0;
 
-    // Pending bookings from last week (Monday to Saturday)
-    const pendingLastWeek = this.bookings.filter(b =>
-      b.status === 'Pending' && b.date >= startOfLastWeekStr && b.date <= endOfLastWeekStr
-    ).length;
+    // activeBookings.forEach(b => {
+    //   // Parse duration string like "1.5 hours", "2 hours", or "30 minutes"
+    //   const durationMatch = b.duration.match(/(\d+\.?\d*)/);
+    //   let duration = durationMatch ? parseFloat(durationMatch[1]) : 1;
 
-    // Cancellation rate this week (Monday to today)
-    const cancelledThisWeek = this.bookings.filter(b =>
-      b.status === 'Cancelled' && b.date >= startOfThisWeekStr && b.date <= todayStr
-    ).length;
-    const cancellationRateThisWeek = bookingsThisWeek > 0
-      ? (cancelledThisWeek / bookingsThisWeek) * 100
-      : 0;
+    //   // If duration is in minutes, convert to hours
+    //   if (b.duration.toLowerCase().includes('minute')) {
+    //     duration = duration / 60;
+    //   }
 
-    // Cancellation rate last week (Monday to Sunday - 7 days)
-    const cancelledLastWeek = this.bookings.filter(b =>
-      b.status === 'Cancelled' && b.date >= startOfLastWeekStr && b.date <= endOfLastWeekStr
-    ).length;
-    const cancellationRateLastWeek = bookingsLastWeek > 0
-      ? (cancelledLastWeek / bookingsLastWeek) * 100
-      : 0;
+    //   // Skip if duration is NaN or invalid
+    //   if (isNaN(duration)) {
+    //     duration = 1; // Default to 1 hour
+    //   }
 
-    // Update Total Bookings stat (show total, compare this week vs last week Mon-Sun)
+    //   if (b.date >= startOfThisWeekStr && b.date <= todayStr) {
+    //     totalDurationHours += duration;
+    //     thisWeekCount++;
+    //   }
+    //   if (b.date >= startOfLastWeekStr && b.date <= endOfLastWeekStr) {
+    //     lastWeekTotalDuration += duration;
+    //     lastWeekCount++;
+    //   }
+    // });
+
+    // const avgDurationThisWeek = thisWeekCount > 0 ? totalDurationHours / thisWeekCount : 0;
+    // const avgDurationLastWeek = lastWeekCount > 0 ? lastWeekTotalDuration / lastWeekCount : 0;
+
+    // Update Total Bookings stat
     this.bookingStats[0].value = totalBookings.toString();
     this.bookingStats[0].lastWeek = bookingsLastWeek.toString();
     this.bookingStats[0].change = this.calculateChangePercent(bookingsLastWeek, bookingsThisWeek);
     this.bookingStats[0].isPositive = bookingsThisWeek >= bookingsLastWeek;
     this.bookingStats[0].trend = this.generateTrend(bookingsLastWeek, bookingsThisWeek);
 
-    // Update Confirmed Today stat (comparing today vs same day last week)
-    this.bookingStats[1].value = confirmedToday.toString();
-    this.bookingStats[1].lastWeek = confirmedSameDayLastWeek.toString();
-    this.bookingStats[1].change = this.calculateChangePercent(confirmedSameDayLastWeek, confirmedToday);
-    this.bookingStats[1].isPositive = confirmedToday >= confirmedSameDayLastWeek;
-    this.bookingStats[1].trend = this.generateTrend(confirmedSameDayLastWeek, confirmedToday);
+    // Update Active Today stat
+    this.bookingStats[1].value = bookingsToday.toString();
+    this.bookingStats[1].lastWeek = bookingsSameDayLastWeek.toString();
+    this.bookingStats[1].change = this.calculateChangePercent(bookingsSameDayLastWeek, bookingsToday);
+    this.bookingStats[1].isPositive = bookingsToday >= bookingsSameDayLastWeek;
+    this.bookingStats[1].trend = this.generateTrend(bookingsSameDayLastWeek, bookingsToday);
 
-    // Update Pending Approval stat (lower is better)
-    this.bookingStats[2].value = pendingNow.toString();
-    this.bookingStats[2].lastWeek = pendingLastWeek.toString();
-    this.bookingStats[2].change = this.calculateChangePercent(pendingLastWeek, pendingNow);
-    this.bookingStats[2].isPositive = pendingNow <= pendingLastWeek; // Reverse: less is better
-    this.bookingStats[2].trend = this.generateTrend(pendingLastWeek, pendingNow);
+    // Update This Week stat
+    this.bookingStats[2].value = bookingsThisWeek.toString();
+    this.bookingStats[2].lastWeek = bookingsLastWeek.toString();
+    this.bookingStats[2].change = this.calculateChangePercent(bookingsLastWeek, bookingsThisWeek);
+    this.bookingStats[2].isPositive = bookingsThisWeek >= bookingsLastWeek;
+    this.bookingStats[2].trend = this.generateTrend(bookingsLastWeek, bookingsThisWeek);
 
-    // Update Cancellation Rate stat (lower is better)
-    this.bookingStats[3].value = `${cancellationRateThisWeek.toFixed(1)}%`;
-    this.bookingStats[3].lastWeek = `${cancellationRateLastWeek.toFixed(1)}%`;
-    this.bookingStats[3].change = this.calculateChangePercent(cancellationRateLastWeek, cancellationRateThisWeek);
-    this.bookingStats[3].isPositive = cancellationRateThisWeek <= cancellationRateLastWeek; // Reverse: less is better
-    this.bookingStats[3].trend = this.generateTrend(cancellationRateLastWeek, cancellationRateThisWeek);
+    // Average Duration stat commented out - not properly integrated with backend data
+    // this.bookingStats[3].value = `${avgDurationThisWeek.toFixed(1)}h`;
+    // this.bookingStats[3].lastWeek = `${avgDurationLastWeek.toFixed(1)}h`;
+    // this.bookingStats[3].change = this.calculateChangePercent(avgDurationLastWeek, avgDurationThisWeek);
+    // this.bookingStats[3].isPositive = true; // Duration is neutral
+    // this.bookingStats[3].trend = this.generateTrend(avgDurationLastWeek, avgDurationThisWeek);
   }
 
   // Calculate percentage change and format it
@@ -280,20 +291,25 @@ export class BookingManagementComponent implements OnInit {
     }
 
     // Apply status filter
+    // Note: Backend only supports isActive (true/false), mapped to Confirmed/Cancelled
+    // No Pending/Completed status support from backend
     const today = new Date().toISOString().split('T')[0];
     switch (this.currentFilter) {
       case 'today':
         filtered = filtered.filter(booking => booking.date === today);
         break;
       case 'upcoming':
-        filtered = filtered.filter(booking => booking.date >= today && (booking.status === 'Confirmed' || booking.status === 'Pending'));
+        // Show future active bookings
+        filtered = filtered.filter(booking => booking.date >= today && booking.status === 'Confirmed');
         break;
-      case 'pending':
-        filtered = filtered.filter(booking => booking.status === 'Pending');
-        break;
-      case 'completed':
-        filtered = filtered.filter(booking => booking.status === 'Completed');
-        break;
+      // Pending filter removed - backend doesn't support approval workflow
+      // case 'pending':
+      //   filtered = filtered.filter(booking => booking.status === 'Pending');
+      //   break;
+      // Completed filter removed - backend doesn't track completion
+      // case 'completed':
+      //   filtered = filtered.filter(booking => booking.status === 'Completed');
+      //   break;
       case 'cancelled':
         filtered = filtered.filter(booking => booking.status === 'Cancelled');
         break;
@@ -376,6 +392,9 @@ export class BookingManagementComponent implements OnInit {
     this.showNotification(`Editing booking: ${booking.id}`);
   }
 
+  // Note: Backend only supports isActive (true/false), no status workflow
+  // toggleBookingStatus commented out - not supported by backend
+  /*
   toggleBookingStatus(booking: FrontendBooking): void {
     const statusFlow: { [key: string]: string } = {
       'Pending': 'Confirmed',
@@ -387,8 +406,7 @@ export class BookingManagementComponent implements OnInit {
     booking.status = statusFlow[booking.status] || 'Pending';
     booking.updatedAt = new Date().toLocaleString();
 
-    // You'll need to get userId and roomId
-    const backendData = BookingMapper.toBackend(booking, '', ''); // Pass actual userId and roomId
+    const backendData = BookingMapper.toBackend(booking, '', '');
 
     this.bookingService.updateBooking(parseInt(booking.id, 10), backendData as any).subscribe({
       next: () => {
@@ -412,21 +430,19 @@ export class BookingManagementComponent implements OnInit {
     };
     return titles[booking.status] || 'Change Status';
   }
+  */
 
   cancelBooking(booking: FrontendBooking): void {
     if (confirm(`Are you sure you want to cancel booking ${booking.id}?`)) {
-      booking.status = 'Cancelled';
-      booking.updatedAt = new Date().toLocaleString();
+      const bookingId = parseInt(booking.id, 10);
 
-      // You'll need to get userId and roomId from somewhere (e.g., from the booking or current user context)
-      const backendData = BookingMapper.toBackend(booking, '', ''); // Pass actual userId and roomId
-
-      this.bookingService.updateBooking(parseInt(booking.id, 10), backendData as any).subscribe({
+      // Use backend's cancel endpoint (PUT /api/bookings/cancel/{id})
+      this.bookingService.cancelBooking(bookingId).subscribe({
         next: () => {
+          booking.status = 'Cancelled';
           this.showNotification(`Booking ${booking.id} has been cancelled`);
           this.closeBookingDetailsModal();
-          this.updateStats();
-          this.applyFilters();
+          this.loadBookings(); // Reload to get fresh data
         },
         error: (error: any) => {
           console.error('Error cancelling booking:', error);

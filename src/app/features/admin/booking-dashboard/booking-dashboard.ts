@@ -170,13 +170,42 @@ export class BookingDashboardComponent implements OnInit {
     // Calculate total booked hours
     let totalBookedHours = 0;
     filteredBookings.forEach(b => {
-      const start = new Date(b.startTime);
-      const end = new Date(b.endTime);
-      const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+      const hours = this.parseBookingDuration(b.startTime, b.endTime);
       totalBookedHours += hours;
     });
 
     return Math.min(Math.round((totalBookedHours / totalPossibleSlots) * 100), 100);
+  }
+
+  // Helper to parse time strings from backend (LocalTime format "HH:mm:ss")
+  private parseTimeToMinutes(time: Date | string): number {
+    if (typeof time === 'string') {
+      const timePart = time.includes('T') ? time.split('T')[1] : time;
+      const [hours, minutes] = timePart.split(':').map(Number);
+      return (hours || 0) * 60 + (minutes || 0);
+    }
+    return time.getHours() * 60 + time.getMinutes();
+  }
+
+  // Helper to parse booking duration in hours
+  private parseBookingDuration(startTime: Date | string, endTime: Date | string): number {
+    const startMinutes = this.parseTimeToMinutes(startTime);
+    const endMinutes = this.parseTimeToMinutes(endTime);
+    const diffMinutes = endMinutes - startMinutes;
+    return diffMinutes > 0 ? diffMinutes / 60 : 1; // Default to 1 hour if invalid
+  }
+
+  // Helper to format time for display
+  private formatTimeForDisplay(time: Date | string): string {
+    if (typeof time === 'string') {
+      const timePart = time.includes('T') ? time.split('T')[1] : time;
+      const [hours, minutes] = timePart.split(':');
+      const hour = parseInt(hours, 10);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes.padStart(2, '0')} ${ampm}`;
+    }
+    return time.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
   }
 
   private processRecentBookings(bookings: Booking[]): DisplayBooking[] {
@@ -184,9 +213,7 @@ export class BookingDashboardComponent implements OnInit {
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 10)
       .map(b => {
-        const start = new Date(b.startTime);
-        const end = new Date(b.endTime);
-        const durationHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+        const durationHours = this.parseBookingDuration(b.startTime, b.endTime);
 
         return {
           id: `#BK${b.id}`,
@@ -194,7 +221,7 @@ export class BookingDashboardComponent implements OnInit {
           user: b.title || 'Unknown',
           room: b.room?.name || 'Unknown Room',
           duration: `${durationHours.toFixed(1)} hours`,
-          total: `${start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} - ${end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`,
+          total: `${this.formatTimeForDisplay(b.startTime)} - ${this.formatTimeForDisplay(b.endTime)}`,
         };
       });
   }

@@ -38,9 +38,13 @@
                             <button class="period-filter-btn"
                                     [class.active]="currentFilter === 'upcoming'"
                                     (click)="filterBookings('upcoming')">Upcoming</button>
-                            <button class="period-filter-btn"
+                            <!-- Pending filter removed - backend doesn't support approval workflow -->
+                            <!-- <button class="period-filter-btn"
                                     [class.active]="currentFilter === 'pending'"
-                                    (click)="filterBookings('pending')">Pending</button>
+                                    (click)="filterBookings('pending')">Pending</button> -->
+                            <button class="period-filter-btn"
+                                    [class.active]="currentFilter === 'cancelled'"
+                                    (click)="filterBookings('cancelled')">Cancelled</button>
                           </div>
                         </div>
                     </div>
@@ -86,10 +90,9 @@
                                             <circle cx="12" cy="12" r="10"></circle>
                                             <polyline points="12 6 12 12 16 14"></polyline>
                                         </g>
-                                        <g *ngSwitchCase="'alert-circle'">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        <g *ngSwitchCase="'trending-up'">
+                                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                            <polyline points="17 6 23 6 23 12"></polyline>
                                         </g>
                                     </ng-container>
                                 </svg>

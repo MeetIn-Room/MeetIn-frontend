@@ -23,35 +23,87 @@ export interface FrontendBooking {
 
 export class BookingMapper {
 
-  // Helper to convert Date/string to time string (HH:MM)
-  private static dateToTimeString(date: Date | string): string {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    const hours = dateObj.getHours().toString().padStart(2, '0');
-    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+  // Helper to convert time to string (HH:MM)
+  // Backend sends LocalTime as "HH:mm:ss" or full datetime
+  private static timeToString(time: Date | string): string {
+    if (typeof time === 'string') {
+      // If it's a time string like "08:00:00" or "08:00", extract HH:MM
+      if (time.includes('T')) {
+        // Full datetime string like "2025-12-13T08:00:00"
+        const timePart = time.split('T')[1];
+        const [hours, minutes] = timePart.split(':');
+        return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+      } else if (time.includes(':')) {
+        // Time string like "08:00:00" or "08:00"
+        const [hours, minutes] = time.split(':');
+        return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+      }
+      return time;
+    }
+    // If it's a Date object
+    const hours = time.getHours().toString().padStart(2, '0');
+    const minutes = time.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
   }
 
   // Helper to convert Date/string to date string (YYYY-MM-DD)
   private static dateToDateString(date: Date | string): string {
+    if (typeof date === 'string') {
+      // If already a date string like "2025-12-13", return as-is
+      if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date;
+      }
+      // If it's a full datetime, extract date part
+      if (date.includes('T')) {
+        return date.split('T')[0];
+      }
+    }
     const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) {
+      return new Date().toISOString().split('T')[0];
+    }
     return dateObj.toISOString().split('T')[0];
   }
 
   // Helper to calculate duration between two times
-  private static calculateDuration(startTime: Date | string, endTime: Date | string): string {
-    const start = typeof startTime === 'string' ? new Date(startTime) : startTime;
-    const end = typeof endTime === 'string' ? new Date(endTime) : endTime;
+  // Handles both time strings ("08:00:00") and full datetime strings
+  private static calculateDuration(startTime: Date | string, endTime: Date | string, dateStr?: string): string {
+    let startMinutes: number;
+    let endMinutes: number;
 
-    const diffMs = end.getTime() - start.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    // Parse start time to minutes since midnight
+    if (typeof startTime === 'string') {
+      const timePart = startTime.includes('T') ? startTime.split('T')[1] : startTime;
+      const [hours, minutes] = timePart.split(':').map(Number);
+      startMinutes = (hours || 0) * 60 + (minutes || 0);
+    } else {
+      startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
+    }
+
+    // Parse end time to minutes since midnight
+    if (typeof endTime === 'string') {
+      const timePart = endTime.includes('T') ? endTime.split('T')[1] : endTime;
+      const [hours, minutes] = timePart.split(':').map(Number);
+      endMinutes = (hours || 0) * 60 + (minutes || 0);
+    } else {
+      endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
+    }
+
+    const diffMinutes = endMinutes - startMinutes;
+    const diffHours = Math.floor(diffMinutes / 60);
+    const remainingMinutes = diffMinutes % 60;
+
+    if (isNaN(diffMinutes) || diffMinutes <= 0) {
+      return '1 hour'; // Default fallback
+    }
 
     if (diffHours === 0) {
-      return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'}`;
-    } else if (diffMinutes === 0) {
+      return `${remainingMinutes} ${remainingMinutes === 1 ? 'minute' : 'minutes'}`;
+    } else if (remainingMinutes === 0) {
       return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'}`;
     } else {
-      return `${diffHours}.5 hours`;
+      const hours = diffHours + remainingMinutes / 60;
+      return `${hours.toFixed(1)} hours`;
     }
   }
 
@@ -75,9 +127,9 @@ export class BookingMapper {
       userDepartment: '', // Fetch from user service
       roomName: backendBooking.room?.name || 'Unknown Room',
       date: bookingDate,
-      startTime: this.dateToTimeString(backendBooking.startTime),
-      endTime: this.dateToTimeString(backendBooking.endTime),
-      duration: this.calculateDuration(backendBooking.startTime, backendBooking.endTime),
+      startTime: this.timeToString(backendBooking.startTime),
+      endTime: this.timeToString(backendBooking.endTime),
+      duration: this.calculateDuration(backendBooking.startTime, backendBooking.endTime, bookingDate),
       purpose: backendBooking.title || 'No title',
       description: backendBooking.description || '',
       attendees: [],
