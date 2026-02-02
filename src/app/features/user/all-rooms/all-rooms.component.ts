@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Room, canRoleBookRoom } from '../../../core/interfaces/room';
+import { Room } from '../../../core/interfaces/room';
 import { RoomCardComponent } from '../../../shared/components/room-card/room-card.component';
 import { RoomDetailsComponent } from '../../../shared/components/room-details/room-details.component';
 import { BookingService } from '../../../core/services/booking.service';
@@ -8,7 +8,7 @@ import { NavbarComponent } from '../../../shared/components/navbar/navbar.compon
 import { RoomBookingCalendarComponent } from '../../../shared/components/room-booking-calendar/room-booking-calendar.component';
 import { Booking } from '../../../core/interfaces/booking';
 import { RoomServiceService } from '../../../core/services/room.service';
-import { User, getAuthUserRoleName } from '../../../core/interfaces/auth';
+import { User } from '../../../core/interfaces/auth';
 
 @Component({
   selector: 'app-all-rooms',
@@ -40,13 +40,14 @@ export class AllRoomsComponent {
   ngOnInit() {
     this.roomService.getRooms().subscribe({
       next: (response) => {
-        const userRoleName = getAuthUserRoleName(this.currentUser);
-        const isAdmin = userRoleName === 'ADMIN';
-        this.rooms = response.filter((room) => {
-          const isActive = room.isActive ?? room.active ?? true;
-          return isActive && canRoleBookRoom(room, userRoleName, isAdmin);
-        });
+        console.log(response);
+         for(const r of response){
+          for(const role of r.allowedRoleNames!){
+            if(role === this.currentUser.roleName && r.active) this.rooms.push(r)
+          }
+        }
         this._rooms.set(this.rooms);
+        console.log(this.rooms);
       },
       error: (err) => alert(err),
     });
