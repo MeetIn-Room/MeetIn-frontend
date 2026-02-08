@@ -42,7 +42,7 @@ export class AllRoomsComponent {
       next: (response) => {
         console.log(response);
          for(const r of response){
-          for(const role of r.allowedRoleNames!){
+          for(const role of r.allowedRoles!){
             if(role === this.currentUser.roleName && r.active) this.rooms.push(r)
           }
         }

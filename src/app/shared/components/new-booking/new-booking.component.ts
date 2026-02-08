@@ -103,7 +103,7 @@ export class NewBookingComponent implements OnInit {
         console.log(response)
         console.log(this.currentUser.roleName)
         for(const r of response){
-          for(const role of r.allowedRoleNames!){
+          for(const role of r.allowedRoles!){
             if(role === this.currentUser.roleName && r.active) this.availableRooms.push(r)
           }
         }
