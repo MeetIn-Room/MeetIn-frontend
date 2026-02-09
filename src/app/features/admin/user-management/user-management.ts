@@ -27,11 +27,11 @@ interface UserStat {
   selector: 'app-user-management',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    ReactiveFormsModule, 
-    RouterModule, 
-    SidebarComponent, 
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    SidebarComponent,
     HeaderComponent,
     RoleBadgeComponent,
     RoleSelectorComponent
@@ -132,12 +132,12 @@ export class UserManagementComponent implements OnInit {
    */
   loadRoles(): void {
     this.rolesLoading = true;
-    
+
     this.roleService.getAllRoles().subscribe({
       next: (roles) => {
         this.roles = roles;
-        this.systemRoles = roles.filter(r => r.isSystem);
-        this.customRoles = roles.filter(r => !r.isSystem);
+        this.systemRoles = roles.filter(r => r.system);
+        this.customRoles = roles.filter(r => !r.system);
         this.rolesLoading = false;
       },
       error: (error) => {
@@ -272,9 +272,9 @@ export class UserManagementComponent implements OnInit {
   onSubmit(): void {
     if (this.userForm.valid) {
       this.isSubmitting = true;
-      
+
       const formValue = this.userForm.value;
-      
+
       if (this.isEditing && this.editingUser) {
         // Update existing user
         const updateData = {
@@ -424,7 +424,7 @@ export class UserManagementComponent implements OnInit {
     if (roleName === 'ADMIN') {
       return [...basePermissions, 'view_all_bookings', 'view_users', 'manage_users', 'reset_passwords', 'manage_rooms', 'system_settings', 'view_audit_logs', 'export_data'];
     }
-    
+
     // All other roles get base permissions only
     return basePermissions;
   }
@@ -619,7 +619,7 @@ export class UserManagementComponent implements OnInit {
   getRoleClass(roleName: string | Role): string {
     // Handle both string and Role object
     const roleStr = typeof roleName === 'string' ? roleName : roleName?.name;
-    
+
     // Dynamic role class mapping based on role name
     const classes: { [key: string]: string } = {
       'ADMIN': 'role-admin',

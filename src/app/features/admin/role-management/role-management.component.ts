@@ -19,11 +19,11 @@ interface RoleStat {
   selector: 'app-role-management',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    ReactiveFormsModule, 
-    RouterModule, 
-    SidebarComponent, 
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    SidebarComponent,
     HeaderComponent,
     RoleBadgeComponent
   ],
@@ -70,8 +70,8 @@ export class RoleManagementComponent implements OnInit {
   constructor() {
     this.roleForm = this.fb.group({
       name: ['', [
-        Validators.required, 
-        Validators.minLength(2), 
+        Validators.required,
+        Validators.minLength(2),
         Validators.maxLength(50),
         Validators.pattern(/^[A-Z_][A-Z0-9_]*$/) // UPPER_CASE_WITH_UNDERSCORES
       ]],
@@ -90,8 +90,8 @@ export class RoleManagementComponent implements OnInit {
     this.roleService.getAllRoles().subscribe({
       next: (roles) => {
         this.roles = roles;
-        this.systemRoles = roles.filter(r => r.isSystem);
-        this.customRoles = roles.filter(r => !r.isSystem);
+        this.systemRoles = roles.filter(r => r.system);
+        this.customRoles = roles.filter(r => !r.system);
         this.applyFilters();
         this.updateStats();
         this.isLoading = false;
@@ -110,7 +110,7 @@ export class RoleManagementComponent implements OnInit {
     // Apply search filter
     if (this.searchQuery.trim()) {
       const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(role => 
+      filtered = filtered.filter(role =>
         role.name.toLowerCase().includes(query) ||
         (role.description && role.description.toLowerCase().includes(query))
       );
@@ -118,9 +118,9 @@ export class RoleManagementComponent implements OnInit {
 
     // Apply type filter
     if (this.currentFilter === 'system') {
-      filtered = filtered.filter(role => role.isSystem);
+      filtered = filtered.filter(role => role.system);
     } else if (this.currentFilter === 'custom') {
-      filtered = filtered.filter(role => !role.isSystem);
+      filtered = filtered.filter(role => !role.system);
     }
 
     this.filteredRoles = filtered;
@@ -185,24 +185,24 @@ export class RoleManagementComponent implements OnInit {
 
   // Edit Role
   openEditModal(role: Role): void {
-    if (role.isSystem) {
+    if (role.system) {
       // For system roles, only description can be edited
       this.errorMessage = 'System roles can only have their description modified.';
     }
-    
+
     this.editingRole = role;
     this.roleForm.patchValue({
       name: role.name,
       description: role.description || ''
     });
-    
+
     // Disable name field for system roles
-    if (role.isSystem) {
+    if (role.system) {
       this.roleForm.get('name')?.disable();
     } else {
       this.roleForm.get('name')?.enable();
     }
-    
+
     this.showEditModal = true;
     this.errorMessage = null;
     this.successMessage = null;
@@ -234,16 +234,16 @@ export class RoleManagementComponent implements OnInit {
         if (index !== -1) {
           this.roles[index] = updatedRole;
         }
-        
+
         // Update system/custom arrays
-        if (updatedRole.isSystem) {
+        if (updatedRole.system) {
           const sysIndex = this.systemRoles.findIndex(r => r.id === updatedRole.id);
           if (sysIndex !== -1) this.systemRoles[sysIndex] = updatedRole;
         } else {
           const custIndex = this.customRoles.findIndex(r => r.id === updatedRole.id);
           if (custIndex !== -1) this.customRoles[custIndex] = updatedRole;
         }
-        
+
         this.applyFilters();
         this.successMessage = `Role "${updatedRole.name}" updated successfully!`;
         this.isSubmitting = false;
@@ -258,16 +258,16 @@ export class RoleManagementComponent implements OnInit {
 
   // Delete Role
   openDeleteModal(role: Role): void {
-    if (role.isSystem) {
+    if (role.system) {
       this.errorMessage = 'System roles cannot be deleted.';
       return;
     }
-    
+
     if (role.userCount && role.userCount > 0) {
       this.errorMessage = `Cannot delete role "${role.name}" because it has ${role.userCount} user(s) assigned.`;
       return;
     }
-    
+
     this.deletingRole = role;
     this.showDeleteModal = true;
     this.errorMessage = null;
@@ -287,7 +287,7 @@ export class RoleManagementComponent implements OnInit {
         // Remove from arrays
         this.roles = this.roles.filter(r => r.id !== this.deletingRole!.id);
         this.customRoles = this.customRoles.filter(r => r.id !== this.deletingRole!.id);
-        
+
         this.applyFilters();
         this.updateStats();
         this.successMessage = `Role "${this.deletingRole?.name}" deleted successfully!`;
