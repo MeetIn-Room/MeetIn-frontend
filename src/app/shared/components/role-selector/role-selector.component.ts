@@ -16,7 +16,7 @@ import { RoleService } from '../../../core/services/role.service';
     <div class="role-selector">
       <!-- Single Select Mode -->
       <div *ngIf="!multiple" class="relative">
-        <select 
+        <select
           [ngModel]="selectedRoleId"
           (ngModelChange)="onSingleSelect($event)"
           class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -25,7 +25,7 @@ import { RoleService } from '../../../core/services/role.service';
           <option value="">{{ placeholder }}</option>
           <option *ngFor="let role of roles" [value]="role.id">
             {{ role.name }}
-            <span *ngIf="role.isSystem" class="text-gray-500"> (System)</span>
+            <span *ngIf="role.system" class="text-gray-500"> (System)</span>
           </option>
         </select>
         <div *ngIf="loading" class="absolute right-8 top-2">
@@ -36,12 +36,12 @@ import { RoleService } from '../../../core/services/role.service';
       <!-- Multi Select Mode -->
       <div *ngIf="multiple" class="space-y-2">
         <div class="flex flex-wrap gap-2">
-          <div 
-            *ngFor="let role of roles" 
+          <div
+            *ngFor="let role of roles"
             class="role-option cursor-pointer"
             (click)="toggleRole(role)"
           >
-            <span 
+            <span
               class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors"
               [class]="isSelected(role) ? getRoleColorClass(role) : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
             >
@@ -75,12 +75,12 @@ export class RoleSelectorComponent implements OnInit {
   @Input() disabled = false;
   @Input() selectedRoleId: string | number = '';
   @Input() selectedRoleIds: (string | number)[] = [];
-  
+
   @Output() roleSelected = new EventEmitter<Role | RoleDisplay | null>();
   @Output() rolesSelected = new EventEmitter<RoleDisplay[]>();
 
   private roleService = inject(RoleService);
-  
+
   roles: RoleDisplay[] = [];
   loading = false;
   error: string | null = null;
@@ -97,7 +97,7 @@ export class RoleSelectorComponent implements OnInit {
       next: (roles) => {
         this.roles = roles.map(role => ({
           ...role,
-          color: getRoleColor(role.name, role.isSystem),
+          color: getRoleColor(role.name, role.system ?? true),
           selected: this.isRoleSelected(role.id)
         }));
         this.loading = false;
@@ -125,7 +125,7 @@ export class RoleSelectorComponent implements OnInit {
 
   toggleRole(role: RoleDisplay): void {
     role.selected = !role.selected;
-    
+
     const selectedRoles = this.roles.filter(r => r.selected);
     this.rolesSelected.emit(selectedRoles);
   }
