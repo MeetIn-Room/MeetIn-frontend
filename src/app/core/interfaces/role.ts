@@ -7,6 +7,7 @@ export interface Role {
   name: string;
   description?: string;
   isSystem: boolean;
+  system?: boolean
   createdAt: string;
   userCount?: number;
 }
@@ -64,15 +65,15 @@ export const ROLE_COLORS: Record<string, string> = {
  * Get color class for a role
  * Returns predefined color for system roles, generates one for custom roles
  */
-export function getRoleColor(roleName: string, isSystem: boolean): string {
+export function getRoleColor(roleName: string, system: boolean): string {
   // Check if we have a predefined color
   if (ROLE_COLORS[roleName]) {
     return ROLE_COLORS[roleName];
   }
-  
+
   // For custom roles without predefined colors, use a default
   // You can extend ROLE_COLORS as needed
-  return isSystem 
+  return system
     ? 'bg-gray-500 text-white'  // Fallback for system roles
     : 'bg-emerald-500 text-white';  // Default for custom roles
 }

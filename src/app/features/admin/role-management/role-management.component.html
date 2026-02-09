@@ -168,8 +168,8 @@
                                     </div>
                                 </td>
                                 <td class="col-type">
-                                    <span class="type-badge" [class.system]="role.isSystem" [class.custom]="!role.isSystem">
-                                        {{ role.isSystem ? 'System' : 'Custom' }}
+                                    <span class="type-badge" [class.system]="role.system" [class.custom]="!role.system">
+                                        {{ role.system ? 'System' : 'Custom' }}
                                     </span>
                                 </td>
                                 <td class="col-description">
@@ -193,11 +193,11 @@
                                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                             </svg>
                                         </button>
-                                        <button 
-                                            class="action-icon-btn delete-btn" 
-                                            (click)="openDeleteModal(role)" 
+                                        <button
+                                            class="action-icon-btn delete-btn"
+                                            (click)="openDeleteModal(role)"
                                             title="Delete Role"
-                                            [disabled]="role.isSystem || (role.userCount && role.userCount > 0)">
+                                            [disabled]="role.system || (role.userCount && role.userCount > 0)">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <polyline points="3 6 5 6 21 6"></polyline>
                                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -225,10 +225,10 @@
             <form [formGroup]="roleForm" (ngSubmit)="createRole()">
                 <div class="form-group">
                     <label for="roleName">Role Name *</label>
-                    <input 
-                        type="text" 
-                        id="roleName" 
-                        formControlName="name" 
+                    <input
+                        type="text"
+                        id="roleName"
+                        formControlName="name"
                         placeholder="e.g., MANAGER_ROLE"
                         class="form-input"
                         [class.error]="roleForm.get('name')?.invalid && roleForm.get('name')?.touched"
@@ -243,9 +243,9 @@
 
                 <div class="form-group">
                     <label for="roleDescription">Description</label>
-                    <textarea 
-                        id="roleDescription" 
-                        formControlName="description" 
+                    <textarea
+                        id="roleDescription"
+                        formControlName="description"
                         placeholder="Enter role description..."
                         class="form-textarea"
                         rows="3"
@@ -257,9 +257,9 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" (click)="closeCreateModal()">Cancel</button>
-                    <button 
-                        type="submit" 
-                        class="btn btn-primary" 
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
                         [disabled]="isSubmitting || roleForm.invalid"
                     >
                         <span *ngIf="isSubmitting" class="spinner-small"></span>
@@ -280,7 +280,7 @@
         </div>
         <div class="modal-body">
             <form [formGroup]="roleForm" (ngSubmit)="updateRole()">
-                <div *ngIf="editingRole?.isSystem" class="system-role-notice">
+                <div *ngIf="editingRole?.system" class="system-role-notice">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
@@ -289,10 +289,10 @@
 
                 <div class="form-group">
                     <label for="editRoleName">Role Name *</label>
-                    <input 
-                        type="text" 
-                        id="editRoleName" 
-                        formControlName="name" 
+                    <input
+                        type="text"
+                        id="editRoleName"
+                        formControlName="name"
                         class="form-input"
                         [class.error]="roleForm.get('name')?.invalid && roleForm.get('name')?.touched"
                     />
@@ -303,9 +303,9 @@
 
                 <div class="form-group">
                     <label for="editRoleDescription">Description</label>
-                    <textarea 
-                        id="editRoleDescription" 
-                        formControlName="description" 
+                    <textarea
+                        id="editRoleDescription"
+                        formControlName="description"
                         placeholder="Enter role description..."
                         class="form-textarea"
                         rows="3"
@@ -314,9 +314,9 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
-                    <button 
-                        type="submit" 
-                        class="btn btn-primary" 
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
                         [disabled]="isSubmitting || roleForm.invalid"
                     >
                         <span *ngIf="isSubmitting" class="spinner-small"></span>
@@ -349,9 +349,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
-                <button 
-                    type="button" 
-                    class="btn btn-danger" 
+                <button
+                    type="button"
+                    class="btn btn-danger"
                     (click)="deleteRole()"
                     [disabled]="isSubmitting"
                 >
